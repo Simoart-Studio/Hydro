@@ -2,68 +2,170 @@
 import { Image } from "astro:assets";
 import { hero } from "../content/hero";
 import Button from "./Button.astro";
+import Container from "./Container.astro";
 ---
 
 <section class="hero" aria-labelledby="hero-title">
-  <Image
-    class="backdrop"
-    src={hero.image.src}
-    alt={hero.image.alt}
-    widths={[640, 960, 1200]}
-    sizes="100vw"
-    loading="eager"
-    fetchpriority="high"
-  />
-  <div class="content">
-    <h1 id="hero-title">{hero.title}</h1>
-    <p class="label">{hero.label}</p>
-    <Button href={hero.action.href} arrow>
-      {hero.action.label}
-    </Button>
+  <div class="media">
+    <Image
+      class="photo"
+      src={hero.image.src}
+      alt={hero.image.alt}
+      widths={[640, 960, 1200]}
+      sizes="(min-width: 56rem) 62vw, 100vw"
+      loading="eager"
+      fetchpriority="high"
+    />
   </div>
+  <Container class="inner">
+    <div class="content">
+      <p class="label">
+        <span class="pipes" aria-hidden="true"></span>
+        {hero.label}
+      </p>
+      <h1 id="hero-title">
+        {hero.title} <span class="accent">{hero.titleAccent}</span>
+      </h1>
+      <p class="lead">{hero.lead}</p>
+      <div class="actions">
+        <Button href={hero.action.href} arrow class="cta">
+          {hero.action.label}
+        </Button>
+        <a class="secondary" href={hero.secondaryAction.href}>
+          {hero.secondaryAction.label}
+        </a>
+      </div>
+    </div>
+  </Container>
 </section>
 
 <style>
   .hero {
     position: relative;
     display: grid;
-    place-items: center;
-    min-block-size: clamp(22rem, 16rem + 18vw, 34rem);
-    padding: var(--space-2xl) var(--gutter) calc(var(--space-2xl) + var(--hero-overlap));
+    padding-block-end: var(--hero-overlap);
     overflow: hidden;
-    background: var(--color-subtle);
+    background: var(--color-hero-bg);
   }
 
-  .backdrop {
+  .media {
+    position: relative;
+    aspect-ratio: 16 / 10;
+  }
+
+  .media::after {
+    content: "";
     position: absolute;
     inset: 0;
+    background: linear-gradient(to bottom, transparent 55%, var(--color-hero-bg));
+  }
+
+  .photo {
     inline-size: 100%;
     block-size: 100%;
     object-fit: cover;
     object-position: 50% 40%;
   }
 
-  .content {
+  .inner {
     position: relative;
+  }
+
+  .content {
     display: grid;
     gap: var(--space-m);
-    justify-items: center;
-    max-inline-size: 38rem;
-    padding: var(--space-l) var(--space-xl);
-    border-block-start: 4px solid var(--color-coral-strong);
-    background: rgb(255 255 255 / 0.97);
-    box-shadow: var(--shadow-card);
-    text-align: center;
+    justify-items: start;
+    max-inline-size: 34rem;
+    padding-block: var(--space-m) var(--space-2xl);
+  }
+
+  .label {
+    display: flex;
+    gap: var(--space-s);
+    align-items: center;
+    color: var(--color-return);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .pipes {
+    flex: none;
+    inline-size: 1.75rem;
+    block-size: 0.6875rem;
+    background:
+      linear-gradient(var(--color-supply) 0 0) top / 100% 3px no-repeat,
+      linear-gradient(var(--color-return) 0 0) bottom / 100% 3px no-repeat;
   }
 
   h1 {
     color: var(--color-ink);
   }
 
-  .label {
-    margin-block-end: var(--space-xs);
-    color: var(--color-coral-strong);
-    font-size: var(--text-sm);
+  .accent {
+    color: var(--color-supply);
+  }
+
+  .lead {
+    color: var(--color-muted);
+    font-size: var(--text-lg);
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-s) var(--space-l);
+    align-items: center;
+    margin-block-start: var(--space-xs);
+  }
+
+  .actions .cta {
+    background: var(--color-supply);
+    box-shadow: 0 4px 14px color-mix(in srgb, var(--color-supply) 30%, transparent);
+  }
+
+  .actions .cta:hover {
+    background: color-mix(in srgb, var(--color-supply) 85%, #000000);
+  }
+
+  .secondary {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--target-size);
+    border-block-end: 2px solid var(--color-return);
+    color: var(--color-return);
     font-weight: 600;
+    text-decoration: none;
+  }
+
+  .secondary:hover {
+    border-block-end-color: currentColor;
+    color: color-mix(in srgb, var(--color-return) 80%, #000000);
+  }
+
+  @media (width >= 56rem) {
+    .hero {
+      min-block-size: clamp(28rem, 18rem + 18vw, 38rem);
+      align-items: center;
+    }
+
+    .media {
+      position: absolute;
+      inset-block: 0;
+      inset-inline-end: 0;
+      inline-size: 62%;
+      aspect-ratio: auto;
+    }
+
+    .media::after {
+      background: linear-gradient(to right, var(--color-hero-bg), transparent 32%);
+    }
+
+    .content {
+      max-inline-size: min(32rem, 40%);
+      padding-block: var(--space-2xl);
+    }
   }
 </style>

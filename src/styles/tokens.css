@@ -18,6 +18,11 @@
   /* Muted text drops to 3.9:1 on the band, so text placed on it uses ink. */
   --color-band: #d3d4e0;
 
+  /* Sampled from the hero photo: supply and return pipes and the wall behind the manifold. */
+  --color-supply: #d82926; /* 4.9:1 with white */
+  --color-return: #1477be; /* 4.8:1 with white */
+  --color-hero-bg: #efeeea;
+
   --font-base: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace;
 
