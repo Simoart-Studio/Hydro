@@ -1,6 +1,6 @@
 ---
 import { mainNavigation, privacyPolicyLink } from "../content/navigation";
-import { site } from "../content/site";
+import { site, siteCredit } from "../content/site";
 import CompanyDetails from "./CompanyDetails.astro";
 import Container from "./Container.astro";
 import { Image } from "astro:assets";
@@ -47,6 +47,17 @@ const year = new Date().getFullYear();
         © {year} {site.legalName}
       </span>
       <a href={privacyPolicyLink.href}>{privacyPolicyLink.label}</a>
+      <span class="credit">
+        {siteCredit.label}{" "}
+        {siteCredit.url ? (
+          <a href={siteCredit.url} rel="nofollow noopener" target="_blank">
+            {siteCredit.name}
+            <span class="visually-hidden"> (otwiera się w nowej karcie)</span>
+          </a>
+        ) : (
+          siteCredit.name
+        )}
+      </span>
     </p>
   </Container>
 </footer>
@@ -126,6 +137,10 @@ const year = new Date().getFullYear();
   }
 
   @media (width >= 40rem) {
+    .credit {
+      margin-inline-start: auto;
+    }
+
     .columns {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
