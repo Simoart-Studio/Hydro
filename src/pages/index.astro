@@ -1,0 +1,10 @@
+---
+import { site } from "../content/site";
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title={`${site.name} | ${site.tagline}`} description={site.description}>
+  <main id="main">
+    <h1>{site.name}</h1>
+  </main>
+</BaseLayout>
