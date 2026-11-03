@@ -59,7 +59,7 @@ a:hover {
 }
 
 :focus-visible {
-  outline: 3px solid var(--color-petrol);
+  outline: 3px solid var(--color-navy);
   outline-offset: 3px;
 }
 

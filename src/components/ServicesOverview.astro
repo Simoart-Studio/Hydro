@@ -22,7 +22,7 @@ const placeholderCount = 5;
           <li class="item">
             <h3>{service.title}</h3>
             <p class="summary">{service.summary}</p>
-            <Button href={service.href} size="small" arrow class="more">
+            <Button href={service.href} variant="outline" size="small" arrow class="more">
               {servicesSection.moreLabel}
               <span class="visually-hidden">: {service.title}</span>
             </Button>
@@ -90,7 +90,7 @@ const placeholderCount = 5;
   }
 
   h3 {
-    color: var(--color-coral-strong);
+    color: var(--color-ink);
     font-size: var(--text-lg);
   }
 

@@ -32,7 +32,7 @@ const titleId = `${id}-title`;
         <li>{item}</li>
       ))}
     </ul>
-    <Button href="/kontakt" size="small" arrow class="inquiry">
+    <Button href="/kontakt" variant="outline" size="small" arrow class="inquiry">
       {offerPage.inquiryLabel}
       <span class="visually-hidden">: {title}</span>
     </Button>
@@ -62,9 +62,9 @@ const titleId = `${id}-title`;
 
   .subsidy {
     padding: var(--space-2xs) var(--space-s);
-    border: 1px solid var(--color-return);
+    border: 1px solid var(--color-blue);
     border-radius: var(--radius-pill);
-    color: var(--color-return);
+    color: var(--color-blue);
     font-family: var(--font-mono);
     font-size: var(--text-xs);
     font-weight: 500;
@@ -77,12 +77,12 @@ const titleId = `${id}-title`;
   }
 
   h2 {
-    color: var(--color-coral-strong);
+    color: var(--color-ink);
   }
 
   h3 {
     margin-block-start: var(--space-xs);
-    color: var(--color-petrol);
+    color: var(--color-blue);
     font-family: var(--font-mono);
     font-size: var(--text-xs);
     font-weight: 500;
@@ -107,7 +107,7 @@ const titleId = `${id}-title`;
 
   .scope li::before {
     content: "+";
-    color: var(--color-coral-strong);
+    color: var(--color-accent);
     font-family: var(--font-mono);
     font-weight: 500;
   }

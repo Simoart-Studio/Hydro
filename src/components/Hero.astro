@@ -19,16 +19,13 @@ import Container from "./Container.astro";
   </div>
   <Container class="inner">
     <div class="content">
-      <p class="label">
-        <span class="pipes" aria-hidden="true"></span>
-        {hero.label}
-      </p>
+      <p class="label">{hero.label}</p>
       <h1 id="hero-title">
         {hero.title} <span class="accent">{hero.titleAccent}</span>
       </h1>
       <p class="lead">{hero.lead}</p>
       <div class="actions">
-        <Button href={hero.action.href} arrow class="cta">
+        <Button href={hero.action.href} arrow>
           {hero.action.label}
         </Button>
         <a class="secondary" href={hero.secondaryAction.href}>
@@ -80,10 +77,7 @@ import Container from "./Container.astro";
   }
 
   .label {
-    display: flex;
-    gap: var(--space-s);
-    align-items: center;
-    color: var(--color-return);
+    color: var(--color-blue);
     font-family: var(--font-mono);
     font-size: var(--text-xs);
     font-weight: 500;
@@ -91,21 +85,12 @@ import Container from "./Container.astro";
     text-transform: uppercase;
   }
 
-  .pipes {
-    flex: none;
-    inline-size: 1.75rem;
-    block-size: 0.6875rem;
-    background:
-      linear-gradient(var(--color-supply) 0 0) top / 100% 3px no-repeat,
-      linear-gradient(var(--color-return) 0 0) bottom / 100% 3px no-repeat;
-  }
-
   h1 {
     color: var(--color-ink);
   }
 
   .accent {
-    color: var(--color-supply);
+    color: var(--color-accent);
   }
 
   .lead {
@@ -121,28 +106,19 @@ import Container from "./Container.astro";
     margin-block-start: var(--space-xs);
   }
 
-  .actions .cta {
-    background: var(--color-supply);
-    box-shadow: 0 4px 14px color-mix(in srgb, var(--color-supply) 30%, transparent);
-  }
-
-  .actions .cta:hover {
-    background: color-mix(in srgb, var(--color-supply) 85%, #000000);
-  }
-
   .secondary {
     display: inline-flex;
     align-items: center;
     min-block-size: var(--target-size);
-    border-block-end: 2px solid var(--color-return);
-    color: var(--color-return);
+    color: var(--color-blue);
     font-weight: 600;
-    text-decoration: none;
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 0.3em;
   }
 
   .secondary:hover {
-    border-block-end-color: currentColor;
-    color: color-mix(in srgb, var(--color-return) 80%, #000000);
+    color: var(--color-navy);
   }
 
   @media (width >= 56rem) {

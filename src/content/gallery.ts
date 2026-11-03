@@ -161,8 +161,8 @@ export const galleryPreview = {
   moreLabel: "Zobacz wszystkie realizacje",
   photos: [
     photos.pelletBoilerFuelStore,
+    photos.heatPumpIndoor,
     photos.manifoldPair,
-    photos.trenchConvector,
     photos.pelletBoilerLowCeiling,
   ],
 };

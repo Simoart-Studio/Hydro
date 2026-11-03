@@ -36,7 +36,7 @@ const iconPaths: Record<StepIcon, string> = {
     ))}
   </ol>
   {action && (
-    <Button href={action.href} arrow class="action">
+    <Button href={action.href} variant="outline" arrow class="action">
       {action.label}
     </Button>
   )}
@@ -64,7 +64,7 @@ const iconPaths: Record<StepIcon, string> = {
   .icon {
     padding: var(--space-xs);
     fill: none;
-    stroke: var(--color-petrol);
+    stroke: var(--color-navy);
     stroke-linecap: round;
     stroke-linejoin: round;
     stroke-width: 2;
@@ -76,7 +76,7 @@ const iconPaths: Record<StepIcon, string> = {
   }
 
   .number {
-    color: var(--color-coral-strong);
+    color: var(--color-accent);
     font-family: var(--font-mono);
   }
 

@@ -1,6 +1,11 @@
 ---
 interface Props {
-  variant?: "primary" | "dark";
+  /**
+   * primary: the one action a section asks for (red).
+   * dark: phone numbers and solid secondary actions (navy).
+   * outline: repeated or supporting actions, such as "Dowiedz się więcej" in a list.
+   */
+  variant?: "primary" | "dark" | "outline";
   size?: "regular" | "small";
   href?: string;
   type?: "button" | "submit";
@@ -39,7 +44,7 @@ const classes = ["button", variant, size, className];
     justify-content: center;
     min-block-size: var(--target-size);
     padding: var(--space-xs) var(--space-l);
-    border: 0;
+    border: 1.5px solid transparent;
     border-radius: var(--radius-pill);
     font-size: 0.9375rem;
     font-weight: 600;
@@ -47,32 +52,50 @@ const classes = ["button", variant, size, className];
     text-align: center;
     text-decoration: none;
     cursor: pointer;
-    transition: background-color 150ms ease;
+    transition:
+      background-color 150ms ease,
+      border-color 150ms ease,
+      color 150ms ease;
   }
 
   .small {
     gap: var(--space-2xs);
-    padding-inline: var(--space-s) var(--space-xs);
-    font-size: var(--text-xs);
+    padding-inline: var(--space-m) var(--space-xs);
+    font-size: var(--text-sm);
     white-space: nowrap;
   }
 
   .primary {
-    background: var(--color-coral-strong);
-    color: var(--color-on-coral);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
   }
 
   .primary:hover {
-    background: color-mix(in srgb, var(--color-coral-strong) 85%, #000000);
+    background: var(--color-accent-hover);
   }
 
   .dark {
-    background: var(--color-petrol);
-    color: var(--color-on-petrol);
+    background: var(--color-navy);
+    color: var(--color-on-navy);
   }
 
   .dark:hover {
-    background: color-mix(in srgb, var(--color-petrol) 85%, #000000);
+    background: var(--color-navy-hover);
+  }
+
+  .outline {
+    border-color: var(--color-navy);
+    background: transparent;
+    color: var(--color-navy);
+  }
+
+  .outline:hover {
+    background: var(--color-navy);
+    color: var(--color-on-navy);
+  }
+
+  .button:active {
+    translate: 0 1px;
   }
 
   .button:disabled {
@@ -87,7 +110,7 @@ const classes = ["button", variant, size, className];
     inline-size: 1.25rem;
     block-size: 1.25rem;
     border-radius: 50%;
-    background: color-mix(in srgb, currentColor 22%, transparent);
+    background: color-mix(in srgb, currentColor 18%, transparent);
   }
 
   .arrow::before {
@@ -98,5 +121,10 @@ const classes = ["button", variant, size, className];
     border-inline-end: 2px solid currentColor;
     translate: -1px 0;
     rotate: 45deg;
+    transition: translate 150ms ease;
+  }
+
+  .button:hover .arrow::before {
+    translate: 1px 0;
   }
 </style>

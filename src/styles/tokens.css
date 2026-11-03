@@ -1,27 +1,28 @@
 :root {
   color-scheme: light;
 
+  /*
+   * One palette taken from the logo and the hero photo.
+   * Red is reserved for actions, navy carries structure, blue marks links and labels,
+   * and the warm greys follow the wall behind the manifold in the hero photo.
+   */
   --color-bg: #ffffff;
   --color-surface: #ffffff;
-  --color-subtle: #f2f2f5;
-  --color-ink: #1f2d33;
-  --color-muted: #55626a;
-  --color-line: #e2e3ea;
-  --color-field: #858a9c;
-  /* Decorative and large text only: 3.1:1 on white is enough for headings, not for body copy. */
-  --color-coral: #f0674a;
-  /* The same hue darkened to 4.8:1 so white text on buttons and labels passes AA. */
-  --color-coral-strong: #c8452a;
-  --color-on-coral: #ffffff;
-  --color-petrol: #1f4e5a;
-  --color-on-petrol: #ffffff;
-  /* Muted text drops to 3.9:1 on the band, so text placed on it uses ink. */
-  --color-band: #d3d4e0;
-
-  /* Sampled from the hero photo: supply and return pipes and the wall behind the manifold. */
-  --color-supply: #d82926; /* 4.9:1 with white */
-  --color-return: #1477be; /* 4.8:1 with white */
+  --color-subtle: #f4f4f1;
   --color-hero-bg: #efeeea;
+  --color-band: #e6e6e0;
+  --color-line: #e0e0da;
+  --color-field: #878b8c; /* 3.4:1 on white, enough for input borders */
+  --color-ink: #18262f;
+  --color-muted: #56626a; /* 5.0:1 or more on every background above */
+
+  --color-accent: #d0281f; /* 5.2:1 with white */
+  --color-accent-hover: #b0201a;
+  --color-on-accent: #ffffff;
+  --color-navy: #163a5f; /* 11.6:1 with white */
+  --color-navy-hover: #0f2a46;
+  --color-on-navy: #ffffff;
+  --color-blue: #11649f; /* 6.3:1 on white, 5.7:1 on subtle */
 
   --font-base: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace;
@@ -54,6 +55,6 @@
   --radius-pill: 999px;
   --target-size: 2.75rem;
 
-  --shadow-card: 0 2px 10px color-mix(in srgb, #1f2d33 14%, transparent);
+  --shadow-card: 0 2px 12px color-mix(in srgb, #18262f 12%, transparent);
   --hero-overlap: clamp(1.5rem, 1rem + 2.5vw, 3rem);
 }
