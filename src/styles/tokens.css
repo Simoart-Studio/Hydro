@@ -1,39 +1,34 @@
 :root {
   color-scheme: light dark;
 
-  --color-bg: #f2f5f4;
+  --color-bg: #ffffff;
   --color-surface: #ffffff;
-  --color-ink: #0f2b2e;
-  --color-muted: #4a6064;
-  --color-line: #d3dddb;
-  /* Darker than the #8ca2a1 from the brief, which gives field borders only 2.7:1 on white (WCAG 1.4.11 needs 3:1). */
-  --color-field: #7a9190;
-  --color-heat: #bf410d;
-  --color-heat-soft: #f9e4d8;
-  --color-cool: #237384;
-  --color-cool-soft: #daedf0;
-  --color-on-heat: #ffffff;
-  --color-hero-bg: #0f2b2e;
-  --color-hero-fg: #f2f5f4;
-  /* Heat and cool text drop below 4.5:1 on the band, so text on it stays in ink or muted. */
-  --color-band: #e2e9e8;
+  --color-subtle: #f2f2f5;
+  --color-ink: #1f2d33;
+  --color-muted: #55626a;
+  --color-line: #e2e3ea;
+  --color-field: #858a9c;
+  /* Decorative and large text only: 3.1:1 on white is enough for headings, not for body copy. */
+  --color-coral: #f0674a;
+  /* The same hue darkened to 4.8:1 so white text on buttons and labels passes AA. */
+  --color-coral-strong: #c8452a;
+  --color-on-coral: #ffffff;
+  --color-petrol: #1f4e5a;
+  --color-on-petrol: #ffffff;
+  /* Petrol used as text, icon or outline colour; it lightens in the dark theme. */
+  --color-petrol-fg: #1f4e5a;
+  /* Muted text drops to 3.9:1 on the band, so text placed on it uses ink. */
+  --color-band: #c9cadb;
 
-  /* The hero is dark in both themes, so it always uses the light-on-dark accents. */
-  --color-hero-muted: #b4c7c7;
-  --color-hero-heat: #f28a4b;
-  --color-hero-cool: #6cc0d2;
-  --color-hero-on-heat: #1a0b03;
+  --font-base: "Poppins", ui-sans-serif, system-ui, sans-serif;
 
-  --font-heading: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
-  --font-body: "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace;
-
-  --text-sm: clamp(0.875rem, 0.85rem + 0.1vw, 0.9375rem);
-  --text-base: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
-  --text-lg: clamp(1.1875rem, 1.1rem + 0.4vw, 1.375rem);
-  --text-xl: clamp(1.3125rem, 1.2rem + 0.6vw, 1.625rem);
-  --text-2xl: clamp(1.75rem, 1.4rem + 1.6vw, 2.5rem);
-  --text-3xl: clamp(2.125rem, 1.4rem + 3.4vw, 3.625rem);
+  --text-xs: 0.8125rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);
+  --text-xl: clamp(1.1875rem, 1.1rem + 0.4vw, 1.375rem);
+  --text-2xl: clamp(1.5rem, 1.25rem + 1.2vw, 2.125rem);
+  --text-3xl: clamp(2rem, 1.4rem + 3vw, 3.5rem);
 
   --space-2xs: 0.25rem;
   --space-xs: 0.5rem;
@@ -42,41 +37,37 @@
   --space-l: 1.5rem;
   --space-xl: 2rem;
   --space-2xl: clamp(2.5rem, 2rem + 2vw, 3.5rem);
-  --space-section: clamp(3.5rem, 2.5rem + 5vw, 6.5rem);
+  --space-section: clamp(3rem, 2.25rem + 3.5vw, 5rem);
 
   --gutter: clamp(1rem, 0.5rem + 3vw, 2.5rem);
   --width-page: 74rem;
-  --width-text: 46rem;
-  --measure: 65ch;
+  --width-column: 56rem;
+  --measure: 68ch;
 
-  --radius-sm: 4px;
+  --radius-sm: 6px;
   --radius: 10px;
-  --radius-lg: 28px;
-  --border-strong: 2px;
+  --radius-tile: clamp(2rem, 1rem + 4vw, 3.5rem);
+  --radius-pill: 999px;
   --target-size: 2.75rem;
 
-  --shadow-card:
-    0 1px 2px color-mix(in srgb, var(--color-ink) 8%, transparent),
-    0 12px 32px -12px color-mix(in srgb, var(--color-ink) 22%, transparent);
-  --hero-overlap: clamp(2.5rem, 1rem + 6vw, 6rem);
+  --shadow-card: 0 10px 30px -8px color-mix(in srgb, #1f2d33 28%, transparent);
+  --hero-overlap: clamp(2rem, 1rem + 4vw, 4.5rem);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-bg: #0b1a1d;
-    --color-surface: #122428;
-    --color-ink: #e7efed;
-    --color-muted: #9fb5b6;
-    --color-line: #25414a;
-    /* Lighter than the #4f7079 from the brief, which sits right at 3:1 against the surface. */
-    --color-field: #5a7d86;
-    --color-heat: #f28a4b;
-    --color-heat-soft: #33201a;
-    --color-cool: #6cc0d2;
-    --color-cool-soft: #12323a;
-    --color-on-heat: #1a0b03;
-    --color-hero-bg: #071417;
-    --color-hero-fg: #e7efed;
-    --color-band: #0f2226;
+    --color-bg: #10181b;
+    --color-surface: #172226;
+    --color-subtle: #1d2a2f;
+    --color-ink: #e8ecee;
+    --color-muted: #a7b4b9;
+    --color-line: #2b3a40;
+    --color-field: #61757d;
+    --color-coral: #ff8a6e;
+    --color-coral-strong: #f07a5e;
+    --color-on-coral: #1a0b06;
+    --color-petrol: #2b6878;
+    --color-band: #262a3a;
+    --color-petrol-fg: #8cc5d2;
   }
 }

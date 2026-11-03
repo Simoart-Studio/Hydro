@@ -8,7 +8,7 @@ import PhoneIcon from "./PhoneIcon.astro";
 ---
 
 <header class="site-header">
-  <Container class="top">
+  <Container class="bar">
     <a class="brand" href="/" aria-label={`${site.name}, strona główna`}>
       <Logo />
       <span class="brand-name">{site.name}</span>
@@ -19,9 +19,6 @@ import PhoneIcon from "./PhoneIcon.astro";
         <PhoneIcon />
         <span class="visually-hidden">Zadzwoń:</span>
         {site.phone}
-      </Button>
-      <Button href={primaryCta.href} class="cta">
-        {primaryCta.label}
       </Button>
       <details class="menu" data-mobile-menu>
         <summary class="menu-toggle">
@@ -40,24 +37,14 @@ import PhoneIcon from "./PhoneIcon.astro";
               ))}
             </ul>
           </nav>
-          <Button href={primaryCta.href}>{primaryCta.label}</Button>
+          <Button href={primaryCta.href} arrow>
+            {primaryCta.label}
+          </Button>
         </div>
       </details>
     </div>
   </Container>
-  <div class="strip">
-    <Container>
-      <nav class="desktop-nav" aria-label="Menu główne">
-        <ul role="list">
-          {mainNavigation.map((link) => (
-            <li>
-              <a href={link.href}>{link.label}</a>
-            </li>
-          ))}
-        </ul>
-      </nav>
-    </Container>
-  </div>
+  <div class="strip"></div>
 </header>
 
 <script>
@@ -82,10 +69,11 @@ import PhoneIcon from "./PhoneIcon.astro";
 <style>
   .site-header {
     position: relative;
+    z-index: 10;
     background: var(--color-surface);
   }
 
-  .top {
+  .bar {
     display: flex;
     gap: var(--space-m);
     align-items: center;
@@ -97,7 +85,6 @@ import PhoneIcon from "./PhoneIcon.astro";
     gap: var(--space-xs);
     align-items: center;
     min-block-size: var(--target-size);
-    font-family: var(--font-heading);
     font-size: var(--text-lg);
     font-weight: 700;
     text-decoration: none;
@@ -106,28 +93,26 @@ import PhoneIcon from "./PhoneIcon.astro";
 
   .tagline {
     display: none;
-    padding-inline-start: var(--space-m);
-    border-inline-start: 1px solid var(--color-line);
-    color: var(--color-muted);
+    flex: 1;
+    min-inline-size: 0;
+    color: var(--color-petrol-fg);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    line-height: 1.3;
+    text-align: center;
   }
 
   .actions {
     display: flex;
+    margin-inline-start: auto;
     gap: var(--space-xs);
     align-items: center;
-    margin-inline-start: auto;
   }
 
   .phone {
-    padding-inline: var(--space-s);
-    font-family: var(--font-mono);
+    padding-inline: var(--space-m);
     font-size: var(--text-sm);
-    font-weight: 500;
     white-space: nowrap;
-  }
-
-  .cta {
-    display: none;
   }
 
   .menu-toggle {
@@ -135,14 +120,18 @@ import PhoneIcon from "./PhoneIcon.astro";
     place-items: center;
     inline-size: var(--target-size);
     block-size: var(--target-size);
-    border: 1px solid var(--color-line);
-    border-radius: var(--radius);
+    border-radius: 50%;
     list-style: none;
     cursor: pointer;
   }
 
   .menu-toggle::-webkit-details-marker {
     display: none;
+  }
+
+  .menu-toggle:hover,
+  .menu[open] .menu-toggle {
+    background: var(--color-subtle);
   }
 
   .menu-toggle svg {
@@ -152,19 +141,15 @@ import PhoneIcon from "./PhoneIcon.astro";
     stroke-width: 2;
   }
 
-  .menu[open] .menu-toggle {
-    background: var(--color-band);
-  }
-
   .menu-panel {
     position: absolute;
-    inset-inline: 0;
+    inset-inline-end: max(var(--gutter), calc((100% - var(--width-page)) / 2));
     top: 100%;
-    z-index: 10;
     display: grid;
     gap: var(--space-m);
-    padding: var(--space-m) var(--gutter) var(--space-l);
-    border-block-end: 1px solid var(--color-line);
+    inline-size: min(20rem, 100% - 2 * var(--gutter));
+    padding: var(--space-m) var(--space-l) var(--space-l);
+    border-radius: 0 0 var(--radius) var(--radius);
     background: var(--color-surface);
     box-shadow: var(--shadow-card);
   }
@@ -178,36 +163,13 @@ import PhoneIcon from "./PhoneIcon.astro";
     text-decoration: none;
   }
 
+  .menu-list a:hover {
+    color: var(--color-coral-strong);
+  }
+
   .strip {
-    border-block-end: 1px solid color-mix(in srgb, var(--color-hero-fg) 14%, transparent);
-    background: var(--color-hero-bg);
-    color: var(--color-hero-fg);
-  }
-
-  .desktop-nav {
-    display: none;
-  }
-
-  .desktop-nav ul {
-    display: flex;
-    gap: var(--space-xs);
-  }
-
-  .desktop-nav a {
-    display: flex;
-    align-items: center;
-    min-block-size: var(--target-size);
-    padding-inline: var(--space-s);
-    font-weight: 600;
-    text-decoration: none;
-  }
-
-  .desktop-nav a:hover {
-    text-decoration: underline;
-  }
-
-  .desktop-nav a:focus-visible {
-    outline-color: var(--color-hero-cool);
+    block-size: clamp(0.75rem, 0.5rem + 1vw, 1.25rem);
+    background: var(--color-petrol);
   }
 
   @media (width < 30rem) {
@@ -216,33 +178,9 @@ import PhoneIcon from "./PhoneIcon.astro";
     }
   }
 
-  @media (width >= 48rem) {
-    .cta {
-      display: inline-flex;
-    }
-  }
-
-  @media (width >= 64rem) {
+  @media (width >= 56rem) {
     .tagline {
       display: block;
-    }
-
-    .menu {
-      display: none;
-    }
-
-    .strip {
-      padding-block: var(--space-2xs);
-    }
-
-    .desktop-nav {
-      display: block;
-    }
-  }
-
-  @media (width < 64rem) {
-    .strip {
-      block-size: 0.375rem;
     }
   }
 </style>

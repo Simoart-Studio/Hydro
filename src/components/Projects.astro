@@ -1,0 +1,28 @@
+---
+import type { Project } from "../content/projects";
+import { projectsSection } from "../content/projects";
+import PhotoTile from "./PhotoTile.astro";
+import Section from "./Section.astro";
+import TileGrid from "./TileGrid.astro";
+
+interface Props {
+  projects: Project[];
+}
+
+const { projects } = Astro.props;
+---
+
+<Section id="realizacje" title={projectsSection.title} intro={projectsSection.intro}>
+  <TileGrid>
+    {projects.map((project) => (
+      <li>
+        <PhotoTile
+          label={`${project.city}, ${project.heatSource}`}
+          image={project.photo?.src}
+          alt={project.photo?.alt}
+          caption={String(project.year)}
+        />
+      </li>
+    ))}
+  </TileGrid>
+</Section>

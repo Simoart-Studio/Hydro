@@ -1,0 +1,64 @@
+---
+import Container from "./Container.astro";
+
+interface Props {
+  id: string;
+  title: string;
+  intro?: string;
+  tone?: "plain" | "subtle";
+  width?: "page" | "column";
+}
+
+const { id, title, intro, tone = "plain", width = "column" } = Astro.props;
+const titleId = `${id}-title`;
+---
+
+<section id={id} class:list={["section", tone]} aria-labelledby={titleId}>
+  <Container width={width} class="inner">
+    <div class="heading">
+      <h2 id={titleId}>{title}</h2>
+      {intro && <p class="intro">{intro}</p>}
+    </div>
+    <slot />
+  </Container>
+</section>
+
+<style>
+  .section {
+    padding-block: var(--space-section);
+  }
+
+  .subtle {
+    background: var(--color-subtle);
+  }
+
+  .inner {
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  .heading {
+    display: grid;
+    gap: var(--space-m);
+    justify-items: center;
+    text-align: center;
+  }
+
+  h2 {
+    color: var(--color-coral);
+  }
+
+  h2::after {
+    content: "";
+    display: block;
+    inline-size: 2.5rem;
+    block-size: 3px;
+    margin: var(--space-s) auto 0;
+    background: var(--color-coral);
+  }
+
+  .intro {
+    max-inline-size: var(--measure);
+    color: var(--color-muted);
+  }
+</style>

@@ -1,4 +1,3 @@
-import { isDemo } from "../lib/env";
 import { projects } from "./projects";
 
 export interface NavLink {
@@ -6,11 +5,11 @@ export interface NavLink {
   href: string;
 }
 
-// The demo shows placeholder frames so the client can see the section before photos exist.
-export const showProjects = projects.length > 0 || isDemo;
+export const showProjects = projects.length > 0;
 
 export const mainNavigation: NavLink[] = [
   { label: "Oferta", href: "/#oferta" },
+  { label: "Urządzenia", href: "/#urzadzenia" },
   { label: "Jak to działa", href: "/#jak-to-dziala" },
   { label: "Zasady", href: "/#zasady" },
   ...(showProjects ? [{ label: "Realizacje", href: "/#realizacje" }] : []),

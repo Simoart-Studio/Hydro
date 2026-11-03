@@ -1,0 +1,54 @@
+---
+import { notice } from "../content/notice";
+import Container from "./Container.astro";
+---
+
+<Container width="column" class="wrapper">
+  <aside class="notice" aria-labelledby="notice-title">
+    <h2 id="notice-title" class="tab">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"></circle>
+        <path d="M12 11v6M12 7.5v.5"></path>
+      </svg>
+      {notice.label}
+    </h2>
+    <p class="text">{notice.text}</p>
+  </aside>
+</Container>
+
+<style>
+  .wrapper {
+    padding-block-end: var(--space-section);
+  }
+
+  .notice {
+    display: grid;
+    justify-items: start;
+  }
+
+  .tab {
+    display: flex;
+    gap: var(--space-xs);
+    align-items: center;
+    margin-inline-start: var(--space-xl);
+    padding: var(--space-xs) var(--space-l);
+    background: var(--color-coral-strong);
+    color: var(--color-on-coral);
+    font-size: var(--text-sm);
+  }
+
+  .tab svg {
+    fill: currentColor;
+    stroke: var(--color-coral-strong);
+    stroke-linecap: round;
+    stroke-width: 2.5;
+  }
+
+  .text {
+    justify-self: stretch;
+    padding: var(--space-l) var(--space-xl);
+    border: 1px solid var(--color-line);
+    background: var(--color-subtle);
+    font-style: italic;
+  }
+</style>

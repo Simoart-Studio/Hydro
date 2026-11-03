@@ -1,6 +1,6 @@
 ---
 interface Props {
-  width?: "page" | "text";
+  width?: "page" | "column";
   class?: string;
 }
 
@@ -22,7 +22,7 @@ const { width = "page", class: className } = Astro.props;
     max-inline-size: calc(var(--width-page) + 2 * var(--gutter));
   }
 
-  .text {
-    max-inline-size: calc(var(--width-text) + 2 * var(--gutter));
+  .column {
+    max-inline-size: calc(var(--width-column) + 2 * var(--gutter));
   }
 </style>

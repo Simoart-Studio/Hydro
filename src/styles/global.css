@@ -1,11 +1,9 @@
-@import "@fontsource/bricolage-grotesque/latin-700.css";
-@import "@fontsource/bricolage-grotesque/latin-ext-700.css";
-@import "@fontsource/source-sans-3/latin-400.css";
-@import "@fontsource/source-sans-3/latin-ext-400.css";
-@import "@fontsource/source-sans-3/latin-600.css";
-@import "@fontsource/source-sans-3/latin-ext-600.css";
-@import "@fontsource/ibm-plex-mono/latin-500.css";
-@import "@fontsource/ibm-plex-mono/latin-ext-500.css";
+@import "@fontsource/poppins/latin-400.css";
+@import "@fontsource/poppins/latin-ext-400.css";
+@import "@fontsource/poppins/latin-600.css";
+@import "@fontsource/poppins/latin-ext-600.css";
+@import "@fontsource/poppins/latin-700.css";
+@import "@fontsource/poppins/latin-ext-700.css";
 @import "./reset.css";
 @import "./tokens.css";
 
@@ -17,17 +15,16 @@ html {
 body {
   background: var(--color-bg);
   color: var(--color-ink);
-  font-family: var(--font-body);
+  font-family: var(--font-base);
   font-size: var(--text-base);
+  line-height: 1.65;
 }
 
 h1,
 h2,
 h3 {
-  font-family: var(--font-heading);
   font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.01em;
+  line-height: 1.2;
   text-wrap: balance;
 }
 
@@ -62,7 +59,7 @@ a:hover {
 }
 
 :focus-visible {
-  outline: 3px solid var(--color-cool);
+  outline: 3px solid var(--color-petrol-fg);
   outline-offset: 3px;
 }
 

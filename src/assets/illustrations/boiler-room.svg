@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="480" viewBox="0 0 480 480">
+  <rect width="480" height="480" fill="#e9e6ee"/>
+  <rect y="410" width="480" height="70" fill="#d7d3de"/>
+  <g fill="none" stroke-width="12" stroke-linejoin="round">
+    <path d="M150 230v60h120v-170h50" stroke="#e0613f"/>
+    <path d="M190 230v100h110v-120h20" stroke="#4a90b8"/>
+  </g>
+  <rect x="90" y="70" width="140" height="170" rx="14" fill="#fbfbfc"/>
+  <rect x="122" y="110" width="76" height="38" rx="6" fill="#2b3a40"/>
+  <rect x="132" y="120" width="34" height="10" rx="3" fill="#4fb6cb"/>
+  <circle cx="186" cy="128" r="6" fill="#f0674a"/>
+  <ellipse cx="380" cy="424" rx="70" ry="8" fill="#1f2d33" opacity="0.12"/>
+  <rect x="320" y="100" width="120" height="320" rx="50" fill="#fbfbfc"/>
+  <path d="M410 106c20 12 30 34 30 50v214c0 18-10 40-30 50z" fill="#e6e8ec"/>
+  <g transform="rotate(-35 150 400)">
+    <rect x="70" y="390" width="150" height="20" rx="10" fill="#2b3a40"/>
+    <path d="M220 380a30 30 0 1 1 0 40h-10v-40z" fill="#2b3a40"/>
+    <circle cx="232" cy="400" r="11" fill="#e9e6ee"/>
+  </g>
+</svg>

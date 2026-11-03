@@ -1,22 +1,33 @@
 ---
 interface Props {
-  variant?: "primary" | "dark" | "outline";
+  variant?: "primary" | "dark";
+  size?: "regular" | "small";
   href?: string;
   type?: "button" | "submit";
+  arrow?: boolean;
   class?: string;
 }
 
-const { variant = "primary", href, type = "button", class: className } = Astro.props;
-const classes = ["button", variant, className];
+const {
+  variant = "primary",
+  size = "regular",
+  href,
+  type = "button",
+  arrow = false,
+  class: className,
+} = Astro.props;
+const classes = ["button", variant, size, className];
 ---
 
 {href ? (
   <a href={href} class:list={classes}>
     <slot />
+    {arrow && <span class="arrow" aria-hidden="true" />}
   </a>
 ) : (
   <button type={type} class:list={classes}>
     <slot />
+    {arrow && <span class="arrow" aria-hidden="true" />}
   </button>
 )}
 
@@ -28,48 +39,61 @@ const classes = ["button", variant, className];
     justify-content: center;
     min-block-size: var(--target-size);
     padding: var(--space-xs) var(--space-l);
-    border: var(--border-strong) solid transparent;
-    border-radius: var(--radius);
+    border: 0;
+    border-radius: var(--radius-pill);
     font-weight: 600;
     line-height: 1.2;
     text-align: center;
     text-decoration: none;
     cursor: pointer;
-    transition:
-      background-color 150ms ease,
-      border-color 150ms ease;
+    transition: background-color 150ms ease;
+  }
+
+  .small {
+    padding-inline: var(--space-m) var(--space-xs);
+    font-size: var(--text-sm);
   }
 
   .primary {
-    background: var(--color-heat);
-    color: var(--color-on-heat);
+    background: var(--color-coral-strong);
+    color: var(--color-on-coral);
   }
 
   .primary:hover {
-    background: color-mix(in srgb, var(--color-heat) 86%, var(--color-ink));
+    background: color-mix(in srgb, var(--color-coral-strong) 85%, #000000);
   }
 
   .dark {
-    background: var(--color-ink);
-    color: var(--color-bg);
+    background: var(--color-petrol);
+    color: var(--color-on-petrol);
   }
 
   .dark:hover {
-    background: color-mix(in srgb, var(--color-ink) 86%, var(--color-bg));
-  }
-
-  .outline {
-    border-color: currentColor;
-    background: transparent;
-    color: var(--color-ink);
-  }
-
-  .outline:hover {
-    background: color-mix(in srgb, var(--color-ink) 10%, transparent);
+    background: color-mix(in srgb, var(--color-petrol) 85%, #000000);
   }
 
   .button:disabled {
     opacity: 0.6;
     cursor: progress;
+  }
+
+  .arrow {
+    display: grid;
+    flex: none;
+    place-items: center;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    border-radius: 50%;
+    background: color-mix(in srgb, currentColor 22%, transparent);
+  }
+
+  .arrow::before {
+    content: "";
+    inline-size: 0.4rem;
+    block-size: 0.4rem;
+    border-block-start: 2px solid currentColor;
+    border-inline-end: 2px solid currentColor;
+    translate: -1px 0;
+    rotate: 45deg;
   }
 </style>

@@ -1,0 +1,55 @@
+---
+import type { Category } from "../content/categories";
+import { intro } from "../content/intro";
+import PhotoTile from "./PhotoTile.astro";
+import Section from "./Section.astro";
+import TileGrid from "./TileGrid.astro";
+
+interface Props {
+  categories: Category[];
+}
+
+const { categories } = Astro.props;
+---
+
+<Section id="o-nas" title={intro.title}>
+  <div class="text">
+    {intro.paragraphs.map((paragraph) => (
+      <p set:html={paragraph} />
+    ))}
+  </div>
+  <p class="prompt">{intro.categoriesPrompt}</p>
+  <TileGrid id="urzadzenia">
+    {categories.map((category) => (
+      <li>
+        <PhotoTile
+          label={category.label}
+          image={category.image}
+          alt={category.alt}
+          href={category.href}
+        />
+      </li>
+    ))}
+  </TileGrid>
+</Section>
+
+<style>
+  .text {
+    display: grid;
+    gap: var(--space-m);
+    max-inline-size: var(--measure);
+    margin-inline: auto;
+  }
+
+  .prompt {
+    justify-self: center;
+    margin-block-start: var(--space-m);
+    padding: var(--space-xs) var(--space-m);
+    border-radius: var(--radius-sm);
+    background: var(--color-petrol);
+    color: var(--color-on-petrol);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-align: center;
+  }
+</style>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="480" viewBox="0 0 480 480">
+  <rect width="480" height="480" fill="#e6ecef"/>
+  <rect y="400" width="480" height="80" fill="#d5dde2"/>
+  <g stroke-width="14" fill="none" stroke-linecap="round">
+    <path d="M150 170H60" stroke="#e0613f"/>
+    <path d="M150 300H60" stroke="#4a90b8"/>
+    <path d="M330 120h90" stroke="#e0613f"/>
+    <path d="M330 340h90" stroke="#4a90b8"/>
+  </g>
+  <ellipse cx="240" cy="418" rx="110" ry="10" fill="#1f2d33" opacity="0.12"/>
+  <rect x="150" y="56" width="180" height="360" rx="80" fill="#fbfbfc"/>
+  <path d="M290 64c26 16 40 46 40 72v200c0 28-14 58-40 74z" fill="#e7ebee"/>
+  <rect x="190" y="200" width="100" height="64" rx="8" fill="#eef1f3" stroke="#d3d9de" stroke-width="2"/>
+  <rect x="204" y="214" width="56" height="8" rx="4" fill="#9aa3ab"/>
+  <rect x="204" y="232" width="40" height="8" rx="4" fill="#c4cad0"/>
+  <circle cx="240" cy="132" r="24" fill="#ffffff" stroke="#c4cad0" stroke-width="4"/>
+  <path d="M240 132l12-12" stroke="#e0613f" stroke-width="4" stroke-linecap="round"/>
+</svg>

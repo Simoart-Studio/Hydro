@@ -1,5 +1,3 @@
-import type { ImageMetadata } from "astro";
-
 export interface PostalAddress {
   street: string;
   postalCode: string;
@@ -28,10 +26,6 @@ export interface SiteInfo {
   serviceArea: {
     summary: string;
     places: string[];
-  };
-  heroImage?: {
-    src: ImageMetadata;
-    alt: string;
   };
 }
 

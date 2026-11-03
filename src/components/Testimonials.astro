@@ -1,0 +1,59 @@
+---
+import type { Testimonial } from "../content/testimonials";
+import { testimonialsSection } from "../content/testimonials";
+import Section from "./Section.astro";
+
+interface Props {
+  testimonials: Testimonial[];
+}
+
+const { testimonials } = Astro.props;
+---
+
+<Section id="opinie" title={testimonialsSection.title} tone="subtle" width="page">
+  <ul class="list" role="list">
+    {testimonials.map((testimonial) => (
+      <li>
+        <figure class="testimonial">
+          <blockquote>
+            <p>{testimonial.quote}</p>
+          </blockquote>
+          <figcaption>
+            <strong>{testimonial.author}</strong>, {testimonial.city}
+          </figcaption>
+        </figure>
+      </li>
+    ))}
+  </ul>
+</Section>
+
+<style>
+  .list {
+    display: grid;
+    gap: var(--space-l);
+  }
+
+  .testimonial {
+    display: grid;
+    gap: var(--space-m);
+    block-size: 100%;
+    padding: var(--space-l);
+    border-block-start: 4px solid var(--color-coral);
+    background: var(--color-surface);
+  }
+
+  blockquote {
+    font-style: italic;
+  }
+
+  figcaption {
+    color: var(--color-muted);
+    font-size: var(--text-sm);
+  }
+
+  @media (width >= 48rem) {
+    .list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

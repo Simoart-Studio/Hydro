@@ -1,0 +1,87 @@
+---
+import type { Step, StepIcon } from "../content/steps";
+import { stepsSection } from "../content/steps";
+import Section from "./Section.astro";
+
+interface Props {
+  steps: Step[];
+}
+
+const { steps } = Astro.props;
+
+const iconPaths: Record<StepIcon, string> = {
+  conversation:
+    "M8 30h3l4 6 4-6h10a3 3 0 0 0 3-3V11a3 3 0 0 0-3-3H8a3 3 0 0 0-3 3v16a3 3 0 0 0 3 3zM12 16h14M12 22h9",
+  selection: "M6 9h20M6 19h20M6 29h20M30 9h6M30 19h6M30 29h6M26 6v6M20 16v6M14 26v6",
+  paperwork: "M11 5h14l7 7v23H11zM25 5v7h7M16 19h11M16 25h11M16 31h6",
+  installation: "M27 8a7 7 0 0 0-8 9L8 28a3 3 0 0 0 4 4l11-11a7 7 0 0 0 9-8l-4 4-4-1-1-4z",
+};
+---
+
+<Section id="jak-to-dziala" title={stepsSection.title} intro={stepsSection.intro} width="page">
+  <ol class="steps" role="list">
+    {steps.map((step, index) => (
+      <li class="step">
+        <svg class="icon" viewBox="0 0 40 40" width="56" height="56" aria-hidden="true">
+          <path d={iconPaths[step.icon]} />
+        </svg>
+        <h3>
+          <span class="number">{index + 1}.</span> {step.title}
+        </h3>
+        <p>{step.description}</p>
+      </li>
+    ))}
+  </ol>
+</Section>
+
+<style>
+  .steps {
+    display: grid;
+    gap: var(--space-xl) var(--space-l);
+  }
+
+  .step {
+    display: grid;
+    gap: var(--space-s);
+    justify-items: center;
+    align-content: start;
+    min-inline-size: 0;
+    text-align: center;
+  }
+
+  .icon {
+    padding: var(--space-xs);
+    fill: none;
+    stroke: var(--color-petrol-fg);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
+    overflow: visible;
+  }
+
+  h3 {
+    font-size: var(--text-lg);
+  }
+
+  .number {
+    color: var(--color-coral-strong);
+  }
+
+  p {
+    max-inline-size: 30ch;
+    color: var(--color-muted);
+    font-size: var(--text-sm);
+  }
+
+  @media (width >= 36rem) {
+    .steps {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (width >= 60rem) {
+    .steps {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+</style>

@@ -1,9 +1,30 @@
 ---
+import Faq from "../components/Faq.astro";
 import Hero from "../components/Hero.astro";
+import Introduction from "../components/Introduction.astro";
+import Notice from "../components/Notice.astro";
+import Principles from "../components/Principles.astro";
+import ProcessSteps from "../components/ProcessSteps.astro";
+import Projects from "../components/Projects.astro";
+import ServicesOverview from "../components/ServicesOverview.astro";
+import Testimonials from "../components/Testimonials.astro";
+import { categories } from "../content/categories";
+import { showProjects } from "../content/navigation";
+import { projects } from "../content/projects";
 import { site } from "../content/site";
+import { steps } from "../content/steps";
+import { testimonials } from "../content/testimonials";
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
 <BaseLayout title={`${site.name} | ${site.tagline}`} description={site.description}>
   <Hero />
+  <ServicesOverview />
+  <Introduction categories={categories} />
+  <ProcessSteps steps={steps} />
+  <Notice />
+  <Principles />
+  {showProjects && <Projects projects={projects} />}
+  {testimonials.length > 0 && <Testimonials testimonials={testimonials} />}
+  <Faq />
 </BaseLayout>

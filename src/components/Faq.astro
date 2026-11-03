@@ -1,0 +1,68 @@
+---
+import { faq, faqSection } from "../content/faq";
+import Section from "./Section.astro";
+---
+
+<Section id="faq" title={faqSection.title}>
+  <div class="list">
+    {faq.map((item) => (
+      <details class="item">
+        <summary>{item.question}</summary>
+        <p>{item.answer}</p>
+      </details>
+    ))}
+  </div>
+</Section>
+
+<style>
+  .list {
+    border-block-start: 1px solid var(--color-line);
+  }
+
+  .item {
+    border-block-end: 1px solid var(--color-line);
+  }
+
+  summary {
+    display: flex;
+    gap: var(--space-m);
+    align-items: center;
+    justify-content: space-between;
+    min-block-size: var(--target-size);
+    padding-block: var(--space-m);
+    font-weight: 600;
+    list-style: none;
+    cursor: pointer;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary::after {
+    content: "";
+    flex: none;
+    inline-size: 0.6rem;
+    block-size: 0.6rem;
+    border-block-end: 2px solid var(--color-coral-strong);
+    border-inline-end: 2px solid var(--color-coral-strong);
+    translate: 0 -25%;
+    rotate: 45deg;
+    transition: rotate 150ms ease;
+  }
+
+  .item[open] summary::after {
+    translate: 0 25%;
+    rotate: 225deg;
+  }
+
+  summary:hover {
+    color: var(--color-coral-strong);
+  }
+
+  p {
+    max-inline-size: var(--measure);
+    padding-block-end: var(--space-l);
+    color: var(--color-muted);
+  }
+</style>
