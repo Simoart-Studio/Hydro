@@ -1,5 +1,5 @@
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
 
   --color-bg: #ffffff;
   --color-surface: #ffffff;
@@ -15,8 +15,6 @@
   --color-on-coral: #ffffff;
   --color-petrol: #1f4e5a;
   --color-on-petrol: #ffffff;
-  /* Petrol used as text, icon or outline colour; it lightens in the dark theme. */
-  --color-petrol-fg: #1f4e5a;
   /* Muted text drops to 3.9:1 on the band, so text placed on it uses ink. */
   --color-band: #d3d4e0;
 
@@ -53,22 +51,4 @@
 
   --shadow-card: 0 2px 10px color-mix(in srgb, #1f2d33 14%, transparent);
   --hero-overlap: clamp(1.5rem, 1rem + 2.5vw, 3rem);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg: #10181b;
-    --color-surface: #172226;
-    --color-subtle: #1d2a2f;
-    --color-ink: #e8ecee;
-    --color-muted: #a7b4b9;
-    --color-line: #2b3a40;
-    --color-field: #61757d;
-    --color-coral: #ff8a6e;
-    --color-coral-strong: #f07a5e;
-    --color-on-coral: #1a0b06;
-    --color-petrol: #2b6878;
-    --color-band: #262a3a;
-    --color-petrol-fg: #8cc5d2;
-  }
 }

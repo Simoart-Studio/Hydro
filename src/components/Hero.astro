@@ -24,7 +24,6 @@ import Button from "./Button.astro";
 </section>
 
 <style>
-  /* The drawing behind the hero is light in both themes, so the hero keeps light-theme colours. */
   .hero {
     position: relative;
     display: grid;
@@ -32,7 +31,7 @@ import Button from "./Button.astro";
     min-block-size: clamp(18rem, 14rem + 14vw, 28rem);
     padding: var(--space-2xl) var(--gutter) calc(var(--space-2xl) + var(--hero-overlap));
     overflow: hidden;
-    background: #f3f5f6;
+    background: var(--color-subtle);
   }
 
   .backdrop {
@@ -54,15 +53,15 @@ import Button from "./Button.astro";
   }
 
   h1 {
-    color: #1f2d33;
+    color: var(--color-ink);
   }
 
   .label {
     margin-block-end: var(--space-xs);
     padding: var(--space-2xs) var(--space-m);
-    border: 1px solid #e2e3ea;
-    background: #ffffff;
-    color: #c8452a;
+    border: 1px solid var(--color-line);
+    background: var(--color-surface);
+    color: var(--color-coral-strong);
     font-size: var(--text-sm);
     font-weight: 600;
   }
