@@ -1,7 +1,7 @@
 ---
 import { contactForm, heatSources } from "../content/contact";
 import { privacyPolicyLink } from "../content/navigation";
-import { phoneHref, site } from "../content/site";
+import { phoneHref, primaryContact } from "../content/site";
 import { formEndpoint } from "../lib/env";
 import Button from "./Button.astro";
 
@@ -124,7 +124,7 @@ const isDemoForm = formEndpoint === "";
 
   <p class="status" role="status" aria-live="polite" data-status></p>
   <template data-failure>
-    {contactForm.failure} <a href={phoneHref}>{site.phone}</a>
+    {contactForm.failure} <a href={phoneHref}>{primaryContact.phone}</a>
   </template>
 </form>
 

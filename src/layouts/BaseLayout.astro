@@ -4,20 +4,32 @@ import regularFont from "@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-400
 import DemoNotice from "../components/DemoNotice.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
+import type { FaqItem } from "../content/faq";
 import { site } from "../content/site";
 import { isDemo, isNoindex } from "../lib/env";
+import { breadcrumbSchema, businessSchema, faqSchema, toJsonLd } from "../lib/structuredData";
 import "../styles/global.css";
 
 interface Props {
   title: string;
   description: string;
+  /** Nazwa podstrony w ścieżce okruszków dla wyszukiwarek. Strona główna jej nie podaje. */
+  breadcrumb?: string;
+  /** Pytania z odpowiedziami do danych strukturalnych FAQPage. */
+  faq?: FaqItem[];
 }
 
-const { title, description } = Astro.props;
+const { title, description, breadcrumb, faq } = Astro.props;
+const base = Astro.site ?? new URL(Astro.url.origin);
 // The file build format reports /dotacje.html, while the site links and serves /dotacje.
 const canonicalPath = Astro.url.pathname.replace(/(index)?\.html$/, "").replace(/(.)\/$/, "$1");
-const canonicalUrl = new URL(canonicalPath, Astro.site);
-const ogImageUrl = new URL("/og.png", Astro.site);
+const canonicalUrl = new URL(canonicalPath, base);
+const ogImageUrl = new URL("/og.jpg", base);
+const structuredData = [
+  businessSchema(base),
+  ...(breadcrumb ? [breadcrumbSchema(base, breadcrumb, canonicalPath)] : []),
+  ...(faq ? [faqSchema(faq)] : []),
+];
 ---
 
 <!doctype html>
@@ -45,7 +57,11 @@ const ogImageUrl = new URL("/og.png", Astro.site);
     <meta property="og:image" content={ogImageUrl} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${site.name}: rozdzielacz ogrzewania podłogowego`} />
     <meta name="twitter:card" content="summary_large_image" />
+    {structuredData.map((schema) => (
+      <script type="application/ld+json" set:html={toJsonLd(schema)} />
+    ))}
     <slot name="head" />
   </head>
   <body>

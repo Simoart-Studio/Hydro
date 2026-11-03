@@ -1,18 +1,27 @@
 ---
 import { notice } from "../content/notice";
 import Container from "./Container.astro";
+
+interface Props {
+  id?: string;
+  label?: string;
+  text?: string;
+}
+
+const { id = "notice", label = notice.label, text = notice.text } = Astro.props;
+const titleId = `${id}-title`;
 ---
 
 <Container width="column" class="wrapper">
-  <aside class="notice" aria-labelledby="notice-title">
-    <h2 id="notice-title" class="tab">
+  <aside id={id} class="notice" aria-labelledby={titleId}>
+    <h2 id={titleId} class="tab">
       <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
         <circle cx="12" cy="12" r="10"></circle>
         <path d="M12 11v6M12 7.5v.5"></path>
       </svg>
-      {notice.label}
+      {label}
     </h2>
-    <p class="text">{notice.text}</p>
+    <p class="text">{text}</p>
   </aside>
 </Container>
 

@@ -21,9 +21,9 @@ import TileGrid from "./TileGrid.astro";
     {offerItems.map((item) => (
       <li>
         <PhotoTile
-          label={item.title}
-          image={item.image}
-          alt={item.alt}
+          label={item.shortTitle}
+          image={item.photo.src}
+          alt={item.photo.caption}
           href={`/oferta#${item.id}`}
         />
       </li>

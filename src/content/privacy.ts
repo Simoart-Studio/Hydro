@@ -1,5 +1,15 @@
 import { formattedAddress, site } from "./site";
 
+const administrator = [site.legalName, formattedAddress, site.taxId && `NIP ${site.taxId}`]
+  .filter(Boolean)
+  .join(", ");
+
+const phones = site.contacts.map((contact) => contact.phone).join(" lub ");
+
+const contactChannels = site.email
+  ? `pisać na adres ${site.email} albo dzwonić pod numer ${phones}`
+  : `dzwonić pod numer ${phones}`;
+
 export interface PolicySection {
   title: string;
   paragraphs: string[];
@@ -17,7 +27,7 @@ export const privacySections: PolicySection[] = [
   {
     title: "Administrator danych",
     paragraphs: [
-      `Administratorem danych osobowych jest ${site.legalName}, ${formattedAddress}, NIP ${site.taxId}. W sprawach danych osobowych można pisać na adres ${site.email} albo dzwonić pod numer ${site.phone}.`,
+      `Administratorem danych osobowych jest ${administrator}. W sprawach danych osobowych można ${contactChannels}.`,
     ],
   },
   {

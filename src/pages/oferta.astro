@@ -10,20 +10,20 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 const entries = [...offerItems, installation];
 ---
 
-<BaseLayout title={`${offerPage.title} | ${site.name}`} description={offerPage.lead}>
+<BaseLayout title={`${offerPage.metaTitle} | ${site.brandLines[0]}`} description={offerPage.lead}>
   <PageHeader title={offerPage.title} lead={offerPage.lead} />
   <Container width="page">
-    <nav class="jump" aria-label="Działy oferty">
+    <nav class="jump" aria-label={offerPage.sectionsLabel}>
       <ul role="list">
         {entries.map((entry) => (
           <li>
-            <a href={`#${entry.id}`}>{entry.title}</a>
+            <a href={`#${entry.id}`}>{entry.shortTitle}</a>
           </li>
         ))}
       </ul>
     </nav>
     {entries.map((entry, index) => (
-      <OfferEntry {...entry} reverse={index % 2 === 1} />
+      <OfferEntry item={entry} reverse={index % 2 === 1} />
     ))}
     <p class="pricing">{offerPage.pricing}</p>
   </Container>

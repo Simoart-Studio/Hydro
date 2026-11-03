@@ -1,41 +1,62 @@
 ---
 import Button from "../components/Button.astro";
 import CtaBand from "../components/CtaBand.astro";
+import Gallery from "../components/Gallery.astro";
 import Hero from "../components/Hero.astro";
 import Introduction from "../components/Introduction.astro";
 import Notice from "../components/Notice.astro";
 import ProcessSteps from "../components/ProcessSteps.astro";
-import ProjectGrid from "../components/ProjectGrid.astro";
 import Section from "../components/Section.astro";
+import ServiceArea from "../components/ServiceArea.astro";
 import ServicesOverview from "../components/ServicesOverview.astro";
 import Testimonials from "../components/Testimonials.astro";
-import { projects, projectsPreview } from "../content/projects";
+import { areaSection } from "../content/about";
+import { galleryPreview } from "../content/gallery";
 import { site } from "../content/site";
 import { steps, stepsSection } from "../content/steps";
 import { testimonials } from "../content/testimonials";
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title={`${site.name} | ${site.tagline}`} description={site.description}>
+<BaseLayout
+  title={`Kotły i pompy ciepła z dotacją, Tczew i Trójmiasto | ${site.brandLines[0]}`}
+  description={site.description}
+>
   <Hero />
   <ServicesOverview />
   <Introduction />
+  <Section
+    id="realizacje"
+    title={galleryPreview.title}
+    intro={galleryPreview.intro}
+    tone="subtle"
+    width="page"
+  >
+    <Gallery photos={galleryPreview.photos} compact />
+    <Button href="/realizacje" arrow class="more">
+      {galleryPreview.moreLabel}
+    </Button>
+  </Section>
   <ProcessSteps steps={steps} action={stepsSection.moreLink} />
   <Notice />
-  {projects.length > 0 && (
-    <Section id="realizacje" title={projectsPreview.title} width="page">
-      <ProjectGrid projects={projects.slice(0, projectsPreview.limit)} />
-      <Button href="/realizacje" arrow class="more">
-        {projectsPreview.moreLabel}
-      </Button>
-    </Section>
-  )}
   {testimonials.length > 0 && <Testimonials testimonials={testimonials} />}
+  <Section id="obszar" title={areaSection.title} tone="subtle">
+    <ServiceArea class="area" />
+  </Section>
   <CtaBand />
 </BaseLayout>
 
 <style>
   .more {
     justify-self: center;
+  }
+
+  .area {
+    justify-items: center;
+    text-align: center;
+  }
+
+  .area :global(.places) {
+    justify-content: center;
   }
 </style>

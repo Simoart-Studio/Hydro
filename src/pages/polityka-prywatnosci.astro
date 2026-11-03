@@ -6,7 +6,11 @@ import { site } from "../content/site";
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title={`${privacyPage.title} | ${site.name}`} description={privacyPage.lead}>
+<BaseLayout
+  title={`${privacyPage.title} | ${site.brandLines[0]}`}
+  description={privacyPage.lead}
+  breadcrumb={privacyPage.title}
+>
   <PageHeader title={privacyPage.title} lead={privacyPage.lead} />
   <Container width="column" class="policy">
     {privacySections.map((section) => (

@@ -17,16 +17,14 @@ const year = new Date().getFullYear();
     </div>
     <section aria-labelledby="footer-company">
       <h2 id="footer-company">Dane firmy</h2>
-      <CompanyDetails fields={["name", "address", "taxId", "phone", "email", "hours"]} />
+      <CompanyDetails fields={["name", "phones", "email", "address", "taxId", "hours"]} />
     </section>
     <section aria-labelledby="footer-area">
       <h2 id="footer-area">Obszar działania</h2>
       <p>{site.serviceArea.summary}</p>
-      <ul class="places" role="list">
-        {site.serviceArea.places.map((place) => (
-          <li>{place}</li>
-        ))}
-      </ul>
+      <a class="area-link" href="/kontakt#obszar">
+        Lista miejscowości
+      </a>
     </section>
     <nav aria-labelledby="footer-shortcuts">
       <h2 id="footer-shortcuts">Strony</h2>
@@ -86,10 +84,11 @@ const year = new Date().getFullYear();
     font-size: var(--text-base);
   }
 
-  .places {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2xs) var(--space-s);
+  .area-link {
+    display: inline-flex;
+    align-items: center;
+    justify-self: start;
+    min-block-size: var(--target-size);
   }
 
   .links a {

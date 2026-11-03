@@ -6,7 +6,10 @@ import { site } from "../content/site";
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title={`Nie znaleziono strony | ${site.name}`} description="Ta strona nie istnieje.">
+<BaseLayout
+  title={`Nie znaleziono strony | ${site.brandLines[0]}`}
+  description="Ta strona nie istnieje."
+>
   <Container width="column" class="not-found">
     <p class="code">404</p>
     <h1>Nie znaleziono strony</h1>

@@ -1,99 +1,107 @@
-import type { ImageMetadata } from "astro";
-import boilerRoom from "../assets/illustrations/boiler-room.svg";
-import bufferTank from "../assets/illustrations/buffer-tank.svg";
-import dhwTank from "../assets/illustrations/dhw-tank.svg";
-import gasBoiler from "../assets/illustrations/gas-boiler.svg";
-import heatPump from "../assets/illustrations/heat-pump.svg";
+import { photos, type Photo } from "./gallery";
 
 export interface OfferItem {
   /** Kotwica na stronie oferty, np. /oferta#kotly. */
   id: string;
   title: string;
+  /** Krótka nazwa na kafelku strony głównej. */
+  shortTitle: string;
   summary: string;
   scope: string[];
-  image: ImageMetadata;
-  alt: string;
+  photo: Photo;
+  /** Informacja o dofinansowaniu przy urządzeniu, jeśli dotyczy. */
+  subsidy?: string;
 }
 
 export const offerPage = {
   title: "Oferta",
-  lead: "Kotły, pompy ciepła, zasobniki i bufory dobrane do budynku i wymagań programu dotacyjnego. Każde urządzenie montujemy sami.",
+  metaTitle: "Kotły na pellet i drewno, pompy ciepła z montażem",
+  lead: "Kotły na pellet, kotły zgazowujące drewno, pompy ciepła, zasobniki i bufory. Dobieramy urządzenie do budynku i wymagań programu dotacyjnego, a potem sami je montujemy.",
   // TODO(klient): potwierdzić, że rabaty instalatorskie są przenoszone na klienta
   pricing:
     "Urządzenia kupujemy na warunkach instalatorskich. Cenę urządzenia, montażu i formalności podajemy w jednej wycenie, po oględzinach kotłowni.",
   scopeLabel: "Co obejmuje",
   inquiryLabel: "Zapytaj o wycenę",
+  sectionsLabel: "Działy oferty",
 };
 
-// TODO(klient): zdjęcia urządzeń lub realizacji w miejsce rysunków (kwadrat, min. 800 × 800 px)
+const eligible = "Możliwe dofinansowanie";
+
 export const offerItems: OfferItem[] = [
   {
     id: "kotly",
-    title: "Kotły",
+    title: "Kotły na pellet i kotły zgazowujące drewno",
+    shortTitle: "Kotły",
     summary:
-      "Wymieniamy stare kotły na urządzenia spełniające wymagania programów dotacyjnych. Moc dobieramy do budynku, nie do katalogu.",
+      "Wymieniamy stare kotły na kotły na pellet z podajnikiem i zasobnikiem paliwa albo na kotły zgazowujące drewno. Oba rodzaje mogą być objęte dofinansowaniem, jeśli konkretny model jest na aktualnej liście ZUM.",
     scope: [
-      "Dobór mocy do zapotrzebowania budynku na ciepło",
+      "Dobór mocy kotła do zapotrzebowania budynku na ciepło",
+      "Sprawdzenie, czy model spełnia aktualne wymagania listy ZUM",
       "Demontaż starego kotła",
       "Podłączenie do instalacji c.o. i ciepłej wody",
       "Uruchomienie i instruktaż obsługi",
     ],
-    image: gasBoiler,
-    alt: "Rysunek kotła z przyłączami zasilania, powrotu i CWU",
+    photo: photos.pelletBoilerRoom,
+    subsidy: eligible,
   },
   {
     id: "pompy-ciepla",
     title: "Pompy ciepła",
+    shortTitle: "Pompy ciepła",
     summary:
-      "Pompy ciepła powietrze–woda do ogrzewania domu i ciepłej wody. Zanim zaproponujemy urządzenie, sprawdzamy, czy instalacja w budynku z nim współpracuje.",
+      "Pompy ciepła powietrze–woda do ogrzewania domu i ciepłej wody. Pompę można też połączyć z kotłem w instalacji hybrydowej. O dofinansowaniu takiego układu decyduje jego konfiguracja i kwalifikowalność urządzeń.",
     scope: [
       "Dobór mocy na podstawie budynku i instalacji grzewczej",
       "Ocena, czy grzejniki pracują przy niższej temperaturze zasilania",
       "Wybór miejsca jednostki zewnętrznej z uwzględnieniem hałasu",
-      "Montaż, uruchomienie i ustawienie sterowania",
+      "Montaż jednostki zewnętrznej i modułu wewnętrznego",
+      "Uruchomienie i ustawienie sterowania",
     ],
-    image: heatPump,
-    alt: "Rysunek jednostki zewnętrznej pompy ciepła",
+    photo: photos.heatPumpOutdoor,
+    subsidy: eligible,
   },
   {
     id: "zasobniki",
     title: "Zasobniki CWU",
+    shortTitle: "Zasobniki CWU",
     summary:
       "Zasobniki ciepłej wody użytkowej współpracujące z kotłem albo pompą ciepła. Pojemność liczymy z zużycia wody, nie na zapas.",
     scope: [
       "Pojemność dobrana do liczby domowników i zużycia wody",
       "Wężownica dopasowana do źródła ciepła",
-      "Grupa bezpieczeństwa i podłączenie cyrkulacji",
+      "Grupa bezpieczeństwa i naczynie wzbiorcze",
+      "Podłączenie cyrkulacji",
     ],
-    image: dhwTank,
-    alt: "Przekrój zasobnika CWU z wężownicą",
+    photo: photos.heatPumpRoom,
   },
   {
     id: "bufory",
     title: "Bufory ciepła",
+    shortTitle: "Bufory ciepła",
     summary:
-      "Bufor magazynuje ciepło, stabilizuje pracę źródła i ogranicza liczbę jego załączeń. Nie każda instalacja go potrzebuje i to mówimy na oględzinach.",
+      "Bufor magazynuje ciepło, stabilizuje pracę źródła i ogranicza liczbę jego załączeń. Przy kotłach zgazowujących drewno bufor jest często wymagany przez producenta. Przy innych źródłach mówimy na oględzinach, czy jest potrzebny.",
     scope: [
       "Ocena, czy instalacja wymaga bufora",
       "Pojemność dobrana do mocy źródła i instalacji",
       "Podłączenie hydrauliczne i izolacja",
     ],
-    image: bufferTank,
-    alt: "Przekrój bufora ciepła z króćcami do źródła i instalacji",
+    photo: photos.solidFuelBoilerBuffer,
   },
 ];
 
-export const installation = {
+export const installation: OfferItem = {
   id: "montaz",
-  title: "Montaż kotłowni",
+  title: "Montaż kotłowni i instalacji",
+  shortTitle: "Montaż",
   summary:
-    "Każde urządzenie z oferty montujemy sami. Kotłownię wykonujemy w całości, od demontażu starego źródła ciepła po uruchomienie nowego.",
+    "Każde urządzenie z oferty montujemy sami. Wykonujemy kotłownię w całości, a także instalację grzewczą w domu: rozdzielacze ogrzewania podłogowego, grzejniki kanałowe i rurociągi.",
+  // TODO(klient): potwierdzić zakres prac instalacyjnych poza kotłownią
   scope: [
-    "Demontaż i odbiór starego urządzenia",
+    "Demontaż starego źródła ciepła",
     "Armatura, zabezpieczenia i pompy obiegowe",
-    "Próba szczelności i uruchomienie",
+    "Rozdzielacze ogrzewania podłogowego ze sterowaniem strefowym",
+    "Płukanie, napełnianie i próba szczelności instalacji",
     "Dokumenty potrzebne do rozliczenia dotacji",
   ],
-  image: boilerRoom,
-  alt: "Schemat kotłowni: źródło ciepła, bufor, pompa i zawór",
+  photo: photos.manifoldPair,
 };

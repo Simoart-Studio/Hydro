@@ -1,6 +1,6 @@
 ---
 import { ctaBand } from "../content/contact";
-import { phoneHref, site } from "../content/site";
+import { phoneHref, primaryContact } from "../content/site";
 import Button from "./Button.astro";
 import Container from "./Container.astro";
 import PhoneIcon from "./PhoneIcon.astro";
@@ -17,7 +17,7 @@ import PhoneIcon from "./PhoneIcon.astro";
       <Button variant="dark" href={phoneHref}>
         <PhoneIcon />
         <span class="visually-hidden">Zadzwoń:</span>
-        {site.phone}
+        {primaryContact.phone}
       </Button>
     </div>
   </Container>

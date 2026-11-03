@@ -1,6 +1,6 @@
 ---
 import { mainNavigation, primaryCta } from "../content/navigation";
-import { phoneHref, site } from "../content/site";
+import { phoneHref, primaryContact, site } from "../content/site";
 import Button from "./Button.astro";
 import Container from "./Container.astro";
 import Logo from "./Logo.astro";
@@ -35,7 +35,7 @@ const isCurrent = (href: string) =>
       <Button variant="dark" href={phoneHref} class="phone">
         <PhoneIcon />
         <span class="visually-hidden">Zadzwoń:</span>
-        {site.phone}
+        {primaryContact.phone}
       </Button>
       <details class="menu" data-mobile-menu>
         <summary class="menu-toggle">

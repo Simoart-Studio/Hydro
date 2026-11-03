@@ -3,26 +3,38 @@ import CompanyDetails from "../components/CompanyDetails.astro";
 import ContactForm from "../components/ContactForm.astro";
 import Container from "../components/Container.astro";
 import PageHeader from "../components/PageHeader.astro";
+import ServiceArea from "../components/ServiceArea.astro";
 import { contactPage } from "../content/contact";
-import { phoneHref, site } from "../content/site";
+import { site, telHref } from "../content/site";
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title={`${contactPage.title} | ${site.name}`} description={contactPage.lead}>
+<BaseLayout
+  title={`${contactPage.metaTitle} | ${site.brandLines[0]}`}
+  description={contactPage.lead}
+  breadcrumb={contactPage.title}
+>
   <PageHeader title={contactPage.title} lead={contactPage.lead} />
   <Container width="page" class="layout">
     <div class="details">
       <section aria-labelledby="contact-details-title">
         <h2 id="contact-details-title">{contactPage.detailsTitle}</h2>
-        <a class="phone" href={phoneHref}>
-          <span class="visually-hidden">Zadzwoń:</span>
-          {site.phone}
-        </a>
+        <ul class="phones" role="list">
+          {site.contacts.map((contact) => (
+            <li>
+              <span class="person">{contact.name}</span>
+              <a class="phone" href={telHref(contact.phone)}>
+                <span class="visually-hidden">Zadzwoń do: {contact.name},</span>
+                {contact.phone}
+              </a>
+            </li>
+          ))}
+        </ul>
         <CompanyDetails fields={["email", "hours", "address", "name", "taxId"]} />
       </section>
-      <section aria-labelledby="contact-area-title">
+      <section id="obszar" aria-labelledby="contact-area-title">
         <h2 id="contact-area-title">{contactPage.areaTitle}</h2>
-        <p>{site.serviceArea.summary}</p>
+        <ServiceArea />
       </section>
     </div>
     <ContactForm />
@@ -43,6 +55,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   }
 
   .details section {
+    scroll-margin-block-start: var(--space-m);
     display: grid;
     gap: var(--space-m);
     padding-block-start: var(--space-m);
@@ -56,6 +69,20 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     font-weight: 500;
     letter-spacing: 0.06em;
     text-transform: uppercase;
+  }
+
+  .phones {
+    display: grid;
+    gap: var(--space-s);
+  }
+
+  .phones li {
+    display: grid;
+  }
+
+  .person {
+    color: var(--color-muted);
+    font-size: var(--text-sm);
   }
 
   .phone {

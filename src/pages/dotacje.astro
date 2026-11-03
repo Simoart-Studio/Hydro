@@ -1,19 +1,56 @@
 ---
 import CtaBand from "../components/CtaBand.astro";
+import EligibilityTable from "../components/EligibilityTable.astro";
 import Faq from "../components/Faq.astro";
 import ListColumns from "../components/ListColumns.astro";
 import Notice from "../components/Notice.astro";
 import PageHeader from "../components/PageHeader.astro";
 import ProcessSteps from "../components/ProcessSteps.astro";
 import Section from "../components/Section.astro";
+import { faq } from "../content/faq";
 import { site } from "../content/site";
 import { steps } from "../content/steps";
-import { preparation, responsibilities, subsidiesPage } from "../content/subsidies";
+import {
+  conditions,
+  eligibleDevices,
+  preparation,
+  responsibilities,
+  subsidiesPage,
+  zum,
+} from "../content/subsidies";
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title={`${subsidiesPage.title} | ${site.name}`} description={subsidiesPage.lead}>
+<BaseLayout
+  title={`${subsidiesPage.metaTitle} | ${site.brandLines[0]}`}
+  description={subsidiesPage.lead}
+  breadcrumb={subsidiesPage.title}
+  faq={faq}
+>
   <PageHeader title={subsidiesPage.title} lead={subsidiesPage.lead} />
+  <Section id="co-mozna-sfinansowac" title={eligibleDevices.title} intro={eligibleDevices.intro}>
+    <EligibilityTable />
+  </Section>
+  <Section
+    id="warunki"
+    title={conditions.title}
+    intro={conditions.intro}
+    tone="subtle"
+    width="page"
+  >
+    <ol class="conditions" role="list">
+      {conditions.items.map((item, index) => (
+        <li>
+          <span class="number">{String(index + 1).padStart(2, "0")}</span>
+          <h3>{item.title}</h3>
+          <p>{item.text}</p>
+        </li>
+      ))}
+    </ol>
+  </Section>
+  <div class="zum">
+    <Notice id="lista-zum" label={zum.title} text={zum.text} />
+  </div>
   <ProcessSteps steps={steps} />
   <Section
     id="obowiazki"
@@ -38,12 +75,37 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       ))}
     </ol>
   </Section>
-  <Notice />
   <Faq />
   <CtaBand />
 </BaseLayout>
 
 <style>
+  .conditions {
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  .conditions li {
+    display: grid;
+    gap: var(--space-xs);
+    align-content: start;
+    padding: var(--space-l);
+    border-block-start: 3px solid var(--color-return);
+    background: var(--color-surface);
+  }
+
+  .conditions h3 {
+    font-size: var(--text-lg);
+  }
+
+  .conditions p {
+    color: var(--color-muted);
+  }
+
+  .zum {
+    padding-block-start: var(--space-section);
+  }
+
   .checklist {
     border-block-start: 1px solid var(--color-line);
   }
@@ -60,5 +122,11 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     color: var(--color-coral-strong);
     font-family: var(--font-mono);
     font-weight: 500;
+  }
+
+  @media (width >= 48rem) {
+    .conditions {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
   }
 </style>

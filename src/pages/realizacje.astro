@@ -1,70 +1,112 @@
 ---
 import Container from "../components/Container.astro";
 import CtaBand from "../components/CtaBand.astro";
+import Gallery from "../components/Gallery.astro";
 import PageHeader from "../components/PageHeader.astro";
-import ProjectGrid from "../components/ProjectGrid.astro";
-import { projects, projectsPage } from "../content/projects";
+import { galleryGroups } from "../content/gallery";
+import { projectsPage } from "../content/projects";
 import { site } from "../content/site";
-import { isDemo } from "../lib/env";
 import BaseLayout from "../layouts/BaseLayout.astro";
-
-// The demo shows where projects will go, so the client sees the layout before sending photos.
-const placeholderCount = 3;
 ---
 
-<BaseLayout title={`${projectsPage.title} | ${site.name}`} description={projectsPage.lead}>
+<BaseLayout
+  title={`${projectsPage.metaTitle} | ${site.brandLines[0]}`}
+  description={projectsPage.lead}
+  breadcrumb={projectsPage.title}
+>
   <PageHeader title={projectsPage.title} lead={projectsPage.lead} />
-  <Container width="page" class="body">
-    {projects.length > 0 ? (
-      <ProjectGrid projects={projects} />
-    ) : (
-      <>
-        <p class="empty">{projectsPage.empty}</p>
-        {isDemo && (
-          <ul class="placeholders" role="list" aria-label="Miejsca na realizacje">
-            {Array.from({ length: placeholderCount }, () => (
-              <li>{projectsPage.placeholder}</li>
-            ))}
-          </ul>
-        )}
-      </>
-    )}
+  <Container width="page">
+    <nav class="jump" aria-label={projectsPage.groupsLabel}>
+      <ul role="list">
+        {galleryGroups.map((group) => (
+          <li>
+            <a href={`#${group.id}`}>
+              {group.title}
+              <span class="count">{group.photos.length}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+    {galleryGroups.map((group) => (
+      <section id={group.id} class="group" aria-labelledby={`${group.id}-title`}>
+        <div class="heading">
+          <h2 id={`${group.id}-title`}>{group.title}</h2>
+          <p>{group.description}</p>
+        </div>
+        <Gallery photos={group.photos} />
+      </section>
+    ))}
   </Container>
   <CtaBand />
 </BaseLayout>
 
 <style>
-  .body {
-    display: grid;
-    gap: var(--space-xl);
-    padding-block: var(--space-section);
+  .jump {
+    padding-block: var(--space-l);
+    border-block-end: 1px solid var(--color-line);
   }
 
-  .empty {
-    max-inline-size: var(--measure);
-    margin-inline: auto;
-    text-align: center;
+  .jump ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    justify-content: center;
   }
 
-  .placeholders {
-    display: grid;
-    gap: var(--space-l);
+  .jump a {
+    display: inline-flex;
+    gap: var(--space-xs);
+    align-items: center;
+    min-block-size: var(--target-size);
+    padding-inline: var(--space-m) var(--space-xs);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-pill);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-decoration: none;
   }
 
-  .placeholders li {
+  .jump a:hover {
+    border-color: var(--color-coral-strong);
+    color: var(--color-coral-strong);
+  }
+
+  .count {
     display: grid;
     place-items: center;
-    aspect-ratio: 4 / 3;
-    border: 2px dashed var(--color-field);
-    border-radius: var(--radius-sm) var(--radius-tile);
+    min-inline-size: 1.75rem;
+    block-size: 1.75rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-subtle);
     color: var(--color-muted);
     font-family: var(--font-mono);
-    font-size: var(--text-sm);
+    font-size: var(--text-xs);
   }
 
-  @media (width >= 40rem) {
-    .placeholders {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
+  .group {
+    display: grid;
+    gap: var(--space-l);
+    padding-block: var(--space-section);
+    border-block-end: 1px solid var(--color-line);
+    scroll-margin-block-start: var(--space-m);
+  }
+
+  .group:last-child {
+    border-block-end: 0;
+  }
+
+  .heading {
+    display: grid;
+    gap: var(--space-xs);
+    max-inline-size: var(--measure);
+  }
+
+  h2 {
+    color: var(--color-coral-strong);
+  }
+
+  .heading p {
+    color: var(--color-muted);
   }
 </style>

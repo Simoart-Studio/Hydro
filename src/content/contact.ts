@@ -1,7 +1,8 @@
 export const contactPage = {
   title: "Kontakt",
+  metaTitle: "Kontakt: Tczew, Trójmiasto i okolice",
   lead: "Zadzwoń albo zostaw numer. Oddzwonimy, zapytamy o budynek i powiemy, czy dotacja ma sens w Twojej sytuacji.",
-  detailsTitle: "Dane kontaktowe",
+  detailsTitle: "Telefon",
   areaTitle: "Obszar działania",
 };
 

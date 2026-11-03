@@ -1,7 +1,7 @@
 ---
-import { emailHref, formattedAddress, phoneHref, site } from "../content/site";
+import { emailHref, formattedAddress, site, telHref } from "../content/site";
 
-type Field = "name" | "address" | "taxId" | "phone" | "email" | "hours";
+type Field = "name" | "phones" | "email" | "address" | "taxId" | "hours";
 
 interface Props {
   fields: Field[];
@@ -12,31 +12,47 @@ const { fields, class: className } = Astro.props;
 
 const labels: Record<Field, string> = {
   name: "Firma",
+  phones: "Telefon",
+  email: "E-mail",
   address: "Adres",
   taxId: "NIP",
-  phone: "Telefon",
-  email: "E-mail",
   hours: "Godziny pracy",
 };
+
+// Fields the client has not filled in yet stay hidden instead of showing placeholders.
+const hasValue: Record<Field, boolean> = {
+  name: site.legalName !== "",
+  phones: site.contacts.length > 0,
+  email: site.email !== "",
+  address: formattedAddress !== "",
+  taxId: site.taxId !== "",
+  hours: site.openingHours.length > 0,
+};
+
+const visibleFields = fields.filter((field) => hasValue[field]);
 ---
 
 <dl class:list={["company-details", className]}>
-  {fields.map((field) => (
+  {visibleFields.map((field) => (
     <div class="row">
       <dt>{labels[field]}</dt>
       <dd>
         {field === "name" && site.legalName}
+        {field === "phones" &&
+          site.contacts.map((contact) => (
+            <span class="line">
+              <a class="phone" href={telHref(contact.phone)}>
+                {contact.phone}
+              </a>{" "}
+              <span class="person">({contact.name})</span>
+            </span>
+          ))}
+        {field === "email" && <a href={emailHref}>{site.email}</a>}
         {field === "address" && formattedAddress}
         {field === "taxId" && site.taxId}
-        {field === "phone" && (
-          <a class="phone" href={phoneHref}>
-            {site.phone}
-          </a>
-        )}
-        {field === "email" && <a href={emailHref}>{site.email}</a>}
         {field === "hours" &&
           site.openingHours.map((entry) => (
-            <span class="hours">
+            <span class="line">
               {entry.days}: {entry.hours}
             </span>
           ))}
@@ -61,11 +77,19 @@ const labels: Record<Field, string> = {
     overflow-wrap: anywhere;
   }
 
-  .phone {
-    font-weight: 600;
+  .line {
+    display: block;
   }
 
-  .hours {
-    display: block;
+  .phone {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--target-size);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .person {
+    color: var(--color-muted);
   }
 </style>
