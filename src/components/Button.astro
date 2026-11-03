@@ -1,0 +1,75 @@
+---
+interface Props {
+  variant?: "primary" | "dark" | "outline";
+  href?: string;
+  type?: "button" | "submit";
+  class?: string;
+}
+
+const { variant = "primary", href, type = "button", class: className } = Astro.props;
+const classes = ["button", variant, className];
+---
+
+{href ? (
+  <a href={href} class:list={classes}>
+    <slot />
+  </a>
+) : (
+  <button type={type} class:list={classes}>
+    <slot />
+  </button>
+)}
+
+<style>
+  .button {
+    display: inline-flex;
+    gap: var(--space-xs);
+    align-items: center;
+    justify-content: center;
+    min-block-size: var(--target-size);
+    padding: var(--space-xs) var(--space-l);
+    border: var(--border-strong) solid transparent;
+    border-radius: var(--radius);
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color 150ms ease,
+      border-color 150ms ease;
+  }
+
+  .primary {
+    background: var(--color-heat);
+    color: var(--color-on-heat);
+  }
+
+  .primary:hover {
+    background: color-mix(in srgb, var(--color-heat) 86%, var(--color-ink));
+  }
+
+  .dark {
+    background: var(--color-ink);
+    color: var(--color-bg);
+  }
+
+  .dark:hover {
+    background: color-mix(in srgb, var(--color-ink) 86%, var(--color-bg));
+  }
+
+  .outline {
+    border-color: currentColor;
+    background: transparent;
+    color: var(--color-ink);
+  }
+
+  .outline:hover {
+    background: color-mix(in srgb, var(--color-ink) 10%, transparent);
+  }
+
+  .button:disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
+</style>

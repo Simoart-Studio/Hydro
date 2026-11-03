@@ -1,8 +1,11 @@
 ---
 import headingFont from "@fontsource/bricolage-grotesque/files/bricolage-grotesque-latin-700-normal.woff2?url";
 import bodyFont from "@fontsource/source-sans-3/files/source-sans-3-latin-400-normal.woff2?url";
+import DemoNotice from "../components/DemoNotice.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import SiteHeader from "../components/SiteHeader.astro";
 import { site } from "../content/site";
-import { isNoindex } from "../lib/env";
+import { isDemo, isNoindex } from "../lib/env";
 import "../styles/global.css";
 
 interface Props {
@@ -44,6 +47,37 @@ const ogImageUrl = new URL("/og.png", Astro.site);
     <slot name="head" />
   </head>
   <body>
-    <slot />
+    <a class="skip-link" href="#main">
+      Przejdź do treści
+    </a>
+    {isDemo && <DemoNotice />}
+    <SiteHeader />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <SiteFooter />
   </body>
 </html>
+
+<style>
+  .skip-link {
+    position: absolute;
+    inset-inline-start: var(--space-m);
+    top: var(--space-m);
+    z-index: 20;
+    padding: var(--space-s) var(--space-m);
+    border-radius: var(--radius);
+    background: var(--color-ink);
+    color: var(--color-bg);
+    font-weight: 600;
+    translate: 0 -200%;
+  }
+
+  .skip-link:focus-visible {
+    translate: 0 0;
+  }
+
+  main:focus {
+    outline: none;
+  }
+</style>

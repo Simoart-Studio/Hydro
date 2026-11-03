@@ -1,0 +1,74 @@
+---
+import { emailHref, formattedAddress, phoneHref, site } from "../content/site";
+
+type Field = "name" | "address" | "taxId" | "phone" | "email" | "hours";
+
+interface Props {
+  fields: Field[];
+  class?: string;
+}
+
+const { fields, class: className } = Astro.props;
+
+const labels: Record<Field, string> = {
+  name: "Firma",
+  address: "Adres",
+  taxId: "NIP",
+  phone: "Telefon",
+  email: "E-mail",
+  hours: "Godziny pracy",
+};
+---
+
+<dl class:list={["company-details", className]}>
+  {fields.map((field) => (
+    <div class="row">
+      <dt>{labels[field]}</dt>
+      <dd>
+        {field === "name" && site.legalName}
+        {field === "address" && formattedAddress}
+        {field === "taxId" && <span class="mono">{site.taxId}</span>}
+        {field === "phone" && (
+          <a class="mono" href={phoneHref}>
+            {site.phone}
+          </a>
+        )}
+        {field === "email" && <a href={emailHref}>{site.email}</a>}
+        {field === "hours" &&
+          site.openingHours.map((entry) => (
+            <span class="hours">
+              {entry.days}: {entry.hours}
+            </span>
+          ))}
+      </dd>
+    </div>
+  ))}
+</dl>
+
+<style>
+  .company-details {
+    display: grid;
+    gap: var(--space-s);
+  }
+
+  dt {
+    color: var(--color-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 500;
+  }
+
+  dd {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .mono {
+    font-family: var(--font-mono);
+    font-weight: 500;
+  }
+
+  .hours {
+    display: block;
+  }
+</style>

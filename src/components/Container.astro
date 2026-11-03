@@ -1,0 +1,28 @@
+---
+interface Props {
+  width?: "page" | "text";
+  class?: string;
+}
+
+const { width = "page", class: className } = Astro.props;
+---
+
+<div class:list={["container", width, className]}>
+  <slot />
+</div>
+
+<style>
+  .container {
+    inline-size: 100%;
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .page {
+    max-inline-size: calc(var(--width-page) + 2 * var(--gutter));
+  }
+
+  .text {
+    max-inline-size: calc(var(--width-text) + 2 * var(--gutter));
+  }
+</style>
