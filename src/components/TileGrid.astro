@@ -1,12 +1,13 @@
 ---
 interface Props {
   id?: string;
+  columns?: 3 | 4;
 }
 
-const { id } = Astro.props;
+const { id, columns = 3 } = Astro.props;
 ---
 
-<ul id={id} class="tile-grid" role="list">
+<ul id={id} class:list={["tile-grid", `columns-${columns}`]} role="list">
   <slot />
 </ul>
 
@@ -24,8 +25,14 @@ const { id } = Astro.props;
   }
 
   @media (width >= 48rem) {
-    .tile-grid {
+    .columns-3 {
       grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (width >= 60rem) {
+    .columns-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
     }
   }
 </style>

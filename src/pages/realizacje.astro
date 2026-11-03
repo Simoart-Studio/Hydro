@@ -1,0 +1,70 @@
+---
+import Container from "../components/Container.astro";
+import CtaBand from "../components/CtaBand.astro";
+import PageHeader from "../components/PageHeader.astro";
+import ProjectGrid from "../components/ProjectGrid.astro";
+import { projects, projectsPage } from "../content/projects";
+import { site } from "../content/site";
+import { isDemo } from "../lib/env";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+// The demo shows where projects will go, so the client sees the layout before sending photos.
+const placeholderCount = 3;
+---
+
+<BaseLayout title={`${projectsPage.title} | ${site.name}`} description={projectsPage.lead}>
+  <PageHeader title={projectsPage.title} lead={projectsPage.lead} />
+  <Container width="page" class="body">
+    {projects.length > 0 ? (
+      <ProjectGrid projects={projects} />
+    ) : (
+      <>
+        <p class="empty">{projectsPage.empty}</p>
+        {isDemo && (
+          <ul class="placeholders" role="list" aria-label="Miejsca na realizacje">
+            {Array.from({ length: placeholderCount }, () => (
+              <li>{projectsPage.placeholder}</li>
+            ))}
+          </ul>
+        )}
+      </>
+    )}
+  </Container>
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .body {
+    display: grid;
+    gap: var(--space-xl);
+    padding-block: var(--space-section);
+  }
+
+  .empty {
+    max-inline-size: var(--measure);
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .placeholders {
+    display: grid;
+    gap: var(--space-l);
+  }
+
+  .placeholders li {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 3;
+    border: 2px dashed var(--color-field);
+    border-radius: var(--radius-sm) var(--radius-tile);
+    color: var(--color-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+
+  @media (width >= 40rem) {
+    .placeholders {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

@@ -1,0 +1,46 @@
+---
+import Container from "../components/Container.astro";
+import PageHeader from "../components/PageHeader.astro";
+import { privacyPage, privacySections } from "../content/privacy";
+import { site } from "../content/site";
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title={`${privacyPage.title} | ${site.name}`} description={privacyPage.lead}>
+  <PageHeader title={privacyPage.title} lead={privacyPage.lead} />
+  <Container width="column" class="policy">
+    {privacySections.map((section) => (
+      <section>
+        <h2>{section.title}</h2>
+        {section.paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+      </section>
+    ))}
+    <p class="updated">{privacyPage.updated}</p>
+  </Container>
+</BaseLayout>
+
+<style>
+  .policy {
+    display: grid;
+    gap: var(--space-xl);
+    padding-block: var(--space-section);
+  }
+
+  section {
+    display: grid;
+    gap: var(--space-s);
+    max-inline-size: var(--measure);
+  }
+
+  h2 {
+    font-size: var(--text-xl);
+  }
+
+  .updated {
+    color: var(--color-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+  }
+</style>

@@ -10,6 +10,7 @@ export const stepsSection = {
   title: "Jak to działa",
   intro:
     "Prowadzimy sprawę od pierwszej rozmowy do rozliczenia dotacji. Na każdym etapie wiesz, co się dzieje i kto za co odpowiada.",
+  moreLink: { label: "Szczegóły procesu dotacji", href: "/dotacje" },
 };
 
 export const steps: Step[] = [

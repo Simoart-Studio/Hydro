@@ -1,0 +1,106 @@
+---
+import CompanyDetails from "../components/CompanyDetails.astro";
+import CtaBand from "../components/CtaBand.astro";
+import PageHeader from "../components/PageHeader.astro";
+import Principles from "../components/Principles.astro";
+import Section from "../components/Section.astro";
+import {
+  aboutPage,
+  areaSection,
+  qualifications,
+  qualificationsSection,
+  story,
+} from "../content/about";
+import { site } from "../content/site";
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title={`${aboutPage.title} | ${site.name}`} description={aboutPage.lead}>
+  <PageHeader title={aboutPage.title} lead={aboutPage.lead} />
+  <Section id="kim-jestesmy" title={story.title}>
+    <div class="story">
+      {story.paragraphs.map((paragraph) => (
+        <p>{paragraph}</p>
+      ))}
+    </div>
+  </Section>
+  {qualifications.length > 0 && (
+    <Section id="uprawnienia" title={qualificationsSection.title}>
+      <ul class="qualifications" role="list">
+        {qualifications.map((item) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+    </Section>
+  )}
+  <Principles />
+  <Section id="obszar" title={areaSection.title} width="page">
+    <div class="area">
+      <div class="panel">
+        <p>{site.serviceArea.summary}</p>
+        <ul class="places" role="list">
+          {site.serviceArea.places.map((place) => (
+            <li>{place}</li>
+          ))}
+        </ul>
+      </div>
+      <CompanyDetails fields={["name", "address", "taxId", "phone", "email"]} class="panel" />
+    </div>
+  </Section>
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .story {
+    display: grid;
+    gap: var(--space-m);
+    max-inline-size: var(--measure);
+    margin-inline: auto;
+  }
+
+  .qualifications {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-s);
+    justify-content: center;
+  }
+
+  .qualifications li {
+    padding: var(--space-xs) var(--space-m);
+    border: 1px solid var(--color-line);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+
+  .area {
+    display: grid;
+    gap: var(--space-l);
+  }
+
+  .panel {
+    display: grid;
+    gap: var(--space-m);
+    align-content: start;
+    padding: var(--space-l);
+    border: 1px solid var(--color-line);
+  }
+
+  .places {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+
+  .places li {
+    padding: var(--space-2xs) var(--space-s);
+    background: var(--color-subtle);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+
+  @media (width >= 48rem) {
+    .area {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

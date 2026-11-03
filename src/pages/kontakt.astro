@@ -1,0 +1,82 @@
+---
+import CompanyDetails from "../components/CompanyDetails.astro";
+import ContactForm from "../components/ContactForm.astro";
+import Container from "../components/Container.astro";
+import PageHeader from "../components/PageHeader.astro";
+import { contactPage } from "../content/contact";
+import { phoneHref, site } from "../content/site";
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title={`${contactPage.title} | ${site.name}`} description={contactPage.lead}>
+  <PageHeader title={contactPage.title} lead={contactPage.lead} />
+  <Container width="page" class="layout">
+    <div class="details">
+      <section aria-labelledby="contact-details-title">
+        <h2 id="contact-details-title">{contactPage.detailsTitle}</h2>
+        <a class="phone" href={phoneHref}>
+          <span class="visually-hidden">Zadzwoń:</span>
+          {site.phone}
+        </a>
+        <CompanyDetails fields={["email", "hours", "address", "name", "taxId"]} />
+      </section>
+      <section aria-labelledby="contact-area-title">
+        <h2 id="contact-area-title">{contactPage.areaTitle}</h2>
+        <p>{site.serviceArea.summary}</p>
+      </section>
+    </div>
+    <ContactForm />
+  </Container>
+</BaseLayout>
+
+<style>
+  .layout {
+    display: grid;
+    gap: var(--space-2xl);
+    align-items: start;
+    padding-block: var(--space-section);
+  }
+
+  .details {
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  .details section {
+    display: grid;
+    gap: var(--space-m);
+    padding-block-start: var(--space-m);
+    border-block-start: 1px solid var(--color-line);
+  }
+
+  h2 {
+    color: var(--color-petrol);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .phone {
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--target-size);
+    color: var(--color-coral-strong);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xl);
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  .phone:hover {
+    text-decoration: underline;
+  }
+
+  @media (width >= 56rem) {
+    .layout {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    }
+  }
+</style>

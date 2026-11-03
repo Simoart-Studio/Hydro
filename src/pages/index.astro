@@ -1,18 +1,17 @@
 ---
-import Faq from "../components/Faq.astro";
+import Button from "../components/Button.astro";
+import CtaBand from "../components/CtaBand.astro";
 import Hero from "../components/Hero.astro";
 import Introduction from "../components/Introduction.astro";
 import Notice from "../components/Notice.astro";
-import Principles from "../components/Principles.astro";
 import ProcessSteps from "../components/ProcessSteps.astro";
-import Projects from "../components/Projects.astro";
+import ProjectGrid from "../components/ProjectGrid.astro";
+import Section from "../components/Section.astro";
 import ServicesOverview from "../components/ServicesOverview.astro";
 import Testimonials from "../components/Testimonials.astro";
-import { categories } from "../content/categories";
-import { showProjects } from "../content/navigation";
-import { projects } from "../content/projects";
+import { projects, projectsPreview } from "../content/projects";
 import { site } from "../content/site";
-import { steps } from "../content/steps";
+import { steps, stepsSection } from "../content/steps";
 import { testimonials } from "../content/testimonials";
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
@@ -20,11 +19,23 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 <BaseLayout title={`${site.name} | ${site.tagline}`} description={site.description}>
   <Hero />
   <ServicesOverview />
-  <Introduction categories={categories} />
-  <ProcessSteps steps={steps} />
+  <Introduction />
+  <ProcessSteps steps={steps} action={stepsSection.moreLink} />
   <Notice />
-  <Principles />
-  {showProjects && <Projects projects={projects} />}
+  {projects.length > 0 && (
+    <Section id="realizacje" title={projectsPreview.title} width="page">
+      <ProjectGrid projects={projects.slice(0, projectsPreview.limit)} />
+      <Button href="/realizacje" arrow class="more">
+        {projectsPreview.moreLabel}
+      </Button>
+    </Section>
+  )}
   {testimonials.length > 0 && <Testimonials testimonials={testimonials} />}
-  <Faq />
+  <CtaBand />
 </BaseLayout>
+
+<style>
+  .more {
+    justify-self: center;
+  }
+</style>

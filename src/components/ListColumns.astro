@@ -1,0 +1,79 @@
+---
+interface Column {
+  title: string;
+  items: string[];
+  marker: "plus" | "minus";
+}
+
+interface Props {
+  columns: Column[];
+}
+
+const { columns } = Astro.props;
+---
+
+<div class="columns">
+  {columns.map((column) => (
+    <div class:list={["column", column.marker]}>
+      <h3>{column.title}</h3>
+      <ul role="list">
+        {column.items.map((item) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+    </div>
+  ))}
+</div>
+
+<style>
+  .columns {
+    display: grid;
+    gap: var(--space-l);
+  }
+
+  .column {
+    display: grid;
+    gap: var(--space-m);
+    align-content: start;
+    padding: var(--space-l);
+    border: 1px solid var(--color-line);
+    border-block-start: 4px solid var(--color-coral);
+    background: var(--color-surface);
+  }
+
+  .minus {
+    border-block-start-color: var(--color-petrol);
+  }
+
+  ul {
+    display: grid;
+    gap: var(--space-s);
+  }
+
+  li {
+    display: grid;
+    grid-template-columns: 1.5rem minmax(0, 1fr);
+    gap: var(--space-xs);
+  }
+
+  li::before {
+    font-family: var(--font-mono);
+    font-weight: 500;
+  }
+
+  .plus li::before {
+    content: "+";
+    color: var(--color-coral-strong);
+  }
+
+  .minus li::before {
+    content: "–";
+    color: var(--color-petrol);
+  }
+
+  @media (width >= 40rem) {
+    .columns {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

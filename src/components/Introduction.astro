@@ -1,32 +1,30 @@
 ---
-import type { Category } from "../content/categories";
 import { intro } from "../content/intro";
+import { offerItems } from "../content/offer";
+import Button from "./Button.astro";
 import PhotoTile from "./PhotoTile.astro";
 import Section from "./Section.astro";
 import TileGrid from "./TileGrid.astro";
-
-interface Props {
-  categories: Category[];
-}
-
-const { categories } = Astro.props;
 ---
 
-<Section id="o-nas" title={intro.title}>
+<Section id="o-firmie" title={intro.title} width="page">
   <div class="text">
     {intro.paragraphs.map((paragraph) => (
       <p set:html={paragraph} />
     ))}
+    <Button href={intro.aboutLink.href} variant="dark" size="small" arrow class="about">
+      {intro.aboutLink.label}
+    </Button>
   </div>
   <p class="prompt">{intro.categoriesPrompt}</p>
-  <TileGrid id="urzadzenia">
-    {categories.map((category) => (
+  <TileGrid columns={4}>
+    {offerItems.map((item) => (
       <li>
         <PhotoTile
-          label={category.label}
-          image={category.image}
-          alt={category.alt}
-          href={category.href}
+          label={item.title}
+          image={item.image}
+          alt={item.alt}
+          href={`/oferta#${item.id}`}
         />
       </li>
     ))}
@@ -37,8 +35,14 @@ const { categories } = Astro.props;
   .text {
     display: grid;
     gap: var(--space-m);
+    justify-items: center;
     max-inline-size: var(--measure);
     margin-inline: auto;
+    text-align: center;
+  }
+
+  .about {
+    margin-block-start: var(--space-xs);
   }
 
   .prompt {

@@ -21,9 +21,9 @@ export const faq: FaqItem[] = [
       "Formalności przygotowujemy jako instalatorzy i sami montujemy urządzenia. Nie ma pośredników między wnioskiem a montażem.",
   },
   {
-    question: "Co przygotować na pierwszą rozmowę?",
+    question: "Ile kosztuje pierwsza rozmowa?",
     answer:
-      "Rok budowy domu, powierzchnię, informację o obecnym źródle ciepła i orientacyjne rachunki za ogrzewanie.",
+      "Nic. Na rozmowie oceniamy, czy dotacja ma sens w Twoim domu. Wycenę przygotowujemy po oględzinach kotłowni.",
   },
   {
     question: "Jaki obszar obsługujecie?",

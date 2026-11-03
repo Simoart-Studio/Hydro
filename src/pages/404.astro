@@ -1,0 +1,57 @@
+---
+import Button from "../components/Button.astro";
+import Container from "../components/Container.astro";
+import { mainNavigation } from "../content/navigation";
+import { site } from "../content/site";
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title={`Nie znaleziono strony | ${site.name}`} description="Ta strona nie istnieje.">
+  <Container width="column" class="not-found">
+    <p class="code">404</p>
+    <h1>Nie znaleziono strony</h1>
+    <p>Adres mógł się zmienić albo zawiera literówkę. Wybierz jedną ze stron poniżej.</p>
+    <nav aria-label="Strony serwisu">
+      <ul role="list">
+        {mainNavigation.map((link) => (
+          <li>
+            <a href={link.href}>{link.label}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+    <Button href="/" arrow>
+      Wróć na stronę główną
+    </Button>
+  </Container>
+</BaseLayout>
+
+<style>
+  .not-found {
+    display: grid;
+    gap: var(--space-m);
+    justify-items: center;
+    padding-block: var(--space-section);
+    text-align: center;
+  }
+
+  .code {
+    color: var(--color-coral-strong);
+    font-family: var(--font-mono);
+    font-size: var(--text-3xl);
+    font-weight: 500;
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs) var(--space-m);
+    justify-content: center;
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--target-size);
+  }
+</style>

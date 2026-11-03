@@ -1,0 +1,70 @@
+---
+import Container from "../components/Container.astro";
+import CtaBand from "../components/CtaBand.astro";
+import OfferEntry from "../components/OfferEntry.astro";
+import PageHeader from "../components/PageHeader.astro";
+import { installation, offerItems, offerPage } from "../content/offer";
+import { site } from "../content/site";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const entries = [...offerItems, installation];
+---
+
+<BaseLayout title={`${offerPage.title} | ${site.name}`} description={offerPage.lead}>
+  <PageHeader title={offerPage.title} lead={offerPage.lead} />
+  <Container width="page">
+    <nav class="jump" aria-label="Działy oferty">
+      <ul role="list">
+        {entries.map((entry) => (
+          <li>
+            <a href={`#${entry.id}`}>{entry.title}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+    {entries.map((entry, index) => (
+      <OfferEntry {...entry} reverse={index % 2 === 1} />
+    ))}
+    <p class="pricing">{offerPage.pricing}</p>
+  </Container>
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .jump {
+    padding-block: var(--space-l);
+    border-block-end: 1px solid var(--color-line);
+  }
+
+  .jump ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    justify-content: center;
+  }
+
+  .jump a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--target-size);
+    padding-inline: var(--space-m);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-pill);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .jump a:hover {
+    border-color: var(--color-coral-strong);
+    color: var(--color-coral-strong);
+  }
+
+  .pricing {
+    max-inline-size: var(--measure);
+    margin: var(--space-2xl) auto;
+    padding: var(--space-l) var(--space-xl);
+    border-inline-start: 4px solid var(--color-petrol);
+    background: var(--color-subtle);
+  }
+</style>

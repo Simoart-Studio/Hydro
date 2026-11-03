@@ -1,13 +1,16 @@
 ---
+import type { NavLink } from "../content/navigation";
 import type { Step, StepIcon } from "../content/steps";
 import { stepsSection } from "../content/steps";
+import Button from "./Button.astro";
 import Section from "./Section.astro";
 
 interface Props {
   steps: Step[];
+  action?: NavLink;
 }
 
-const { steps } = Astro.props;
+const { steps, action } = Astro.props;
 
 const iconPaths: Record<StepIcon, string> = {
   conversation:
@@ -32,12 +35,21 @@ const iconPaths: Record<StepIcon, string> = {
       </li>
     ))}
   </ol>
+  {action && (
+    <Button href={action.href} arrow class="action">
+      {action.label}
+    </Button>
+  )}
 </Section>
 
 <style>
   .steps {
     display: grid;
     gap: var(--space-xl) var(--space-l);
+  }
+
+  .action {
+    justify-self: center;
   }
 
   .step {
