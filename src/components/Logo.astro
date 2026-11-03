@@ -1,35 +1,19 @@
 ---
+import { Image } from "astro:assets";
+import logoMark from "../assets/brand/logo-mark.png";
+
 interface Props {
   size?: number;
 }
 
-const { size = 32 } = Astro.props;
+const { size = 44 } = Astro.props;
 ---
 
-<svg class="logo" viewBox="0 0 40 40" width={size} height={size} aria-hidden="true">
-  <path class="connector" d="M27 11v18"></path>
-  <path class="supply" d="M6 11h28"></path>
-  <path class="return" d="M6 29h28"></path>
-</svg>
+<Image class="logo" src={logoMark} alt="" width={size} height={size} densities={[1, 2]} />
 
 <style>
   .logo {
     flex: none;
-    fill: none;
-    stroke-linecap: round;
-    stroke-width: 5;
-  }
-
-  .connector {
-    stroke: var(--color-petrol);
-  }
-
-  .supply {
-    stroke: var(--color-coral);
-  }
-
-  .return {
-    stroke: var(--color-petrol);
-    opacity: 0.55;
+    border-radius: var(--radius-sm);
   }
 </style>

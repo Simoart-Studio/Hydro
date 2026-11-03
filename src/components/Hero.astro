@@ -9,7 +9,7 @@ import Button from "./Button.astro";
     class="backdrop"
     src={hero.image.src}
     alt={hero.image.alt}
-    widths={[640, 1024, 1600, 1920]}
+    widths={[640, 960, 1200]}
     sizes="100vw"
     loading="eager"
     fetchpriority="high"
@@ -28,7 +28,7 @@ import Button from "./Button.astro";
     position: relative;
     display: grid;
     place-items: center;
-    min-block-size: clamp(18rem, 14rem + 14vw, 28rem);
+    min-block-size: clamp(22rem, 16rem + 18vw, 34rem);
     padding: var(--space-2xl) var(--gutter) calc(var(--space-2xl) + var(--hero-overlap));
     overflow: hidden;
     background: var(--color-subtle);
@@ -40,7 +40,7 @@ import Button from "./Button.astro";
     inline-size: 100%;
     block-size: 100%;
     object-fit: cover;
-    object-position: 60% 50%;
+    object-position: 50% 40%;
   }
 
   .content {
@@ -49,6 +49,10 @@ import Button from "./Button.astro";
     gap: var(--space-m);
     justify-items: center;
     max-inline-size: 38rem;
+    padding: var(--space-l) var(--space-xl);
+    border-block-start: 4px solid var(--color-coral-strong);
+    background: rgb(255 255 255 / 0.97);
+    box-shadow: var(--shadow-card);
     text-align: center;
   }
 
@@ -58,9 +62,6 @@ import Button from "./Button.astro";
 
   .label {
     margin-block-end: var(--space-xs);
-    padding: var(--space-2xs) var(--space-m);
-    border: 1px solid var(--color-line);
-    background: var(--color-surface);
     color: var(--color-coral-strong);
     font-size: var(--text-sm);
     font-weight: 600;

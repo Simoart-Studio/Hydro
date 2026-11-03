@@ -14,6 +14,8 @@ export interface OpeningHours {
 
 export interface SiteInfo {
   name: string;
+  /** Nazwa w dwóch wierszach obok znaku w nagłówku, tak jak w logo. */
+  brandLines: [string, string];
   legalName: string;
   domain: string;
   tagline: string;
@@ -30,8 +32,9 @@ export interface SiteInfo {
 }
 
 export const site: SiteInfo = {
-  name: "Pompy & Kotły",
-  legalName: "Pompy & Kotły", // TODO(klient): pełna nazwa firmy z CEIDG lub KRS
+  name: "HYDRO Leszek Weinerowski",
+  brandLines: ["HYDRO", "Leszek Weinerowski"],
+  legalName: "HYDRO Leszek Weinerowski", // TODO(klient): pełna nazwa firmy z CEIDG
   domain: "pompykotly.pl", // TODO(klient): potwierdzić domenę
   tagline: "Dotacje, urządzenia i montaż kotłowni",
   description:

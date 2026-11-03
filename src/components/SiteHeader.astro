@@ -15,7 +15,10 @@ const isCurrent = (href: string) =>
   <Container class="bar">
     <a class="brand" href="/" aria-label={`${site.name}, strona główna`}>
       <Logo />
-      <span class="brand-name">{site.name}</span>
+      <span class="brand-name" aria-hidden="true">
+        <span class="brand-primary">{site.brandLines[0]}</span>
+        <span class="brand-secondary">{site.brandLines[1]}</span>
+      </span>
     </a>
     <nav class="desktop-nav" aria-label="Menu główne">
       <ul class="desktop-list" role="list">
@@ -101,10 +104,25 @@ const isCurrent = (href: string) =>
     gap: var(--space-xs);
     align-items: center;
     min-block-size: var(--target-size);
-    font-size: var(--text-lg);
-    font-weight: 600;
     text-decoration: none;
     white-space: nowrap;
+  }
+
+  .brand-name {
+    display: grid;
+    line-height: 1.15;
+  }
+
+  .brand-primary {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+
+  .brand-secondary {
+    color: var(--color-coral-strong);
+    font-size: var(--text-xs);
+    font-weight: 600;
   }
 
   .desktop-nav {

@@ -3,7 +3,8 @@ import { mainNavigation, privacyPolicyLink } from "../content/navigation";
 import { site } from "../content/site";
 import CompanyDetails from "./CompanyDetails.astro";
 import Container from "./Container.astro";
-import Logo from "./Logo.astro";
+import { Image } from "astro:assets";
+import logo from "../assets/brand/logo.jpeg";
 
 const year = new Date().getFullYear();
 ---
@@ -11,10 +12,7 @@ const year = new Date().getFullYear();
 <footer class="site-footer">
   <Container class="columns">
     <div class="about">
-      <p class="brand">
-        <Logo size={32} />
-        {site.name}
-      </p>
+      <Image class="logo" src={logo} alt={site.name} width={144} densities={[1, 2]} />
       <p>{site.description}</p>
     </div>
     <section aria-labelledby="footer-company">
@@ -74,12 +72,8 @@ const year = new Date().getFullYear();
     min-inline-size: 0;
   }
 
-  .brand {
-    display: flex;
-    gap: var(--space-xs);
-    align-items: center;
-    font-size: var(--text-lg);
-    font-weight: 600;
+  .logo {
+    border-radius: var(--radius);
   }
 
   .about p:last-child {
