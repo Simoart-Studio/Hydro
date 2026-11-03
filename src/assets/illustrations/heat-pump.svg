@@ -1,22 +1,31 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="480" height="480" viewBox="0 0 480 480">
-  <rect width="480" height="480" fill="#e4e9ee"/>
-  <rect y="370" width="480" height="110" fill="#d3dae1"/>
-  <ellipse cx="240" cy="392" rx="180" ry="14" fill="#1f2d33" opacity="0.12"/>
-  <rect x="64" y="128" width="352" height="256" rx="18" fill="#f6f8fa"/>
-  <path d="M372 128h26a18 18 0 0 1 18 18v220a18 18 0 0 1-18 18h-26z" fill="#e2e7ec"/>
-  <circle cx="190" cy="256" r="94" fill="#e3e8ec"/>
-  <g fill="none" stroke="#c6cdd4" stroke-width="3">
-    <circle cx="190" cy="256" r="80"/>
-    <circle cx="190" cy="256" r="60"/>
-    <circle cx="190" cy="256" r="40"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="480" viewBox="0 0 480 480" font-family="IBM Plex Mono, Consolas, monospace" font-size="14">
+  <defs>
+    <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M24 0H0v24" fill="none" stroke="#e1e6e8" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="480" height="480" fill="#f3f5f6"/>
+  <rect width="480" height="480" fill="url(#grid)"/>
+  <g fill="none" stroke="#44575e" stroke-width="2.5" stroke-linejoin="round">
+    <rect x="60" y="140" width="360" height="220" rx="8"/>
+    <circle cx="180" cy="250" r="82"/>
+    <path d="M330 160v180M350 160v180M370 160v180M390 160v180"/>
+    <path d="M90 360v28M390 360v28M70 388h340"/>
   </g>
-  <g fill="#a9b3bc">
-    <path d="M190 256c-8-34 0-58 26-66 8 26-6 50-26 66z"/>
-    <path d="M190 256c34-4 56 10 56 38-28 2-48-14-56-38z"/>
-    <path d="M190 256c-26 24-54 28-72 8 18-22 44-24 72-8z"/>
+  <g fill="none" stroke="#8a9aa0" stroke-width="1.5">
+    <circle cx="180" cy="250" r="60"/>
+    <circle cx="180" cy="250" r="38"/>
+    <path d="M98 250h164M180 168v164"/>
   </g>
-  <circle cx="190" cy="256" r="12" fill="#8e979f"/>
-  <rect x="318" y="180" width="44" height="80" rx="8" fill="#2b3a40"/>
-  <rect x="327" y="192" width="26" height="16" rx="3" fill="#4fb6cb"/>
-  <circle cx="340" cy="240" r="5" fill="#f0674a"/>
+  <g fill="none" stroke-width="4">
+    <path d="M420 300h34" stroke="#c8452a"/>
+    <path d="M420 330h34" stroke="#2f6f80"/>
+  </g>
+  <g fill="#5d6e74">
+    <path d="M240 140v-50h36" fill="none" stroke="#8a9aa0" stroke-width="1"/>
+    <text x="282" y="95">jednostka</text>
+    <text x="282" y="113">zewnętrzna</text>
+    <text x="60" y="432">wentylator</text>
+    <path d="M100 418l40-60" fill="none" stroke="#8a9aa0" stroke-width="1"/>
+  </g>
 </svg>

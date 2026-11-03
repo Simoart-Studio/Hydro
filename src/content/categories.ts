@@ -13,27 +13,42 @@ export interface Category {
   alt: string;
 }
 
-// TODO(klient): zdjęcia urządzeń lub realizacji w miejsce ilustracji (kwadrat, min. 800 × 800 px)
+// TODO(klient): zdjęcia urządzeń lub realizacji w miejsce rysunków (kwadrat, min. 800 × 800 px)
 export const categories: Category[] = [
   {
     label: "Pompy ciepła",
     href: "/#kontakt",
     image: heatPump,
-    alt: "Jednostka zewnętrzna pompy ciepła",
+    alt: "Rysunek jednostki zewnętrznej pompy ciepła",
   },
-  { label: "Kotły", href: "/#kontakt", image: gasBoiler, alt: "Kocioł wiszący z przyłączami" },
+  {
+    label: "Kotły",
+    href: "/#kontakt",
+    image: gasBoiler,
+    alt: "Rysunek kotła z przyłączami zasilania, powrotu i CWU",
+  },
   {
     label: "Zasobniki CWU",
     href: "/#kontakt",
     image: dhwTank,
-    alt: "Zasobnik ciepłej wody użytkowej",
+    alt: "Przekrój zasobnika CWU z wężownicą",
   },
-  { label: "Bufory ciepła", href: "/#kontakt", image: bufferTank, alt: "Bufor ciepła w izolacji" },
-  { label: "Armatura", href: "/#kontakt", image: fittings, alt: "Zawory i manometr na rurach" },
+  {
+    label: "Bufory ciepła",
+    href: "/#kontakt",
+    image: bufferTank,
+    alt: "Przekrój bufora ciepła z króćcami do źródła i instalacji",
+  },
+  {
+    label: "Armatura",
+    href: "/#kontakt",
+    image: fittings,
+    alt: "Schemat armatury: zawory kulowe, manometr, pompa i zawór zwrotny",
+  },
   {
     label: "Montaż kotłowni",
     href: "/#jak-to-dziala",
     image: boilerRoom,
-    alt: "Kotłownia z kotłem, zasobnikiem i kluczem",
+    alt: "Schemat kotłowni: źródło ciepła, bufor, pompa i zawór",
   },
 ];

@@ -1,9 +1,9 @@
-@import "@fontsource/poppins/latin-400.css";
-@import "@fontsource/poppins/latin-ext-400.css";
-@import "@fontsource/poppins/latin-600.css";
-@import "@fontsource/poppins/latin-ext-600.css";
-@import "@fontsource/poppins/latin-700.css";
-@import "@fontsource/poppins/latin-ext-700.css";
+@import "@fontsource/ibm-plex-sans/latin-400.css";
+@import "@fontsource/ibm-plex-sans/latin-ext-400.css";
+@import "@fontsource/ibm-plex-sans/latin-600.css";
+@import "@fontsource/ibm-plex-sans/latin-ext-600.css";
+@import "@fontsource/ibm-plex-mono/latin-500.css";
+@import "@fontsource/ibm-plex-mono/latin-ext-500.css";
 @import "./reset.css";
 @import "./tokens.css";
 
@@ -17,14 +17,14 @@ body {
   color: var(--color-ink);
   font-family: var(--font-base);
   font-size: var(--text-base);
-  line-height: 1.65;
+  line-height: 1.6;
 }
 
 h1,
 h2,
 h3 {
-  font-weight: 700;
-  line-height: 1.2;
+  font-weight: 600;
+  line-height: 1.25;
   text-wrap: balance;
 }
 

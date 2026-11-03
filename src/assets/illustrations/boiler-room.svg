@@ -1,20 +1,30 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="480" height="480" viewBox="0 0 480 480">
-  <rect width="480" height="480" fill="#e9e6ee"/>
-  <rect y="410" width="480" height="70" fill="#d7d3de"/>
-  <g fill="none" stroke-width="12" stroke-linejoin="round">
-    <path d="M150 230v60h120v-170h50" stroke="#e0613f"/>
-    <path d="M190 230v100h110v-120h20" stroke="#4a90b8"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="480" viewBox="0 0 480 480" font-family="IBM Plex Mono, Consolas, monospace" font-size="14">
+  <defs>
+    <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M24 0H0v24" fill="none" stroke="#e1e6e8" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="480" height="480" fill="#f3f5f6"/>
+  <rect width="480" height="480" fill="url(#grid)"/>
+  <g fill="none" stroke-width="3.5" stroke-linejoin="round">
+    <path d="M140 140h90M310 140h120V96" stroke="#c8452a"/>
+    <path d="M140 300h90M310 300h120v44" stroke="#2f6f80"/>
   </g>
-  <rect x="90" y="70" width="140" height="170" rx="14" fill="#fbfbfc"/>
-  <rect x="122" y="110" width="76" height="38" rx="6" fill="#2b3a40"/>
-  <rect x="132" y="120" width="34" height="10" rx="3" fill="#4fb6cb"/>
-  <circle cx="186" cy="128" r="6" fill="#f0674a"/>
-  <ellipse cx="380" cy="424" rx="70" ry="8" fill="#1f2d33" opacity="0.12"/>
-  <rect x="320" y="100" width="120" height="320" rx="50" fill="#fbfbfc"/>
-  <path d="M410 106c20 12 30 34 30 50v214c0 18-10 40-30 50z" fill="#e6e8ec"/>
-  <g transform="rotate(-35 150 400)">
-    <rect x="70" y="390" width="150" height="20" rx="10" fill="#2b3a40"/>
-    <path d="M220 380a30 30 0 1 1 0 40h-10v-40z" fill="#2b3a40"/>
-    <circle cx="232" cy="400" r="11" fill="#e9e6ee"/>
+  <g fill="#f3f5f6" stroke="#44575e" stroke-width="2.5" stroke-linejoin="round">
+    <rect x="40" y="110" width="100" height="220" rx="6"/>
+    <rect x="230" y="90" width="80" height="260" rx="34"/>
+    <circle cx="370" cy="140" r="18"/>
+    <path d="M360 128l24 12-24 12z"/>
+    <path d="M170 280v40l24-20z M218 280v40l-24-20z"/>
+    <rect x="390" y="56" width="80" height="40"/>
+    <rect x="390" y="344" width="80" height="40"/>
+  </g>
+  <path d="M60 140h60M60 160h40" stroke="#8a9aa0" stroke-width="1.5"/>
+  <g fill="#5d6e74" text-anchor="middle">
+    <text x="90" y="356">źródło</text>
+    <text x="270" y="376">bufor</text>
+    <text x="370" y="186">pompa</text>
+    <text x="194" y="350">zawór</text>
+    <text x="430" y="420">c.o.</text>
   </g>
 </svg>

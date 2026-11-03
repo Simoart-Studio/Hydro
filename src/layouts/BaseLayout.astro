@@ -1,6 +1,6 @@
 ---
-import boldFont from "@fontsource/poppins/files/poppins-latin-700-normal.woff2?url";
-import regularFont from "@fontsource/poppins/files/poppins-latin-400-normal.woff2?url";
+import semiboldFont from "@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-600-normal.woff2?url";
+import regularFont from "@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-400-normal.woff2?url";
 import DemoNotice from "../components/DemoNotice.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
@@ -31,7 +31,7 @@ const ogImageUrl = new URL("/og.png", Astro.site);
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <meta name="theme-color" content="#1f4e5a" />
-    <link rel="preload" href={boldFont} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={semiboldFont} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={regularFont} as="font" type="font/woff2" crossorigin />
 
     <meta property="og:type" content="website" />

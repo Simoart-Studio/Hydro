@@ -24,26 +24,15 @@ import Button from "./Button.astro";
 </section>
 
 <style>
-  /* The hero sits on a picture in both themes, so its colours are fixed rather than themed. */
+  /* The drawing behind the hero is light in both themes, so the hero keeps light-theme colours. */
   .hero {
     position: relative;
     display: grid;
     place-items: center;
-    min-block-size: clamp(22rem, 18rem + 18vw, 34rem);
+    min-block-size: clamp(18rem, 14rem + 14vw, 28rem);
     padding: var(--space-2xl) var(--gutter) calc(var(--space-2xl) + var(--hero-overlap));
     overflow: hidden;
-    background: #9fb4c4;
-  }
-
-  .hero::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(
-      ellipse 70% 65% at 50% 45%,
-      rgb(15 30 36 / 0.62),
-      rgb(15 30 36 / 0.2)
-    );
+    background: #f3f5f6;
   }
 
   .backdrop {
@@ -60,21 +49,21 @@ import Button from "./Button.astro";
     display: grid;
     gap: var(--space-m);
     justify-items: center;
-    max-inline-size: 44rem;
+    max-inline-size: 38rem;
     text-align: center;
   }
 
   h1 {
-    color: #ffffff;
-    text-shadow: 0 2px 16px rgb(15 30 36 / 0.45);
+    color: #1f2d33;
   }
 
   .label {
     margin-block-end: var(--space-xs);
     padding: var(--space-2xs) var(--space-m);
-    border-radius: var(--radius-sm);
+    border: 1px solid #e2e3ea;
     background: #ffffff;
     color: #c8452a;
+    font-size: var(--text-sm);
     font-weight: 600;
   }
 </style>

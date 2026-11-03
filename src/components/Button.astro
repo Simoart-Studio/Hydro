@@ -41,6 +41,7 @@ const classes = ["button", variant, size, className];
     padding: var(--space-xs) var(--space-l);
     border: 0;
     border-radius: var(--radius-pill);
+    font-size: 0.9375rem;
     font-weight: 600;
     line-height: 1.2;
     text-align: center;
@@ -50,8 +51,10 @@ const classes = ["button", variant, size, className];
   }
 
   .small {
-    padding-inline: var(--space-m) var(--space-xs);
-    font-size: var(--text-sm);
+    gap: var(--space-2xs);
+    padding-inline: var(--space-s) var(--space-xs);
+    font-size: var(--text-xs);
+    white-space: nowrap;
   }
 
   .primary {
@@ -81,16 +84,16 @@ const classes = ["button", variant, size, className];
     display: grid;
     flex: none;
     place-items: center;
-    inline-size: 1.5rem;
-    block-size: 1.5rem;
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
     border-radius: 50%;
     background: color-mix(in srgb, currentColor 22%, transparent);
   }
 
   .arrow::before {
     content: "";
-    inline-size: 0.4rem;
-    block-size: 0.4rem;
+    inline-size: 0.35rem;
+    block-size: 0.35rem;
     border-block-start: 2px solid currentColor;
     border-inline-end: 2px solid currentColor;
     translate: -1px 0;

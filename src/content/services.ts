@@ -12,27 +12,23 @@ export const servicesSection = {
 
 export const services: Service[] = [
   {
-    title: "Pomoc w formalnościach dotacyjnych",
-    summary:
-      "Sprawdzamy, z którego programu możesz skorzystać i jakie warunki trzeba spełnić. Kompletujemy dokumenty i pilnujemy terminów.",
+    title: "Formalności dotacyjne",
+    summary: "Dobór programu, komplet dokumentów i pilnowanie terminów.",
     href: "/#jak-to-dziala",
   },
   {
-    title: "Rabaty na kotły, pompy ciepła i armaturę",
-    summary:
-      "Jako instalatorzy kupujemy urządzenia na warunkach hurtowych. Rabat widać w wycenie, którą dostajesz przed decyzją.",
-    href: "/#kontakt",
+    title: "Rabaty na urządzenia",
+    summary: "Kotły, pompy ciepła i armatura na warunkach instalatorskich.",
+    href: "/#urzadzenia",
   },
   {
-    title: "Zasobniki CWU i bufory ciepła",
-    summary:
-      "Dobieramy pojemność do zużycia ciepłej wody i mocy źródła ciepła. Zbiorniki oferujemy w korzystnych cenach.",
-    href: "/#kontakt",
+    title: "Zasobniki i bufory",
+    summary: "Pojemność dobrana do zużycia wody i mocy źródła ciepła.",
+    href: "/#urzadzenia",
   },
   {
-    title: "Montaż i kompleksowe wykonanie kotłowni",
-    summary:
-      "Demontujemy stare urządzenie i wykonujemy całą instalację w kotłowni. Uruchamiamy system i pokazujemy, jak go obsługiwać.",
-    href: "/#zasady",
+    title: "Montaż kotłowni",
+    summary: "Demontaż, wykonanie instalacji, uruchomienie i instruktaż.",
+    href: "/#jak-to-dziala",
   },
 ];

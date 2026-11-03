@@ -22,7 +22,7 @@ const iconPaths: Record<StepIcon, string> = {
   <ol class="steps" role="list">
     {steps.map((step, index) => (
       <li class="step">
-        <svg class="icon" viewBox="0 0 40 40" width="56" height="56" aria-hidden="true">
+        <svg class="icon" viewBox="0 0 40 40" width="44" height="44" aria-hidden="true">
           <path d={iconPaths[step.icon]} />
         </svg>
         <h3>
@@ -60,11 +60,12 @@ const iconPaths: Record<StepIcon, string> = {
   }
 
   h3 {
-    font-size: var(--text-lg);
+    font-size: var(--text-base);
   }
 
   .number {
     color: var(--color-coral-strong);
+    font-family: var(--font-mono);
   }
 
   p {
