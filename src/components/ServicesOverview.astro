@@ -130,10 +130,16 @@ const iconPaths: Record<ServiceIcon, string> = {
 
     const last = items.at(-1);
     if (!last) return release();
-    last.addEventListener("animationend", release, { once: true });
+    last.addEventListener("animationend", (event) => {
+      if (event.animationName.includes("slide-out") || items.length === 1) release();
+    });
     // Safety net: release even if the animation event never fires (for example in a background tab).
     const style = getComputedStyle(last);
-    const seconds = parseFloat(style.animationDelay) + parseFloat(style.animationDuration);
+    const delays = style.animationDelay.split(",").map(parseFloat);
+    const durations = style.animationDuration.split(",").map(parseFloat);
+    const seconds = Math.max(
+      ...durations.map((duration, index) => duration + (delays[index] ?? 0)),
+    );
     window.setTimeout(release, seconds * 1000 + 300);
   };
 
@@ -237,8 +243,15 @@ const iconPaths: Record<ServiceIcon, string> = {
     animation-delay: calc(var(--order, 0) * 180ms);
   }
 
-  /* Row on wide screens: the first card arrives in 0.8 s, then the rest fan out from under it in 0.8 s. */
+  /*
+   * Row on wide screens. The first card glides in from the left edge. While it settles, the other three
+   * leave from under it as one block: each card's duration grows with its distance, so with the same
+   * easing they share the same speed, and they come to rest one after another, left to right.
+   */
   [data-revealed] .item {
+    --stack-start: 600ms;
+    --step-duration: 460ms;
+
     will-change: transform, opacity;
   }
 
@@ -247,7 +260,10 @@ const iconPaths: Record<ServiceIcon, string> = {
   }
 
   [data-revealed] .item:not(:first-child) {
-    animation: fan-out 1600ms linear backwards;
+    animation:
+      stay-hidden var(--stack-start) steps(1, end) backwards,
+      slide-out calc(var(--i) * var(--step-duration)) cubic-bezier(0.25, 0.5, 0.35, 1)
+        var(--stack-start) backwards;
   }
 
   /* A rule along the bottom edge fills in on hover, echoing the red underline under section titles. */
@@ -358,23 +374,16 @@ const iconPaths: Record<ServiceIcon, string> = {
     }
   }
 
-  /* Hidden for the first half while the first card arrives, then slides out from under it. */
-  @keyframes fan-out {
-    0%,
-    50% {
+  /* Keeps the stacked cards out of sight until the first card covers their starting point. */
+  @keyframes stay-hidden {
+    from {
       opacity: 0;
-      transform: translate3d(var(--from, 0), 0, 0);
     }
+  }
 
-    50.01% {
-      opacity: 1;
+  @keyframes slide-out {
+    from {
       transform: translate3d(var(--from, 0), 0, 0);
-      animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-    }
-
-    100% {
-      opacity: 1;
-      transform: none;
     }
   }
 
