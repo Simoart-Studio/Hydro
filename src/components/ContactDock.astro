@@ -1,0 +1,188 @@
+---
+import { contactDock } from "../content/contact";
+import { phoneHref, primaryContact } from "../content/site";
+import { hasContactForm } from "../lib/env";
+import Button from "./Button.astro";
+import PhoneIcon from "./PhoneIcon.astro";
+
+const contactLabel = hasContactForm ? contactDock.formLabel : contactDock.contactLabel;
+---
+
+<aside class="contact-dock" aria-label={contactDock.label} data-contact-dock>
+  <p class="title">{contactDock.title}</p>
+  <div class="actions">
+    <Button variant="dark" size="small" href={phoneHref} class="action">
+      <PhoneIcon />
+      <span class="visually-hidden">Zadzwoń do: {primaryContact.name},</span>
+      {primaryContact.phone}
+    </Button>
+    <Button size="small" href="/kontakt" arrow class="action">
+      {contactLabel}
+    </Button>
+  </div>
+  <button type="button" class="close" aria-label={contactDock.closeLabel} data-contact-dock-close>
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path d="M6 6l12 12M18 6L6 18"></path>
+    </svg>
+  </button>
+</aside>
+
+<script>
+  const dock = document.querySelector<HTMLElement>("[data-contact-dock]");
+  const storageKey = "contact-dock-closed";
+
+  const readClosed = () => {
+    try {
+      return sessionStorage.getItem(storageKey) === "1";
+    } catch {
+      return false;
+    }
+  };
+
+  if (dock && !readClosed()) {
+    // The dock waits until the hero has scrolled away and steps aside wherever contact is already on screen.
+    const threshold = () => Math.min(window.innerHeight * 0.6, 520);
+    const covering = new Set<Element>();
+    let ticking = false;
+    let closed = false;
+
+    const update = () => {
+      const visible = !closed && window.scrollY > threshold() && covering.size === 0;
+      dock.toggleAttribute("data-visible", visible);
+      ticking = false;
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) covering.add(entry.target);
+        else covering.delete(entry.target);
+      }
+      update();
+    });
+    document
+      .querySelectorAll(".cta-band, .site-footer")
+      .forEach((target) => observer.observe(target));
+
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true },
+    );
+
+    dock.querySelector("[data-contact-dock-close]")?.addEventListener("click", () => {
+      closed = true;
+      dock.removeAttribute("data-visible");
+      observer.disconnect();
+      try {
+        sessionStorage.setItem(storageKey, "1");
+      } catch {
+        // Without storage the dock simply stays closed until the next page load.
+      }
+      document.querySelector<HTMLElement>("#main")?.focus({ preventScroll: true });
+    });
+
+    update();
+  }
+</script>
+
+<style>
+  .contact-dock {
+    position: fixed;
+    inset-inline: var(--space-s);
+    inset-block-end: max(var(--space-s), env(safe-area-inset-bottom));
+    z-index: 25;
+    display: flex;
+    gap: var(--space-s);
+    align-items: center;
+    margin-inline: auto;
+    inline-size: fit-content;
+    max-inline-size: calc(100% - 2 * var(--space-s));
+    padding: var(--space-xs) var(--space-xs) var(--space-xs) var(--space-m);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-pill);
+    background: rgb(255 255 255 / 0.96);
+    box-shadow: 0 10px 30px color-mix(in srgb, var(--color-ink) 18%, transparent);
+    backdrop-filter: blur(8px);
+    visibility: hidden;
+    opacity: 0;
+    translate: 0 calc(100% + var(--space-l));
+    transition:
+      translate 280ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      opacity 200ms ease,
+      visibility 0s linear 280ms;
+  }
+
+  .contact-dock[data-visible] {
+    visibility: visible;
+    opacity: 1;
+    translate: 0 0;
+    transition:
+      translate 280ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      opacity 200ms ease,
+      visibility 0s;
+  }
+
+  .title {
+    display: none;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .actions {
+    display: flex;
+    flex: 1;
+    gap: var(--space-xs);
+  }
+
+  .action {
+    flex: 1;
+  }
+
+  .close {
+    display: grid;
+    flex: none;
+    place-items: center;
+    inline-size: var(--target-size);
+    block-size: var(--target-size);
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--color-muted);
+    cursor: pointer;
+  }
+
+  .close:hover {
+    background: var(--color-subtle);
+    color: var(--color-ink);
+  }
+
+  .close svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-width: 2;
+  }
+
+  @media (width < 30rem) {
+    .contact-dock {
+      inline-size: auto;
+      padding-inline-start: var(--space-xs);
+    }
+  }
+
+  @media (width >= 40rem) {
+    .title {
+      display: block;
+    }
+
+    .action {
+      flex: none;
+    }
+  }
+</style>

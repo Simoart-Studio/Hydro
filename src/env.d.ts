@@ -1,7 +1,6 @@
 interface ImportMetaEnv {
   readonly PUBLIC_SITE_URL?: string;
   readonly PUBLIC_FORM_ENDPOINT?: string;
-  readonly PUBLIC_DEMO?: string;
   readonly PUBLIC_NOINDEX?: string;
 }
 

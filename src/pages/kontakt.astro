@@ -1,4 +1,5 @@
 ---
+import CallCard from "../components/CallCard.astro";
 import CompanyDetails from "../components/CompanyDetails.astro";
 import ContactForm from "../components/ContactForm.astro";
 import Container from "../components/Container.astro";
@@ -7,29 +8,38 @@ import ServiceArea from "../components/ServiceArea.astro";
 import { contactPage } from "../content/contact";
 import { site, telHref } from "../content/site";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { hasContactForm } from "../lib/env";
+
+const lead = hasContactForm ? contactPage.lead : contactPage.leadPhoneOnly;
 ---
 
 <BaseLayout
   title={`${contactPage.metaTitle} | ${site.brandLines[0]}`}
-  description={contactPage.lead}
+  description={lead}
   breadcrumb={contactPage.title}
+  contactDock={false}
 >
-  <PageHeader title={contactPage.title} lead={contactPage.lead} />
+  <PageHeader title={contactPage.title} lead={lead} />
   <Container width="page" class="layout">
+    {hasContactForm ? <ContactForm /> : <CallCard />}
     <div class="details">
       <section aria-labelledby="contact-details-title">
-        <h2 id="contact-details-title">{contactPage.detailsTitle}</h2>
-        <ul class="phones" role="list">
-          {site.contacts.map((contact) => (
-            <li>
-              <span class="person">{contact.name}</span>
-              <a class="phone" href={telHref(contact.phone)}>
-                <span class="visually-hidden">Zadzwoń do: {contact.name},</span>
-                {contact.phone}
-              </a>
-            </li>
-          ))}
-        </ul>
+        <h2 id="contact-details-title">
+          {hasContactForm ? contactPage.detailsTitle : contactPage.companyTitle}
+        </h2>
+        {hasContactForm && (
+          <ul class="phones" role="list">
+            {site.contacts.map((contact) => (
+              <li>
+                <span class="person">{contact.name}</span>
+                <a class="phone" href={telHref(contact.phone)}>
+                  <span class="visually-hidden">Zadzwoń do: {contact.name},</span>
+                  {contact.phone}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
         <CompanyDetails fields={["email", "hours", "address", "name", "taxId"]} />
       </section>
       <section id="obszar" aria-labelledby="contact-area-title">
@@ -37,7 +47,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         <ServiceArea />
       </section>
     </div>
-    <ContactForm />
   </Container>
 </BaseLayout>
 
@@ -104,6 +113,11 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   @media (width >= 56rem) {
     .layout {
       grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    }
+
+    .details {
+      grid-row: 1;
+      grid-column: 1;
     }
   }
 </style>

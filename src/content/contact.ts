@@ -2,14 +2,31 @@ export const contactPage = {
   title: "Kontakt",
   metaTitle: "Kontakt: Tczew, Trójmiasto i okolice",
   lead: "Zadzwoń albo zostaw numer. Oddzwonimy, zapytamy o budynek i powiemy, czy dotacja ma sens w Twojej sytuacji.",
+  leadPhoneOnly:
+    "Zadzwoń do nas. Zapytamy o budynek i obecne ogrzewanie, a potem powiemy, czy dotacja ma sens w Twojej sytuacji.",
   detailsTitle: "Telefon",
+  companyTitle: "Dane firmy",
   areaTitle: "Obszar działania",
 };
 
 export const ctaBand = {
   title: "Porozmawiajmy o dotacji",
   text: "Pierwsza rozmowa jest bezpłatna i do niczego nie zobowiązuje. Po niej wiesz, czy wymiana źródła ciepła z dotacją ma sens w Twoim domu.",
-  action: { label: "Zostaw numer", href: "/kontakt" },
+  action: { label: "Umów rozmowę", href: "/kontakt" },
+};
+
+export const callCard = {
+  title: "Najszybciej przez telefon",
+  text: "Odbierze Leszek albo Norbert. Pierwsza rozmowa jest bezpłatna i do niczego nie zobowiązuje.",
+  preparationTitle: "Przyda się na rozmowę",
+};
+
+export const contactDock = {
+  label: "Szybki kontakt",
+  title: "Porozmawiajmy o dotacji",
+  formLabel: "Zostaw numer",
+  contactLabel: "Kontakt",
+  closeLabel: "Ukryj panel kontaktu",
 };
 
 export const heatSources: string[] = [
@@ -51,5 +68,4 @@ export const contactForm = {
   success: "Dziękujemy, zapytanie dotarło. Oddzwonimy na podany numer.",
   failure: "Nie udało się wysłać zapytania. Spróbuj ponownie albo zadzwoń:",
   invalid: "Formularz zawiera błędy. Popraw zaznaczone pola.",
-  demo: "Tryb demonstracyjny: formularz nie wysyła danych. Po podłączeniu adresu usługi formularzy zapytania będą trafiać na skrzynkę firmy.",
 };

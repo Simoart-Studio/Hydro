@@ -6,16 +6,14 @@ import { formEndpoint } from "../lib/env";
 import Button from "./Button.astro";
 
 const { fields } = contactForm;
-const isDemoForm = formEndpoint === "";
 ---
 
 <form
   class="contact-form"
   method="post"
-  action={isDemoForm ? undefined : formEndpoint}
+  action={formEndpoint}
   aria-labelledby="contact-form-title"
   data-contact-form
-  data-demo={isDemoForm ? "true" : undefined}
 >
   <h2 id="contact-form-title">{contactForm.title}</h2>
   <p class="note">{contactForm.requiredNote}</p>
@@ -120,8 +118,6 @@ const isDemoForm = formEndpoint === "";
     <span data-submit-label>{contactForm.submit}</span>
   </Button>
 
-  {isDemoForm && <p class="demo">{contactForm.demo}</p>}
-
   <p class="status" role="status" aria-live="polite" data-status></p>
   <template data-failure>
     {contactForm.failure} <a href={phoneHref}>{primaryContact.phone}</a>
@@ -142,7 +138,6 @@ const isDemoForm = formEndpoint === "";
     const submit = form.querySelector<HTMLButtonElement>("button[type=submit]");
     const submitLabel = form.querySelector<HTMLElement>("[data-submit-label]");
     const fields = Array.from(form.querySelectorAll<Field>("[data-error]"));
-    const isDemoForm = form.dataset.demo === "true";
     const isTextInput = (field: Field) =>
       field instanceof HTMLInputElement && field.type !== "checkbox";
 
@@ -199,11 +194,6 @@ const isDemoForm = formEndpoint === "";
       if (invalid.length > 0) {
         setStatus(contactForm.invalid, "error");
         invalid[0]?.focus();
-        return;
-      }
-
-      if (isDemoForm) {
-        setStatus(contactForm.demo, "info");
         return;
       }
 
@@ -328,13 +318,6 @@ const isDemoForm = formEndpoint === "";
 
   .submit {
     justify-self: start;
-  }
-
-  .demo {
-    padding: var(--space-s) var(--space-m);
-    border: 1px dashed var(--color-field);
-    color: var(--color-muted);
-    font-size: var(--text-sm);
   }
 
   .status {

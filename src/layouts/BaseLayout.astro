@@ -1,12 +1,12 @@
 ---
 import semiboldFont from "@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-600-normal.woff2?url";
 import regularFont from "@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-400-normal.woff2?url";
-import DemoNotice from "../components/DemoNotice.astro";
+import ContactDock from "../components/ContactDock.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import type { FaqItem } from "../content/faq";
 import { site } from "../content/site";
-import { isDemo, isNoindex } from "../lib/env";
+import { isNoindex } from "../lib/env";
 import { breadcrumbSchema, businessSchema, faqSchema, toJsonLd } from "../lib/structuredData";
 import "../styles/global.css";
 
@@ -17,9 +17,11 @@ interface Props {
   breadcrumb?: string;
   /** Pytania z odpowiedziami do danych strukturalnych FAQPage. */
   faq?: FaqItem[];
+  /** Panel szybkiego kontaktu przy dolnej krawędzi; strona Kontakt go nie potrzebuje. */
+  contactDock?: boolean;
 }
 
-const { title, description, breadcrumb, faq } = Astro.props;
+const { title, description, breadcrumb, faq, contactDock = true } = Astro.props;
 const base = Astro.site ?? new URL(Astro.url.origin);
 // The file build format reports /dotacje.html, while the site links and serves /dotacje.
 const canonicalPath = Astro.url.pathname.replace(/(index)?\.html$/, "").replace(/(.)\/$/, "$1");
@@ -68,12 +70,12 @@ const structuredData = [
     <a class="skip-link" href="#main">
       Przejdź do treści
     </a>
-    {isDemo && <DemoNotice />}
     <SiteHeader />
     <main id="main" tabindex="-1">
       <slot />
     </main>
     <SiteFooter />
+    {contactDock && <ContactDock />}
   </body>
 </html>
 

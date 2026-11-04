@@ -2,13 +2,8 @@
 import { Image } from "astro:assets";
 import { brands, brandsSection } from "../content/brands";
 import { services, servicesSection } from "../content/services";
-import { isDemo } from "../lib/env";
 import Button from "./Button.astro";
 import Container from "./Container.astro";
-
-// The demo reserves the logo row so the client sees the band before any brand has agreed to appear.
-const showBrandPlaceholders = brands.length === 0 && isDemo;
-const placeholderCount = 5;
 ---
 
 <section id="oferta" class="services" aria-labelledby="oferta-title">
@@ -41,13 +36,6 @@ const placeholderCount = 5;
           ))}
         </ul>
       </div>
-    )}
-    {showBrandPlaceholders && (
-      <ul class="logos" role="list" aria-label="Miejsca na logotypy marek">
-        {Array.from({ length: placeholderCount }, () => (
-          <li class="logo-placeholder">logo marki</li>
-        ))}
-      </ul>
     )}
   </Container>
 </section>
@@ -116,14 +104,6 @@ const placeholderCount = 5;
     block-size: 2.5rem;
     filter: grayscale(1);
     mix-blend-mode: multiply;
-  }
-
-  .logo-placeholder {
-    padding: var(--space-xs) var(--space-m);
-    border: 2px dashed color-mix(in srgb, var(--color-ink) 45%, transparent);
-    border-radius: var(--radius-sm);
-    color: var(--color-ink);
-    font-size: var(--text-sm);
   }
 
   @media (width >= 36rem) {

@@ -11,7 +11,7 @@ const isCurrent = (href: string) =>
   href === "/" ? currentPath === "/" : currentPath === href || currentPath.startsWith(`${href}/`);
 ---
 
-<header class="site-header">
+<header class="site-header" data-site-header>
   <Container class="bar">
     <a class="brand" href="/" aria-label={`${site.name}, strona główna`}>
       <Logo />
@@ -67,7 +67,28 @@ const isCurrent = (href: string) =>
 </header>
 
 <script>
+  const header = document.querySelector<HTMLElement>("[data-site-header]");
   const menu = document.querySelector<HTMLDetailsElement>("[data-mobile-menu]");
+
+  if (header) {
+    // The shadow appears once the page moves under the header, so it reads as lifted only when it needs to.
+    let ticking = false;
+    const update = () => {
+      header.toggleAttribute("data-scrolled", window.scrollY > 8);
+      ticking = false;
+    };
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true },
+    );
+    update();
+  }
 
   if (menu) {
     menu.addEventListener("click", (event) => {
@@ -87,9 +108,15 @@ const isCurrent = (href: string) =>
 
 <style>
   .site-header {
-    position: relative;
-    z-index: 10;
+    position: sticky;
+    top: 0;
+    z-index: 30;
     background: var(--color-surface);
+    transition: box-shadow 200ms ease;
+  }
+
+  .site-header[data-scrolled] {
+    box-shadow: 0 6px 18px color-mix(in srgb, var(--color-ink) 10%, transparent);
   }
 
   .bar {
@@ -97,6 +124,11 @@ const isCurrent = (href: string) =>
     gap: var(--space-m);
     align-items: center;
     padding-block: var(--space-s);
+    transition: padding-block 200ms ease;
+  }
+
+  [data-scrolled] .bar {
+    padding-block: var(--space-xs);
   }
 
   .brand {
