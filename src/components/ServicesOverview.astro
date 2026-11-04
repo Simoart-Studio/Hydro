@@ -109,9 +109,9 @@ const iconPaths: Record<ServiceIcon, string> = {
   .list {
     position: relative;
     display: grid;
-    gap: var(--space-s);
+    gap: var(--space-l);
     inline-size: 100%;
-    max-inline-size: 60rem;
+    max-inline-size: 66rem;
     margin-block-start: calc(-1 * var(--hero-overlap));
     margin-inline: auto;
   }
@@ -140,8 +140,8 @@ const iconPaths: Record<ServiceIcon, string> = {
   }
 
   [data-revealed] .item {
-    animation: fly-in 1100ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
-    animation-delay: calc(var(--i) * 260ms);
+    animation: fly-in 1600ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+    animation-delay: calc(var(--i) * 650ms);
   }
 
   /* A rule along the bottom edge fills in on hover, echoing the red underline under section titles. */
@@ -272,7 +272,7 @@ const iconPaths: Record<ServiceIcon, string> = {
   @media (width >= 60rem) {
     .list {
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: var(--space-m);
+      gap: var(--space-xl);
     }
   }
 
