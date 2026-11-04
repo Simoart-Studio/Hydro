@@ -22,11 +22,11 @@ const iconPaths: Record<ServiceIcon, string> = {
     <h2 id="oferta-title" class="visually-hidden">
       {servicesSection.title}
     </h2>
-    <ul class="list" role="list">
+    <ul class="list" role="list" data-reveal>
       {services.map((service, index) => (
         <li class="item" style={`--i: ${index}`}>
           <span class="badge" aria-hidden="true">
-            <svg viewBox="0 0 40 40" width="32" height="32">
+            <svg viewBox="0 0 40 40" width="26" height="26">
               <path d={iconPaths[service.icon]} />
             </svg>
           </span>
@@ -56,10 +56,31 @@ const iconPaths: Record<ServiceIcon, string> = {
   </Container>
 </section>
 
+<script>
+  // Cards slide in one after another once the band scrolls into view. Without the observer they stay visible.
+  const lists = document.querySelectorAll<HTMLElement>("[data-reveal]");
+
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          entry.target.setAttribute("data-revealed", "");
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.3 },
+    );
+    lists.forEach((list) => observer.observe(list));
+  } else {
+    lists.forEach((list) => list.setAttribute("data-revealed", ""));
+  }
+</script>
+
 <style>
   .services {
     display: flow-root;
-    padding-block-end: var(--space-2xl);
+    padding-block-end: var(--space-xl);
     background: var(--color-band);
     scroll-margin-block-start: calc(var(--hero-overlap) + var(--space-l));
   }
@@ -72,28 +93,39 @@ const iconPaths: Record<ServiceIcon, string> = {
   .list {
     position: relative;
     display: grid;
-    gap: var(--space-m);
+    gap: var(--space-s);
+    inline-size: 100%;
+    max-inline-size: 60rem;
     margin-block-start: calc(-1 * var(--hero-overlap));
+    margin-inline: auto;
   }
 
   .item {
     position: relative;
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
-    gap: var(--space-s) var(--space-m);
+    gap: var(--space-2xs) var(--space-s);
     align-items: start;
     min-inline-size: 0;
-    padding: var(--space-l);
+    padding: var(--space-m);
     overflow: hidden;
     border: 1px solid var(--color-line);
     border-radius: var(--radius);
     background: var(--color-surface);
     box-shadow: var(--shadow-card);
-    animation: rise 640ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
-    animation-delay: calc(120ms + var(--i) * 90ms);
     transition:
       translate 220ms ease,
       box-shadow 220ms ease;
+  }
+
+  /* Hidden only when scripts run (the html.js class is set in the head), so the cards never vanish without JS. */
+  :global(.js) [data-reveal]:not([data-revealed]) .item {
+    opacity: 0;
+  }
+
+  [data-revealed] .item {
+    animation: slide-in 560ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+    animation-delay: calc(var(--i) * 140ms);
   }
 
   /* A rule along the bottom edge fills in on hover, echoing the red underline under section titles. */
@@ -111,8 +143,8 @@ const iconPaths: Record<ServiceIcon, string> = {
 
   .item:hover,
   .item:focus-within {
-    translate: 0 -4px;
-    box-shadow: 0 14px 30px color-mix(in srgb, var(--color-ink) 14%, transparent);
+    translate: 0 -3px;
+    box-shadow: 0 12px 26px color-mix(in srgb, var(--color-ink) 14%, transparent);
   }
 
   .item:hover::after,
@@ -122,9 +154,10 @@ const iconPaths: Record<ServiceIcon, string> = {
 
   .badge {
     display: grid;
+    grid-row: span 3;
     place-items: center;
-    inline-size: 3.5rem;
-    block-size: 3.5rem;
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
     border-radius: 50%;
     background: var(--color-hero-bg);
     color: var(--color-navy);
@@ -139,7 +172,7 @@ const iconPaths: Record<ServiceIcon, string> = {
     stroke: currentColor;
     stroke-linecap: round;
     stroke-linejoin: round;
-    stroke-width: 2;
+    stroke-width: 2.2;
     overflow: visible;
   }
 
@@ -156,17 +189,18 @@ const iconPaths: Record<ServiceIcon, string> = {
 
   h3 {
     color: var(--color-ink);
-    font-size: var(--text-lg);
+    font-size: var(--text-base);
   }
 
   .summary {
     color: var(--color-muted);
-    font-size: var(--text-sm);
+    font-size: var(--text-xs);
+    line-height: 1.5;
   }
 
   .more {
-    grid-column: 2;
     justify-self: start;
+    margin-block-start: var(--space-xs);
   }
 
   .logos {
@@ -184,10 +218,10 @@ const iconPaths: Record<ServiceIcon, string> = {
     mix-blend-mode: multiply;
   }
 
-  @keyframes rise {
+  @keyframes slide-in {
     from {
       opacity: 0;
-      translate: 0 1.25rem;
+      translate: -1.5rem 0;
     }
   }
 
@@ -200,35 +234,29 @@ const iconPaths: Record<ServiceIcon, string> = {
       grid-template-columns: minmax(0, 1fr);
       grid-template-rows: auto 1fr auto;
       justify-items: center;
-      padding: var(--space-xl) var(--space-l) var(--space-l);
+      padding: var(--space-l) var(--space-m) var(--space-m);
       text-align: center;
     }
 
-    .body {
-      gap: var(--space-xs);
+    .badge {
+      grid-row: auto;
+      margin-block-end: var(--space-xs);
     }
 
     .more {
-      grid-column: auto;
       justify-self: center;
-    }
-
-    .badge {
-      inline-size: 4rem;
-      block-size: 4rem;
-      margin-block-end: var(--space-2xs);
     }
   }
 
   @media (width >= 60rem) {
     .list {
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: var(--space-l);
+      gap: var(--space-m);
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .item {
+    [data-revealed] .item {
       animation: none;
     }
   }
