@@ -8,6 +8,7 @@
 @import "./tokens.css";
 
 html {
+  scrollbar-gutter: stable;
   scroll-behavior: smooth;
   scroll-padding-block-start: calc(var(--header-height) + var(--space-m));
 }
@@ -61,6 +62,11 @@ a:hover {
 :focus-visible {
   outline: 3px solid var(--color-navy);
   outline-offset: 3px;
+}
+
+/* Set by the services reveal while its cards come in; the gutter above keeps the layout from shifting. */
+html[data-scroll-locked] {
+  overflow: hidden;
 }
 
 .visually-hidden {

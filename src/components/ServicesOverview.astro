@@ -57,39 +57,118 @@ const iconPaths: Record<ServiceIcon, string> = {
 </section>
 
 <script>
-  // Cards stay hidden until the visitor has scrolled at least 100 px and the row is on screen, then fly in
-  // from behind the left edge one after another. Without the observer they stay visible.
-  const scrollTrigger = 100;
-  const lists = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
-  const onScreen = new Set<Element>();
+  // After the visitor has scrolled 70 px, the cards glide in from behind the left edge one by one.
+  // When the whole row fits on screen, scrolling is held until the last card lands, then released.
+  // When it does not (stacked cards on a phone), each card enters as it scrolls into view, without a hold.
+  const scrollTrigger = 70;
+  const list = document.querySelector<HTMLElement>("[data-reveal]");
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const scrollKeys = new Set(["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "]);
 
-  const reveal = (list: Element) => list.setAttribute("data-revealed", "");
-
-  if ("IntersectionObserver" in window && lists.length > 0) {
-    const tryReveal = () => {
-      if (window.scrollY < scrollTrigger) return;
-      for (const list of onScreen) {
-        reveal(list);
-        observer.unobserve(list);
-        onScreen.delete(list);
-      }
-      if (lists.every((list) => list.hasAttribute("data-revealed"))) {
-        window.removeEventListener("scroll", tryReveal);
-      }
+  const lockScroll = () => {
+    const lockedY = window.scrollY;
+    const block = (event: Event) => event.preventDefault();
+    const blockKeys = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (target?.closest("input, textarea, select, [contenteditable]")) return;
+      if (scrollKeys.has(event.key)) event.preventDefault();
+    };
+    const hold = () => {
+      if (window.scrollY !== lockedY) window.scrollTo({ top: lockedY, behavior: "instant" });
     };
 
-    const observer = new IntersectionObserver((entries) => {
-      for (const entry of entries) {
-        if (entry.isIntersecting) onScreen.add(entry.target);
-        else onScreen.delete(entry.target);
-      }
-      tryReveal();
+    document.documentElement.setAttribute("data-scroll-locked", "");
+    window.addEventListener("wheel", block, { passive: false });
+    window.addEventListener("touchmove", block, { passive: false });
+    window.addEventListener("keydown", blockKeys);
+    window.addEventListener("scroll", hold);
+
+    return () => {
+      document.documentElement.removeAttribute("data-scroll-locked");
+      window.removeEventListener("wheel", block);
+      window.removeEventListener("touchmove", block);
+      window.removeEventListener("keydown", blockKeys);
+      window.removeEventListener("scroll", hold);
+    };
+  };
+
+  // Each card travels just far enough to start fully behind the left edge, which keeps the speed even.
+  const measureStart = (item: HTMLElement) => {
+    const { right } = item.getBoundingClientRect();
+    item.style.setProperty("--from", `${-Math.ceil(right + 24)}px`);
+  };
+
+  const fitsOnScreen = (items: HTMLElement[]) =>
+    items.every((item) => {
+      const { top, bottom } = item.getBoundingClientRect();
+      return top >= 0 && bottom <= window.innerHeight;
     });
 
-    lists.forEach((list) => observer.observe(list));
-    window.addEventListener("scroll", tryReveal, { passive: true });
-  } else {
-    lists.forEach(reveal);
+  const playRow = (target: HTMLElement, items: HTMLElement[]) => {
+    items.forEach(measureStart);
+    const unlock = lockScroll();
+    let released = false;
+    const release = () => {
+      if (released) return;
+      released = true;
+      unlock();
+    };
+
+    target.setAttribute("data-revealed", "");
+
+    const last = items.at(-1);
+    if (!last) return release();
+    last.addEventListener("animationend", release, { once: true });
+    // Safety net: release even if the animation event never fires (for example in a background tab).
+    const style = getComputedStyle(last);
+    const seconds = parseFloat(style.animationDelay) + parseFloat(style.animationDuration);
+    window.setTimeout(release, seconds * 1000 + 300);
+  };
+
+  const playOneByOne = (target: HTMLElement, items: HTMLElement[]) => {
+    target.setAttribute("data-stacked", "");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entering = entries.filter((entry) => entry.isIntersecting);
+        entering.forEach((entry, order) => {
+          const item = entry.target as HTMLElement;
+          measureStart(item);
+          item.style.setProperty("--order", String(order));
+          item.setAttribute("data-shown", "");
+          observer.unobserve(item);
+        });
+      },
+      { rootMargin: "0px 0px -10% 0px" },
+    );
+    items.forEach((item) => observer.observe(item));
+  };
+
+  if (list) {
+    const items = Array.from(list.querySelectorAll<HTMLElement>(".item"));
+
+    if (reducedMotion || !("IntersectionObserver" in window)) {
+      list.setAttribute("data-revealed", "");
+    } else {
+      let onScreen = false;
+      let started = false;
+
+      const start = () => {
+        if (started || !onScreen || window.scrollY < scrollTrigger) return;
+        started = true;
+        observer.disconnect();
+        window.removeEventListener("scroll", start);
+        if (fitsOnScreen(items)) playRow(list, items);
+        else playOneByOne(list, items);
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        onScreen = entries.some((entry) => entry.isIntersecting);
+        start();
+      });
+
+      observer.observe(list);
+      window.addEventListener("scroll", start, { passive: true });
+    }
   }
 </script>
 
@@ -117,7 +196,9 @@ const iconPaths: Record<ServiceIcon, string> = {
   }
 
   .item {
+    /* Later cards sit lower, so each one slides in from under the card already in place. */
     position: relative;
+    z-index: calc(4 - var(--i));
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
     gap: var(--space-2xs) var(--space-s);
@@ -135,13 +216,19 @@ const iconPaths: Record<ServiceIcon, string> = {
   }
 
   /* Hidden only when scripts run (the html.js class is set in the head), so the cards never vanish without JS. */
-  :global(.js) [data-reveal]:not([data-revealed]) .item {
+  :global(.js) [data-reveal]:not([data-revealed]) .item:not([data-shown]) {
     opacity: 0;
   }
 
+  [data-stacked] .item[data-shown] {
+    animation: fly-in 1100ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    animation-delay: calc(var(--order, 0) * 220ms);
+  }
+
   [data-revealed] .item {
-    animation: fly-in 1600ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
-    animation-delay: calc(var(--i) * 650ms);
+    animation: fly-in 1400ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    animation-delay: calc(var(--i) * 520ms);
+    will-change: transform, opacity;
   }
 
   /* A rule along the bottom edge fills in on hover, echoing the red underline under section titles. */
@@ -234,15 +321,21 @@ const iconPaths: Record<ServiceIcon, string> = {
     mix-blend-mode: multiply;
   }
 
-  /* Each card starts beyond the left edge of the viewport and glides to its place, slowing down at the end. */
+  /* Each card starts just behind the left edge (--from is measured per card), glides in and settles with a
+     slight scale-up, so the motion stays even and lands softly. */
   @keyframes fly-in {
-    from {
+    0% {
       opacity: 0;
-      translate: -100vw 0;
+      transform: translate3d(var(--from, -100vw), 0, 0) scale(0.96);
     }
 
-    40% {
+    35% {
       opacity: 1;
+    }
+
+    100% {
+      opacity: 1;
+      transform: none;
     }
   }
 
