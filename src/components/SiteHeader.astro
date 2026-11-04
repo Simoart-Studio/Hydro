@@ -13,7 +13,7 @@ const isCurrent = (href: string) =>
 
 <header class="site-header" data-site-header>
   <Container class="bar">
-    <a class="brand" href="/" aria-label={`${site.name}, strona główna`}>
+    <a class="brand" href="/" data-home-link aria-label={`${site.name}, strona główna`}>
       <Logo />
       <span class="brand-name" aria-hidden="true">
         <span class="brand-primary">{site.brandLines[0]}</span>
@@ -69,6 +69,21 @@ const isCurrent = (href: string) =>
 <script>
   const header = document.querySelector<HTMLElement>("[data-site-header]");
   const menu = document.querySelector<HTMLDetailsElement>("[data-mobile-menu]");
+
+  // On the home page the logo glides back to the top instead of reloading the page.
+  const homeLink = document.querySelector<HTMLAnchorElement>("[data-home-link]");
+  const isHome = window.location.pathname === "/" || window.location.pathname === "/index.html";
+
+  if (homeLink && isHome) {
+    homeLink.addEventListener("click", (event) => {
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0)
+        return;
+      event.preventDefault();
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+      if (window.location.hash) history.replaceState(null, "", "/");
+    });
+  }
 
   if (header) {
     // The shadow appears once the page moves under the header, so it reads as lifted only when it needs to.

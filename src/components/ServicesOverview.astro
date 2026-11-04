@@ -57,8 +57,9 @@ const iconPaths: Record<ServiceIcon, string> = {
 </section>
 
 <script>
-  // After the visitor has scrolled 70 px, the cards glide in from behind the left edge one by one.
-  // When the whole row fits on screen, scrolling is held until the last card lands, then released.
+  // After the visitor has scrolled 70 px, the first card glides in from behind the left edge and the others
+  // then fan out from under it to their places. When the whole row fits on screen, scrolling is held until
+  // the last card lands, then released.
   // When it does not (stacked cards on a phone), each card enters as it scrolls into view, without a hold.
   const scrollTrigger = 70;
   const list = document.querySelector<HTMLElement>("[data-reveal]");
@@ -105,7 +106,18 @@ const iconPaths: Record<ServiceIcon, string> = {
     });
 
   const playRow = (target: HTMLElement, items: HTMLElement[]) => {
-    items.forEach(measureStart);
+    const [first, ...rest] = items;
+    if (first) {
+      measureStart(first);
+      // The other cards start stacked exactly under the first one and travel right to their own slots.
+      const firstLeft = first.getBoundingClientRect().left;
+      for (const item of rest) {
+        item.style.setProperty(
+          "--from",
+          `${Math.round(firstLeft - item.getBoundingClientRect().left)}px`,
+        );
+      }
+    }
     const unlock = lockScroll();
     let released = false;
     const release = () => {
@@ -221,14 +233,21 @@ const iconPaths: Record<ServiceIcon, string> = {
   }
 
   [data-stacked] .item[data-shown] {
-    animation: fly-in 1100ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
-    animation-delay: calc(var(--order, 0) * 220ms);
+    animation: fly-in 900ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    animation-delay: calc(var(--order, 0) * 180ms);
   }
 
+  /* Row on wide screens: the first card arrives in 0.8 s, then the rest fan out from under it in 0.8 s. */
   [data-revealed] .item {
-    animation: fly-in 1400ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
-    animation-delay: calc(var(--i) * 520ms);
     will-change: transform, opacity;
+  }
+
+  [data-revealed] .item:first-child {
+    animation: fly-in 800ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+
+  [data-revealed] .item:not(:first-child) {
+    animation: fan-out 1600ms linear backwards;
   }
 
   /* A rule along the bottom edge fills in on hover, echoing the red underline under section titles. */
@@ -331,6 +350,26 @@ const iconPaths: Record<ServiceIcon, string> = {
 
     35% {
       opacity: 1;
+    }
+
+    100% {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* Hidden for the first half while the first card arrives, then slides out from under it. */
+  @keyframes fan-out {
+    0%,
+    50% {
+      opacity: 0;
+      transform: translate3d(var(--from, 0), 0, 0);
+    }
+
+    50.01% {
+      opacity: 1;
+      transform: translate3d(var(--from, 0), 0, 0);
+      animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     100% {
