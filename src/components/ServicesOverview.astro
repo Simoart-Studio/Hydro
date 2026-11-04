@@ -64,6 +64,8 @@ const iconPaths: Record<ServiceIcon, string> = {
   const scrollTrigger = 70;
   const list = document.querySelector<HTMLElement>("[data-reveal]");
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // Time the farthest card needs to reach its place; nearer cards take proportionally less.
+  const rowDuration = 1500;
   const scrollKeys = new Set(["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "]);
 
   const lockScroll = () => {
@@ -106,18 +108,18 @@ const iconPaths: Record<ServiceIcon, string> = {
     });
 
   const playRow = (target: HTMLElement, items: HTMLElement[]) => {
-    const [first, ...rest] = items;
-    if (first) {
-      measureStart(first);
-      // The other cards start stacked exactly under the first one and travel right to their own slots.
-      const firstLeft = first.getBoundingClientRect().left;
-      for (const item of rest) {
-        item.style.setProperty(
-          "--from",
-          `${Math.round(firstLeft - item.getBoundingClientRect().left)}px`,
-        );
-      }
-    }
+    // All cards leave together from one point just past the left edge. Each one's duration is
+    // proportional to its distance, so with the same easing they travel as one stack and spread out
+    // evenly: the first card stops first and the others keep sliding out from under it.
+    const rects = items.map((item) => item.getBoundingClientRect());
+    const startX = -Math.ceil(Math.max(...rects.map((rect) => rect.width)) + 24);
+    const distances = rects.map((rect) => rect.left - startX);
+    const longest = Math.max(...distances);
+    items.forEach((item, index) => {
+      const distance = distances[index] ?? longest;
+      item.style.setProperty("--from", `${Math.round(-distance)}px`);
+      item.style.setProperty("--duration", `${Math.round((distance / longest) * rowDuration)}ms`);
+    });
     const unlock = lockScroll();
     let released = false;
     const release = () => {
@@ -131,7 +133,7 @@ const iconPaths: Record<ServiceIcon, string> = {
     const last = items.at(-1);
     if (!last) return release();
     last.addEventListener("animationend", (event) => {
-      if (event.animationName.includes("slide-out") || items.length === 1) release();
+      if (event.animationName.includes("fly-row")) release();
     });
     // Safety net: release even if the animation event never fires (for example in a background tab).
     const style = getComputedStyle(last);
@@ -243,27 +245,10 @@ const iconPaths: Record<ServiceIcon, string> = {
     animation-delay: calc(var(--order, 0) * 180ms);
   }
 
-  /*
-   * Row on wide screens. The first card glides in from the left edge. While it settles, the other three
-   * leave from under it as one block: each card's duration grows with its distance, so with the same
-   * easing they share the same speed, and they come to rest one after another, left to right.
-   */
+  /* Row on wide screens: one continuous motion, timed per card from JavaScript (see playRow). */
   [data-revealed] .item {
-    --stack-start: 600ms;
-    --step-duration: 460ms;
-
+    animation: fly-row var(--duration, 1500ms) cubic-bezier(0.3, 0.7, 0.4, 1) backwards;
     will-change: transform, opacity;
-  }
-
-  [data-revealed] .item:first-child {
-    animation: fly-in 800ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
-  }
-
-  [data-revealed] .item:not(:first-child) {
-    animation:
-      stay-hidden var(--stack-start) steps(1, end) backwards,
-      slide-out calc(var(--i) * var(--step-duration)) cubic-bezier(0.25, 0.5, 0.35, 1)
-        var(--stack-start) backwards;
   }
 
   /* A rule along the bottom edge fills in on hover, echoing the red underline under section titles. */
@@ -374,16 +359,14 @@ const iconPaths: Record<ServiceIcon, string> = {
     }
   }
 
-  /* Keeps the stacked cards out of sight until the first card covers their starting point. */
-  @keyframes stay-hidden {
+  @keyframes fly-row {
     from {
       opacity: 0;
+      transform: translate3d(var(--from, -100vw), 0, 0);
     }
-  }
 
-  @keyframes slide-out {
-    from {
-      transform: translate3d(var(--from, 0), 0, 0);
+    12% {
+      opacity: 1;
     }
   }
 
