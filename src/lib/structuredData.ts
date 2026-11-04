@@ -47,7 +47,21 @@ export function businessSchema(base: URL): Schema {
         "@type": "AdministrativeArea",
         name: `województwo ${region}`,
       })),
-      ...serviceArea.places.map((place) => ({ "@type": "City", name: place })),
+      {
+        "@type": "GeoCircle",
+        name: `Do ${serviceArea.base.radiusKm} km od miejscowości ${serviceArea.base.name}`,
+        geoMidpoint: {
+          "@type": "GeoCoordinates",
+          latitude: serviceArea.base.lat,
+          longitude: serviceArea.base.lon,
+        },
+        geoRadius: serviceArea.base.radiusKm * 1000,
+      },
+      ...serviceArea.places.map((place) => ({
+        "@type": "City",
+        name: place.name,
+        geo: { "@type": "GeoCoordinates", latitude: place.lat, longitude: place.lon },
+      })),
     ],
     makesOffer: [...offerItems, installation].map((item) => ({
       "@type": "Offer",

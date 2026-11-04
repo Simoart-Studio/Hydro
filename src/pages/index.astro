@@ -40,8 +40,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   <ProcessSteps steps={steps} action={stepsSection.moreLink} />
   <Notice />
   {testimonials.length > 0 && <Testimonials testimonials={testimonials} />}
-  <Section id="obszar" title={areaSection.title} tone="subtle">
-    <ServiceArea class="area" />
+  <Section id="obszar" title={areaSection.title} tone="subtle" width="page">
+    <ServiceArea />
   </Section>
   <CtaBand />
 </BaseLayout>
@@ -49,14 +49,5 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 <style>
   .more {
     justify-self: center;
-  }
-
-  .area {
-    justify-items: center;
-    text-align: center;
-  }
-
-  .area :global(.places) {
-    justify-content: center;
   }
 </style>

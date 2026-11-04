@@ -1,25 +1,37 @@
 ---
 import { site } from "../content/site";
+import ServiceAreaMap from "./ServiceAreaMap.astro";
 
 interface Props {
+  /** split: mapa obok listy na szerokim ekranie; stacked: lista pod mapą (wąskie kolumny). */
+  layout?: "split" | "stacked";
   class?: string;
 }
 
-const { class: className } = Astro.props;
+const { layout = "split", class: className } = Astro.props;
 ---
 
-<div class:list={["service-area", className]}>
-  <p class="summary">{site.serviceArea.summary}</p>
-  <ul class="places" role="list" aria-label="Miejscowości, w których pracujemy">
-    {site.serviceArea.places.map((place) => (
-      <li>{place}</li>
-    ))}
-  </ul>
-  <p class="note">Nie widzisz swojej miejscowości? Zadzwoń, sprawdzimy dojazd.</p>
+<div class:list={["service-area", layout, className]}>
+  <ServiceAreaMap />
+  <div class="info">
+    <p class="summary">{site.serviceArea.summary}</p>
+    <ul class="places" role="list" aria-label="Miejscowości, w których pracujemy">
+      {site.serviceArea.places.map((place) => (
+        <li data-place-link={place.name}>{place.name}</li>
+      ))}
+    </ul>
+    <p class="note">Nie widzisz swojej miejscowości? Zadzwoń, sprawdzimy dojazd.</p>
+  </div>
 </div>
 
 <style>
   .service-area {
+    display: grid;
+    gap: var(--space-l);
+    align-items: start;
+  }
+
+  .info {
     display: grid;
     gap: var(--space-m);
   }
@@ -40,10 +52,26 @@ const { class: className } = Astro.props;
     border-radius: var(--radius-pill);
     background: var(--color-surface);
     font-size: var(--text-sm);
+    cursor: default;
+    transition:
+      border-color 150ms ease,
+      color 150ms ease;
+  }
+
+  .places li:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
   }
 
   .note {
     color: var(--color-muted);
     font-size: var(--text-sm);
+  }
+
+  @media (width >= 56rem) {
+    .split {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+      gap: var(--space-xl);
+    }
   }
 </style>

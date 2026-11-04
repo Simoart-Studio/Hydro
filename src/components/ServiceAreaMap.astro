@@ -1,0 +1,503 @@
+---
+import { serviceMapFrame, serviceMapRegions } from "../content/serviceMapGeometry";
+import { site } from "../content/site";
+
+// Same projection as scripts/build-service-map.mjs, so towns land exactly on the generated outlines.
+const { lonMin, latMax, kx, scale, width, height } = serviceMapFrame;
+const project = (lon: number, lat: number) => ({
+  x: (lon - lonMin) * kx * scale,
+  y: (latMax - lat) * scale,
+});
+const percent = (value: number, total: number) => `${((value / total) * 100).toFixed(3)}%`;
+
+const { base, places, regions: servedRegions } = site.serviceArea;
+const baseXY = project(base.lon, base.lat);
+const kmToPx = (km: number) => (km / 111.32) * scale;
+
+// Served area: the convex hull of all towns, widened by about 11 km and clipped to land, so the shape
+// follows the real list of places instead of an arbitrary circle.
+const buffer = kmToPx(11);
+const samples = places.flatMap((place) => {
+  const { x, y } = project(place.lon, place.lat);
+  return Array.from({ length: 32 }, (_, i) => {
+    const angle = (i / 32) * Math.PI * 2;
+    return { x: x + Math.cos(angle) * buffer, y: y + Math.sin(angle) * buffer };
+  });
+});
+const cross = (
+  o: { x: number; y: number },
+  a: { x: number; y: number },
+  b: { x: number; y: number },
+) => (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
+const sorted = [...samples].sort((a, b) => a.x - b.x || a.y - b.y);
+const half = (points: typeof sorted) => {
+  const chain: typeof sorted = [];
+  for (const point of points) {
+    while (chain.length >= 2 && cross(chain.at(-2)!, chain.at(-1)!, point) <= 0) chain.pop();
+    chain.push(point);
+  }
+  return chain.slice(0, -1);
+};
+const hull = [...half(sorted), ...half([...sorted].reverse())];
+const hullPath = `M${hull.map(({ x, y }) => `${x.toFixed(1)} ${y.toFixed(1)}`).join("L")}Z`;
+
+const isServed = (name: string) => servedRegions.includes(name);
+const regionLabels = [
+  { text: ["POMORSKIE"], lon: 17.38, lat: 54.08 },
+  { text: ["WARMIŃSKO-", "MAZURSKIE"], lon: 19.43, lat: 53.66 },
+  { text: ["KUJAWSKO-", "POMORSKIE"], lon: 18.15, lat: 53.56 },
+  { text: ["ZACHODNIO-", "POMORSKIE"], lon: 17.12, lat: 54.42 },
+];
+const waterLabels = [
+  { text: "Morze Bałtyckie", lon: 17.75, lat: 54.9 },
+  { text: "Zatoka Gdańska", lon: 19.05, lat: 54.6 },
+];
+
+// Label side per town, chosen so neighbouring names do not overlap.
+const labelSides: Record<string, "left" | "right" | "top" | "bottom"> = {
+  Gdańsk: "right",
+  Gdynia: "right",
+  Wejherowo: "left",
+  Lębork: "top",
+  Kartuzy: "top",
+  Kościerzyna: "left",
+  Czersk: "left",
+  "Starogard Gdański": "left",
+  Tczew: "right",
+  Malbork: "right",
+  Kwidzyn: "right",
+  "Nowy Dwór Gdański": "top",
+  Elbląg: "bottom",
+};
+
+// On narrow screens only these names stay, so the map does not turn into a cloud of text.
+const keyTowns = new Set([
+  "Gdańsk",
+  "Gdynia",
+  "Tczew",
+  "Elbląg",
+  "Malbork",
+  "Kościerzyna",
+  "Lębork",
+  "Kwidzyn",
+]);
+
+const distanceFromBase = (lon: number, lat: number) => {
+  const { x, y } = project(lon, lat);
+  return Math.hypot(x - baseXY.x, y - baseXY.y);
+};
+const maxDistance = Math.max(...places.map((place) => distanceFromBase(place.lon, place.lat)));
+
+const markers = places.map((place) => {
+  const { x, y } = project(place.lon, place.lat);
+  return {
+    ...place,
+    left: percent(x, width),
+    top: percent(y, height),
+    isBase: place.name === base.name,
+    isKey: keyTowns.has(place.name),
+    side: labelSides[place.name] ?? "right",
+    // Towns appear in a ripple that spreads out from the base.
+    delay: Math.round((distanceFromBase(place.lon, place.lat) / maxDistance) * 900),
+  };
+});
+
+const description = `${site.serviceArea.summary} Na mapie zaznaczono ${places.length} miejscowości: ${places
+  .map((place) => place.name)
+  .join(", ")}.`;
+---
+
+<figure class="service-map" data-map-reveal>
+  <div class="canvas" style={`aspect-ratio: ${width} / ${height}`}>
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      role="img"
+      aria-labelledby="service-map-title service-map-desc"
+      preserveAspectRatio="xMidYMid meet"
+    >
+      <title id="service-map-title">Mapa obszaru działania</title>
+      <desc id="service-map-desc">{description}</desc>
+      <defs>
+        <clipPath id="service-map-land">
+          {serviceMapRegions.map((region) => (
+            <path d={region.d} />
+          ))}
+        </clipPath>
+        <pattern id="service-map-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+          <path d="M40 0H0v40" fill="none" class="grid-line" />
+        </pattern>
+      </defs>
+
+      <rect class="sea" width={width} height={height} />
+      <rect class="sea-grid" width={width} height={height} fill="url(#service-map-grid)" />
+
+      {serviceMapRegions.map((region) => (
+        <path class:list={["region", { served: isServed(region.name) }]} d={region.d} />
+      ))}
+
+      <g clip-path="url(#service-map-land)">
+        <path class="area" d={hullPath} />
+        <path class="area-outline" d={hullPath} />
+      </g>
+
+      {waterLabels.map((label) => {
+        const { x, y } = project(label.lon, label.lat);
+        return (
+          <text class="water-label" x={x} y={y}>
+            {label.text}
+          </text>
+        );
+      })}
+    </svg>
+
+    <ul class="labels" aria-hidden="true">
+      {regionLabels.map((label) => {
+        const { x, y } = project(label.lon, label.lat);
+        return (
+          <li class="region-label" style={`left: ${percent(x, width)}; top: ${percent(y, height)}`}>
+            {label.text.map((line) => (
+              <span>{line}</span>
+            ))}
+          </li>
+        );
+      })}
+    </ul>
+
+    <ul class="markers" aria-hidden="true">
+      {markers.map((marker) => (
+        <li
+          class:list={[
+            "marker",
+            `side-${marker.side}`,
+            { base: marker.isBase, "is-key": marker.isKey },
+          ]}
+          style={`left: ${marker.left}; top: ${marker.top}; --delay: ${marker.delay}ms`}
+          data-place={marker.name}
+          title={marker.name}
+        >
+          <span class="dot"></span>
+          {(marker.label || marker.isBase) && <span class="name">{marker.name}</span>}
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <figcaption class="legend">
+    <span class="legend-item">
+      <span class="key key-base" aria-hidden="true"></span>
+      Baza: {base.name}
+    </span>
+    <span class="legend-item">
+      <span class="key key-town" aria-hidden="true"></span>
+      Miejscowości, w których pracujemy
+    </span>
+    <span class="legend-item">
+      <span class="key key-area" aria-hidden="true"></span>
+      Obszar działania, ok. {base.radiusKm} km od bazy
+    </span>
+  </figcaption>
+</figure>
+
+<script>
+  // Towns ripple out from the base once the map scrolls into view. Without the observer they stay visible.
+  const maps = document.querySelectorAll<HTMLElement>("[data-map-reveal]");
+
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          entry.target.setAttribute("data-revealed", "");
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.35 },
+    );
+    maps.forEach((map) => observer.observe(map));
+  } else {
+    maps.forEach((map) => map.setAttribute("data-revealed", ""));
+  }
+
+  // Hovering or focusing a town in the list next to the map highlights it on the map.
+  document.querySelectorAll<HTMLElement>("[data-place-link]").forEach((item) => {
+    const name = item.dataset.placeLink;
+    const markers = document.querySelectorAll<HTMLElement>(`.service-map [data-place="${name}"]`);
+    const toggle = (active: boolean) =>
+      markers.forEach((marker) => marker.toggleAttribute("data-active", active));
+    item.addEventListener("mouseenter", () => toggle(true));
+    item.addEventListener("mouseleave", () => toggle(false));
+    item.addEventListener("focus", () => toggle(true));
+    item.addEventListener("blur", () => toggle(false));
+  });
+</script>
+
+<style>
+  .service-map {
+    display: grid;
+    gap: var(--space-s);
+  }
+
+  .canvas {
+    position: relative;
+    container-type: inline-size;
+    inline-size: 100%;
+    overflow: hidden;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius);
+    background: var(--color-sea);
+    box-shadow: var(--shadow-card);
+  }
+
+  svg {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  .sea {
+    fill: var(--color-sea);
+  }
+
+  .grid-line {
+    stroke: color-mix(in srgb, var(--color-blue) 10%, transparent);
+    stroke-width: 1;
+  }
+
+  .region {
+    fill: var(--color-subtle);
+    stroke: color-mix(in srgb, var(--color-ink) 22%, transparent);
+    stroke-width: 1;
+    stroke-linejoin: round;
+  }
+
+  .region.served {
+    fill: var(--color-surface);
+    stroke: var(--color-navy);
+    stroke-width: 1.6;
+  }
+
+  .area {
+    fill: color-mix(in srgb, var(--color-blue) 16%, transparent);
+  }
+
+  .area-outline {
+    fill: none;
+    stroke: var(--color-blue);
+    stroke-dasharray: 6 5;
+    stroke-width: 2;
+    stroke-linejoin: round;
+  }
+
+  .water-label {
+    fill: color-mix(in srgb, var(--color-blue) 70%, var(--color-ink));
+    font-family: var(--font-base);
+    font-size: 20px;
+    font-style: italic;
+    text-anchor: middle;
+  }
+
+  .labels,
+  .markers {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    pointer-events: none;
+  }
+
+  .region-label {
+    position: absolute;
+    display: grid;
+    color: color-mix(in srgb, var(--color-ink) 55%, transparent);
+    font-family: var(--font-mono);
+    font-size: clamp(0.5625rem, 0.45rem + 0.35vw, 0.75rem);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    line-height: 1.25;
+    text-align: center;
+    translate: -50% -50%;
+  }
+
+  .marker {
+    position: absolute;
+    inline-size: 0;
+    block-size: 0;
+    pointer-events: auto;
+  }
+
+  .dot {
+    position: absolute;
+    inline-size: 0.625rem;
+    block-size: 0.625rem;
+    border: 2px solid var(--color-surface);
+    border-radius: 50%;
+    background: var(--color-navy);
+    box-shadow: 0 1px 3px color-mix(in srgb, var(--color-ink) 35%, transparent);
+    translate: -50% -50%;
+    transition:
+      scale 200ms ease,
+      background-color 200ms ease;
+  }
+
+  .base .dot {
+    inline-size: 1rem;
+    block-size: 1rem;
+    background: var(--color-accent);
+  }
+
+  /* A slow ring around the base point. */
+  .base .dot::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border: 2px solid var(--color-accent);
+    border-radius: 50%;
+    animation: pulse 2.4s ease-out infinite;
+  }
+
+  .name {
+    position: absolute;
+    color: var(--color-ink);
+    font-size: clamp(0.6875rem, 0.6rem + 0.3vw, 0.8125rem);
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    text-shadow:
+      0 0 3px var(--color-surface),
+      0 0 3px var(--color-surface),
+      0 0 6px var(--color-surface);
+  }
+
+  .base .name {
+    color: var(--color-accent);
+    font-size: clamp(0.75rem, 0.65rem + 0.35vw, 0.9375rem);
+  }
+
+  .side-right .name {
+    inset-inline-start: 0.6rem;
+    translate: 0 -50%;
+  }
+
+  .side-left .name {
+    inset-inline-end: 0.6rem;
+    translate: 0 -50%;
+  }
+
+  .side-top .name {
+    inset-block-end: 0.55rem;
+    translate: -50% 0;
+  }
+
+  .side-bottom .name {
+    inset-block-start: 0.55rem;
+    translate: -50% 0;
+  }
+
+  .marker[data-active] .dot,
+  .marker:hover .dot {
+    background: var(--color-accent);
+    scale: 1.5;
+  }
+
+  .marker[data-active] .name {
+    color: var(--color-accent);
+  }
+
+  /* Before the map enters the view (only when scripts run) towns wait hidden, then ripple out from the base. */
+  :global(.js) [data-map-reveal]:not([data-revealed]) .marker,
+  :global(.js) [data-map-reveal]:not([data-revealed]) .area,
+  :global(.js) [data-map-reveal]:not([data-revealed]) .area-outline {
+    opacity: 0;
+  }
+
+  [data-revealed] .marker {
+    animation: drop-in 520ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    animation-delay: calc(300ms + var(--delay));
+  }
+
+  [data-revealed] .area,
+  [data-revealed] .area-outline {
+    animation: fade-in 900ms ease backwards;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs) var(--space-l);
+    color: var(--color-muted);
+    font-size: var(--text-sm);
+  }
+
+  .legend-item {
+    display: inline-flex;
+    gap: var(--space-xs);
+    align-items: center;
+  }
+
+  .key {
+    flex: none;
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+    border-radius: 50%;
+  }
+
+  .key-base {
+    background: var(--color-accent);
+  }
+
+  .key-town {
+    border: 2px solid var(--color-surface);
+    background: var(--color-navy);
+    box-shadow: 0 0 0 1px var(--color-line);
+  }
+
+  .key-area {
+    inline-size: 1.25rem;
+    border: 2px dashed var(--color-blue);
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--color-blue) 16%, transparent);
+  }
+
+  @keyframes drop-in {
+    from {
+      opacity: 0;
+      translate: 0 -0.75rem;
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes pulse {
+    from {
+      opacity: 0.8;
+      scale: 0.6;
+    }
+
+    to {
+      opacity: 0;
+      scale: 1.9;
+    }
+  }
+
+  /* Measured on the map itself, so a map in a narrow column thins its labels just like on a phone. */
+  @container (width < 40rem) {
+    .marker:not(.base, .is-key) .name,
+    .region-label {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-revealed] .marker,
+    [data-revealed] .area,
+    [data-revealed] .area-outline,
+    .base .dot::after {
+      animation: none;
+    }
+  }
+</style>

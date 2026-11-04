@@ -23,6 +23,7 @@
   --color-navy-hover: #0f2a46;
   --color-on-navy: #ffffff;
   --color-blue: #11649f; /* 6.3:1 on white, 5.7:1 on subtle */
+  --color-sea: #e3ecf1;
 
   --font-base: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace;
