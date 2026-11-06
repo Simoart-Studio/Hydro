@@ -52,6 +52,14 @@ export const privacySections: PolicySection[] = [
     title: "Komu przekazujemy dane",
     paragraphs: [
       "Dane mogą trafić do firm, które obsługują dla nas formularz, pocztę i hosting strony, wyłącznie w zakresie potrzebnym do świadczenia tych usług. Danych nie sprzedajemy i nie przekazujemy w celach marketingowych.",
+      // TODO(klient): prawnik — podstawa przekazania danych do USA (np. Data Privacy Framework lub standardowe klauzule umowne w umowie z Vercel) i okres przechowywania logów
+      "Stronę utrzymuje Vercel Inc. z siedzibą w USA. Przy każdym wejściu na stronę serwery hostingu zapisują w logach technicznych adres IP i informacje o przeglądarce. Służą one wyłącznie do bezpiecznego i poprawnego działania strony.",
+    ],
+  },
+  {
+    title: "Logi serwera",
+    paragraphs: [
+      "Podstawą przetwarzania danych z logów jest nasz prawnie uzasadniony interes, czyli zapewnienie bezpieczeństwa i ciągłości działania strony (art. 6 ust. 1 lit. f RODO). Nie łączymy tych danych z innymi informacjami i nie używamy ich do identyfikowania odwiedzających.",
     ],
   },
   {

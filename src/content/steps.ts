@@ -9,8 +9,8 @@ export interface Step {
 export const stepsSection = {
   title: "Jak to działa",
   intro:
-    "Prowadzimy sprawę od pierwszej rozmowy do rozliczenia dotacji. Na każdym etapie wiesz, co się dzieje i kto za co odpowiada.",
-  moreLink: { label: "Szczegóły procesu dotacji", href: "/dotacje" },
+    "Od pierwszej rozmowy do uruchomienia instalacji. Na każdym etapie wiesz, co się dzieje i kto za co odpowiada.",
+  moreLink: { label: "Jak pomagamy przy dotacji", href: "/dotacje" },
 };
 
 export const steps: Step[] = [
@@ -18,24 +18,24 @@ export const steps: Step[] = [
     icon: "conversation",
     title: "Rozmowa i wstępna ocena",
     description:
-      "Pytamy o budynek i obecne ogrzewanie. Mówimy, czy dotacja ma sens w Twojej sytuacji.",
+      "Pytamy o budynek i obecne ogrzewanie. Mówimy, jakie rozwiązanie ma sens w Twojej sytuacji.",
   },
   {
     icon: "selection",
-    title: "Dobór rozwiązania",
+    title: "Oględziny i dobór",
     description:
-      "Oglądamy kotłownię i dobieramy urządzenia do budynku. Dostajesz jedną wycenę z kosztami urządzeń, montażu i formalności.",
+      "Oglądamy kotłownię i dobieramy urządzenia do budynku. Dostajesz jedną wycenę urządzeń i montażu.",
   },
   {
     icon: "paperwork",
-    title: "Wniosek i formalności",
+    title: "Dotacja, jeśli się kwalifikujesz",
     description:
-      "Przygotowujemy dokumenty do wybranego programu i pomagamy złożyć wniosek. Informujemy, na jakim etapie jest sprawa.",
+      "Wniosek prowadzi firma, z którą współpracujemy: specjaliści od programów, nie handlowcy. My dbamy, żeby urządzenie spełniało wymagania.",
   },
   {
     icon: "installation",
-    title: "Montaż i rozliczenie",
+    title: "Montaż i uruchomienie",
     description:
-      "Montujemy i uruchamiamy kotłownię. Pomagamy skompletować dokumenty potrzebne do rozliczenia dotacji.",
+      "Montujemy, podłączamy i uruchamiamy instalację. Pokazujemy obsługę i przekazujemy dokumenty z montażu.",
   },
 ];

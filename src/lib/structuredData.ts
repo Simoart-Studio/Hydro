@@ -1,5 +1,5 @@
 import type { FaqItem } from "../content/faq";
-import { installation, offerItems } from "../content/offer";
+import { electrical, installation, offerItems } from "../content/offer";
 import { site } from "../content/site";
 
 type Schema = Record<string, unknown>;
@@ -63,7 +63,7 @@ export function businessSchema(base: URL): Schema {
         geo: { "@type": "GeoCoordinates", latitude: place.lat, longitude: place.lon },
       })),
     ],
-    makesOffer: [...offerItems, installation].map((item) => ({
+    makesOffer: [...offerItems, installation, electrical].map((item) => ({
       "@type": "Offer",
       itemOffered: {
         "@type": "Service",
@@ -99,4 +99,4 @@ export function faqSchema(items: FaqItem[]): Schema {
 }
 
 /** JSON for a script tag; escaping "<" keeps the content from closing the tag early. */
-export const toJsonLd = (schema: Schema) => JSON.stringify(schema).replace(/</g, "\u003c");
+export const toJsonLd = (schema: Schema) => JSON.stringify(schema).replace(/</g, "\\u003c");

@@ -1,0 +1,33 @@
+name: Smoke
+
+# After every successful Vercel deployment, and every 30 minutes as a simple uptime check of production.
+# A failed run sends the repository owner an e-mail from GitHub.
+on:
+  deployment_status:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    # Vercel previews sit behind Vercel Authentication, so only production deployments are tested.
+    if: >-
+      github.event_name != 'deployment_status' ||
+      (github.event.deployment_status.state == 'success' && startsWith(github.event.deployment.environment, 'Production'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: package.json
+      - name: Smoke test of the deployment
+        env:
+          # Deployment URL from Vercel, otherwise the production address from the repository variable SITE_URL.
+          TARGET_URL: ${{ github.event.deployment_status.environment_url || vars.SITE_URL || 'https://hydrodemosite.vercel.app' }}
+        run: node scripts/smoke.mjs "$TARGET_URL"

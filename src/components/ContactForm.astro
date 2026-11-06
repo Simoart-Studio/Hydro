@@ -274,12 +274,12 @@ const { fields } = contactForm;
   }
 
   [aria-invalid="true"] {
-    border-color: var(--color-accent);
-    box-shadow: inset 4px 0 0 var(--color-accent);
+    border-color: var(--color-accent-text);
+    box-shadow: inset 4px 0 0 var(--color-accent-text);
   }
 
   .error {
-    color: var(--color-accent);
+    color: var(--color-accent-text);
     font-size: var(--text-sm);
     font-weight: 600;
   }
@@ -305,7 +305,7 @@ const { fields } = contactForm;
 
   .check input[aria-invalid="true"] {
     box-shadow: none;
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-accent-text);
   }
 
   .trap {
@@ -332,6 +332,6 @@ const { fields } = contactForm;
   }
 
   .status[data-tone="error"] {
-    border-inline-start-color: var(--color-accent);
+    border-inline-start-color: var(--color-accent-text);
   }
 </style>

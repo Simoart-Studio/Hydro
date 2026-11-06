@@ -9,7 +9,7 @@ import logo from "../assets/brand/logo.jpeg";
 const year = new Date().getFullYear();
 ---
 
-<footer class="site-footer">
+<footer class="site-footer on-navy">
   <Container class="columns">
     <div class="about">
       <Image class="logo" src={logo} alt={site.name} width={144} densities={[1, 2]} />
@@ -65,7 +65,7 @@ const year = new Date().getFullYear();
 <style>
   .site-footer {
     padding-block: var(--space-2xl) var(--space-xl);
-    background: var(--color-subtle);
+    background: var(--surface-navy-deep);
     font-size: var(--text-sm);
   }
 
@@ -83,6 +83,7 @@ const year = new Date().getFullYear();
 
   .logo {
     border-radius: var(--radius);
+    box-shadow: 0 0 0 1px var(--color-line);
   }
 
   .about p:last-child {
@@ -100,6 +101,11 @@ const year = new Date().getFullYear();
     align-items: center;
     justify-self: start;
     min-block-size: var(--target-size);
+  }
+
+  .links a:hover,
+  .area-link:hover {
+    color: var(--color-accent-text);
   }
 
   .links a {

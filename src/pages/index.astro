@@ -19,19 +19,16 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
 <BaseLayout
-  title={`Kotły i pompy ciepła z dotacją, Tczew i Trójmiasto | ${site.brandLines[0]}`}
+  title={`Instalacje grzewcze i hydrauliczne, Trójmiasto i Tczew | ${site.brandLines[0]}`}
   description={site.description}
 >
   <Hero />
   <ServicesOverview />
   <Introduction />
-  <Section
-    id="realizacje"
-    title={galleryPreview.title}
-    intro={galleryPreview.intro}
-    tone="subtle"
-    width="page"
-  >
+  <Section id="obszar" title={areaSection.title} tone="navy" width="page">
+    <ServiceArea />
+  </Section>
+  <Section id="realizacje" title={galleryPreview.title} intro={galleryPreview.intro} width="page">
     <Gallery photos={galleryPreview.photos} compact />
     <Button href="/realizacje" variant="outline" arrow class="more">
       {galleryPreview.moreLabel}
@@ -40,9 +37,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   <ProcessSteps steps={steps} action={stepsSection.moreLink} />
   <Notice />
   {testimonials.length > 0 && <Testimonials testimonials={testimonials} />}
-  <Section id="obszar" title={areaSection.title} tone="subtle" width="page">
-    <ServiceArea />
-  </Section>
   <CtaBand />
 </BaseLayout>
 

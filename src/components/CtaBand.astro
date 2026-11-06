@@ -6,7 +6,7 @@ import Container from "./Container.astro";
 import PhoneIcon from "./PhoneIcon.astro";
 ---
 
-<section class="cta-band" aria-labelledby="cta-title">
+<section class="cta-band on-navy" aria-labelledby="cta-title">
   <Container width="column" class="inner">
     <h2 id="cta-title">{ctaBand.title}</h2>
     <p>{ctaBand.text}</p>
@@ -26,8 +26,14 @@ import PhoneIcon from "./PhoneIcon.astro";
 <style>
   .cta-band {
     padding-block: var(--space-section);
-    border-block-start: 4px solid var(--color-navy);
-    background: var(--color-band);
+    border-block-start: 4px solid var(--color-accent);
+    background:
+      radial-gradient(
+        50rem 22rem at 50% 0%,
+        color-mix(in srgb, #1675b9 34%, transparent),
+        transparent 70%
+      ),
+      var(--surface-navy);
   }
 
   .inner {

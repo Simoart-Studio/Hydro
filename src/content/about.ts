@@ -1,25 +1,26 @@
 export const aboutPage = {
   title: "O nas",
-  metaTitle: "O firmie: instalatorzy kotłów i pomp ciepła",
-  lead: "Firma instalacyjna z Pomorza, która prowadzi wymianę źródła ciepła od wniosku o dotację po uruchomienie kotłowni.",
+  metaTitle: "O firmie: instalatorzy z uprawnieniami SEP i F-Gaz",
+  lead: "Trzyosobowy zespół instalatorów z Pomorza. Prowadzimy instalacje grzewcze, hydrauliczne i elektryczne od doboru urządzenia po uruchomienie.",
 };
 
 export const story = {
   title: "Kim jesteśmy",
-  // TODO(klient): rok założenia, doświadczenie, zespół. Bez liczb, których nie da się potwierdzić.
+  // TODO(klient): rok założenia i lata doświadczenia, jeśli chcecie je podać.
   paragraphs: [
-    "HYDRO Leszek Weinerowski to firma instalacyjna. Montujemy kotły na pellet, kotły zgazowujące drewno i pompy ciepła w domach jednorodzinnych. Wykonujemy też instalacje grzewcze: rozdzielacze ogrzewania podłogowego, grzejniki kanałowe i rurociągi w budynkach w budowie.",
-    "Formalności i montaż prowadzi ten sam zespół. Dzięki temu urządzenie we wniosku jest tym samym, które potem montujemy, a za cały proces odpowiada jedna firma.",
+    "HYDRO Leszek Weinerowski to trzyosobowy zespół z doświadczeniem hydraulicznym i instalacyjnym. Montujemy pompy ciepła, kotły gazowe, kotły na pellet i kotły zgazowujące drewno różnych producentów, a także kompletne instalacje: kotłownie, ogrzewanie podłogowe, grzejniki i rurociągi.",
+    "Mamy uprawnienia SEP G1, G2 i G3 oraz F-Gaz. Dlatego wykonujemy też instalacje elektryczne i rozdzielnice, a urządzenie podłączamy w całości, bez szukania kolejnych wykonawców.",
+    "Zapewniamy kompleksową obsługę: od doboru urządzenia, przez montaż, po uruchomienie. Jeśli kwalifikujesz się do dotacji, pomagamy ją uzyskać we współpracy z firmą, która zajmuje się wnioskami.",
   ],
-  contactNote: "Na rozmowę możesz umówić się bezpośrednio z Leszkiem albo z Norbertem.",
+  contactNote: "Zadzwoń bezpośrednio do Norberta albo do Leszka.",
 };
 
 export const qualificationsSection = {
   title: "Uprawnienia",
 };
 
-// TODO(klient): uprawnienia i certyfikaty, np. SEP, F-gazy, szkolenia producentów. Pusta tablica ukrywa sekcję.
-export const qualifications: string[] = [];
+// Pusta tablica ukrywa sekcję.
+export const qualifications: string[] = ["SEP G1", "SEP G2", "SEP G3", "F-Gaz"];
 
 export const areaSection = {
   title: "Obszar działania",

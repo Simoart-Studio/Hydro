@@ -31,7 +31,6 @@ export interface SiteInfo {
   /** Nazwa w dwóch wierszach obok znaku w nagłówku, tak jak w logo. */
   brandLines: [string, string];
   legalName: string;
-  domain: string;
   tagline: string;
   description: string;
   /** Pierwszy kontakt jest numerem głównym: nagłówek, przyciski, dane strukturalne. */
@@ -46,6 +45,8 @@ export interface SiteInfo {
     regions: string[];
     /** Siedziba, od której liczony jest zasięg na mapie. */
     base: { name: string; lat: number; lon: number; radiusKm: number };
+    /** Zasięg wokół każdej miejscowości z listy, rysowany na mapie jako obszar działania. */
+    reachKm: number;
     places: Place[];
   };
 }
@@ -54,13 +55,13 @@ export const site: SiteInfo = {
   name: "HYDRO Leszek Weinerowski",
   brandLines: ["HYDRO", "Leszek Weinerowski"],
   legalName: "HYDRO Leszek Weinerowski", // TODO(klient): pełna nazwa firmy z CEIDG
-  domain: "pompykotly.pl", // TODO(klient): domena firmy
-  tagline: "Kotły na pellet, pompy ciepła i dotacje",
+  tagline: "Nowoczesne instalacje grzewcze i hydrauliczne",
   description:
-    "Montaż kotłów na pellet, kotłów zgazowujących drewno i pomp ciepła z pomocą w uzyskaniu dotacji. Trójmiasto, Tczew i okolice do 100 km.",
+    "Pompy ciepła, kotły gazowe, kotły na pellet i zgazowujące drewno. Kompleksowy montaż, modernizacja kotłowni i instalacje hydrauliczne, plus pomoc w uzyskaniu dotacji. Trójmiasto, Tczew i okolice.",
   contacts: [
-    { name: "Leszek", phone: "+48 690 135 002" },
+    // TODO(klient): numer Norberta. Pierwsze dane: 882 834 207, w feedbacku: 882 834 297. Potwierdzić.
     { name: "Norbert", phone: "+48 882 834 207" },
+    { name: "Leszek", phone: "+48 690 135 002" },
   ],
   email: "", // TODO(klient): adres e-mail
   address: {
@@ -77,11 +78,16 @@ export const site: SiteInfo = {
     regions: ["pomorskie", "warmińsko-mazurskie"],
     // TODO(klient): potwierdzić punkt, od którego liczyć zasięg (na razie Tczew)
     base: { name: "Tczew", lat: 54.092, lon: 18.778, radiusKm: 100 },
+    // Z grafiki klienta: „+ do 20 km od powyższych miejscowości”.
+    reachKm: 20,
     // Współrzędne WGS84 do mapy obszaru działania; label: true podpisuje miejscowość na mapie.
     places: [
       { name: "Gdańsk", lat: 54.352, lon: 18.646, label: true },
       { name: "Gdynia", lat: 54.519, lon: 18.531, label: true },
       { name: "Sopot", lat: 54.441, lon: 18.56 },
+      { name: "Pruszcz Gdański", lat: 54.262, lon: 18.636 },
+      { name: "Trąbki Wielkie", lat: 54.17, lon: 18.632 },
+      { name: "Stegna", lat: 54.326, lon: 19.111 },
       { name: "Tczew", lat: 54.092, lon: 18.778, label: true },
       { name: "Pelplin", lat: 53.928, lon: 18.697 },
       { name: "Starogard Gdański", lat: 53.964, lon: 18.526, label: true },

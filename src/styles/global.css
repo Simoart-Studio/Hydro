@@ -64,6 +64,27 @@ a:hover {
   outline-offset: 3px;
 }
 
+/*
+ * Navy surfaces (hero, page headers, navy sections, call band, footer). Inside, the text, line and
+ * button tokens flip, so every component keeps AA contrast without its own dark variant:
+ * outline and dark buttons turn white, orange text gets lighter (7.4:1 on navy).
+ */
+.on-navy {
+  --color-ink: #ffffff;
+  --color-muted: #c9d3de;
+  --color-line: color-mix(in srgb, #ffffff 16%, transparent);
+  --color-surface: #1c3a5c;
+  --color-subtle: #183553;
+  --color-accent-text: #f7a95c;
+  --color-blue: #8cc4ee;
+  --color-navy: #ffffff;
+  --color-navy-hover: #e4ecf4;
+  --color-on-navy: #142b45;
+  --shadow-card: 0 2px 12px color-mix(in srgb, #000000 30%, transparent);
+
+  color: var(--color-ink);
+}
+
 /* Set by the services reveal while its cards come in; the gutter above keeps the layout from shifting. */
 html[data-scroll-locked] {
   overflow: hidden;

@@ -12,7 +12,7 @@ export const mainNavigation: NavLink[] = [
   { label: "Kontakt", href: "/kontakt" },
 ];
 
-export const primaryCta: NavLink = { label: "Zapytaj o dotację", href: "/kontakt" };
+export const primaryCta: NavLink = { label: "Zapytaj o wycenę", href: "/kontakt" };
 
 export const privacyPolicyLink: NavLink = {
   label: "Polityka prywatności",

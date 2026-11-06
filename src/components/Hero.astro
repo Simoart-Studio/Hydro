@@ -1,18 +1,22 @@
 ---
 import { Image } from "astro:assets";
 import { hero } from "../content/hero";
-import Button from "./Button.astro";
+import { site, telHref } from "../content/site";
 import Container from "./Container.astro";
+import PhoneIcon from "./PhoneIcon.astro";
+
+// Both numbers go in the hero; the first contact is the one who usually answers.
+const [firstContact, ...otherContacts] = site.contacts;
 ---
 
-<section class="hero" aria-labelledby="hero-title">
+<section class="hero on-navy" aria-labelledby="hero-title">
   <div class="media">
     <Image
       class="photo"
       src={hero.image.src}
       alt={hero.image.alt}
       widths={[640, 960, 1200]}
-      sizes="(min-width: 56rem) 62vw, 100vw"
+      sizes="(min-width: 56rem) 58vw, 100vw"
       loading="eager"
       fetchpriority="high"
     />
@@ -21,16 +25,49 @@ import Container from "./Container.astro";
     <div class="content">
       <p class="label">{hero.label}</p>
       <h1 id="hero-title">
-        {hero.title} <span class="accent">{hero.titleAccent}</span>
+        <span class="brand">{hero.brand}</span>
+        <span class="visually-hidden"> – </span>
+        <span class="title">
+          {hero.title} <span class="accent">{hero.titleAccent}</span>
+        </span>
       </h1>
       <p class="lead">{hero.lead}</p>
-      <div class="actions">
-        <Button href={hero.action.href} arrow>
-          {hero.action.label}
-        </Button>
-        <a class="secondary" href={hero.secondaryAction.href}>
-          {hero.secondaryAction.label}
-        </a>
+      <ul class="calls" role="list" aria-label={hero.callLabel}>
+        <li>
+          <a class="call call-primary" href={telHref(firstContact.phone)}>
+            <PhoneIcon />
+            <span class="call-text">
+              <span class="call-name">{firstContact.name}</span>
+              <span class="call-number">{firstContact.phone}</span>
+            </span>
+          </a>
+        </li>
+        {otherContacts.map((contact) => (
+          <li>
+            <a class="call call-secondary" href={telHref(contact.phone)}>
+              <PhoneIcon />
+              <span class="call-text">
+                <span class="call-name">{contact.name}</span>
+                <span class="call-number">{contact.phone}</span>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <div class="perks">
+        <p class="perks-label">{hero.perksLabel}</p>
+        <ul class="perks-list" role="list">
+          {hero.perks.map((perk) => (
+            <li>
+              <a href={perk.href}>
+                <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+                  <path d="M8 3v10M3 8h10"></path>
+                </svg>
+                {perk.label}
+              </a>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   </Container>
@@ -43,18 +80,19 @@ import Container from "./Container.astro";
     padding-block-end: var(--hero-overlap);
     overflow: hidden;
     background: var(--color-hero-bg);
+    color: var(--color-ink);
   }
 
   .media {
     position: relative;
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 16 / 9;
   }
 
   .media::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(to bottom, transparent 55%, var(--color-hero-bg));
+    background: linear-gradient(to bottom, transparent 45%, var(--color-hero-bg));
   }
 
   .photo {
@@ -72,21 +110,46 @@ import Container from "./Container.astro";
     display: grid;
     gap: var(--space-m);
     justify-items: start;
-    max-inline-size: 34rem;
-    padding-block: var(--space-m) var(--space-2xl);
+    max-inline-size: 36rem;
+    padding-block: var(--space-xs) var(--space-2xl);
   }
 
   .label {
-    color: var(--color-blue);
+    display: inline-flex;
+    gap: var(--space-xs);
+    align-items: center;
+    color: var(--color-accent);
     font-family: var(--font-mono);
     font-size: var(--text-xs);
     font-weight: 500;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
   }
 
+  .label::before {
+    content: "";
+    inline-size: 1.5rem;
+    block-size: 2px;
+    background: currentColor;
+  }
+
   h1 {
+    display: grid;
+    gap: var(--space-2xs);
     color: var(--color-ink);
+  }
+
+  .brand {
+    font-size: clamp(3rem, 2rem + 5vw, 5.25rem);
+    font-weight: 700;
+    font-style: italic;
+    letter-spacing: 0.02em;
+    line-height: 0.95;
+  }
+
+  .title {
+    font-size: var(--text-3xl);
+    line-height: 1.15;
   }
 
   .accent {
@@ -94,36 +157,127 @@ import Container from "./Container.astro";
   }
 
   .lead {
-    color: var(--color-muted);
+    color: var(--color-on-navy-muted);
     font-size: var(--text-lg);
   }
 
-  .actions {
+  .calls {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-s) var(--space-l);
-    align-items: center;
+    gap: var(--space-s);
     margin-block-start: var(--space-xs);
   }
 
-  .secondary {
+  .call {
     display: inline-flex;
+    gap: var(--space-s);
+    align-items: center;
+    min-block-size: 3.25rem;
+    padding: var(--space-xs) var(--space-l) var(--space-xs) var(--space-m);
+    border: 1.5px solid transparent;
+    border-radius: var(--radius-pill);
+    text-decoration: none;
+    transition:
+      background-color 150ms ease,
+      border-color 150ms ease,
+      color 150ms ease;
+  }
+
+  .call :global(.phone-icon) {
+    inline-size: 1.375rem;
+    block-size: 1.375rem;
+  }
+
+  .call-text {
+    display: grid;
+    line-height: 1.15;
+  }
+
+  .call-name {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .call-number {
+    font-size: var(--text-lg);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .call-primary {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  .call-primary:hover {
+    background: var(--color-accent-hover);
+  }
+
+  .call-secondary {
+    border-color: color-mix(in srgb, var(--color-ink) 55%, transparent);
+    color: var(--color-ink);
+  }
+
+  .call-secondary:hover {
+    border-color: var(--color-ink);
+    background: var(--color-navy-soft);
+  }
+
+  .call:active {
+    translate: 0 1px;
+  }
+
+  .perks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs) var(--space-m);
+    align-items: center;
+    margin-block-start: var(--space-2xs);
+    padding-block-start: var(--space-m);
+    border-block-start: 1px solid color-mix(in srgb, var(--color-ink) 18%, transparent);
+  }
+
+  .perks-label {
+    color: var(--color-on-navy-muted);
+    font-size: var(--text-sm);
+  }
+
+  .perks-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs) var(--space-m);
+  }
+
+  .perks-list a {
+    display: inline-flex;
+    gap: var(--space-2xs);
     align-items: center;
     min-block-size: var(--target-size);
-    color: var(--color-blue);
+    color: var(--color-ink);
+    font-size: var(--text-sm);
     font-weight: 600;
     text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--color-accent) 70%, transparent);
     text-decoration-thickness: 1.5px;
     text-underline-offset: 0.3em;
   }
 
-  .secondary:hover {
-    color: var(--color-navy);
+  .perks-list a:hover {
+    text-decoration-color: var(--color-accent);
+  }
+
+  .perks-list svg {
+    fill: none;
+    stroke: var(--color-accent);
+    stroke-linecap: round;
+    stroke-width: 2.5;
   }
 
   @media (width >= 56rem) {
     .hero {
-      min-block-size: clamp(28rem, 18rem + 18vw, 38rem);
+      min-block-size: clamp(32rem, 20rem + 20vw, 42rem);
       align-items: center;
     }
 
@@ -131,17 +285,19 @@ import Container from "./Container.astro";
       position: absolute;
       inset-block: 0;
       inset-inline-end: 0;
-      inline-size: 62%;
+      inline-size: 58%;
       aspect-ratio: auto;
     }
 
     .media::after {
-      background: linear-gradient(to right, var(--color-hero-bg), transparent 32%);
+      background:
+        linear-gradient(to right, var(--color-hero-bg), transparent 38%),
+        linear-gradient(to top, var(--color-hero-bg), transparent 30%);
     }
 
     .content {
-      max-inline-size: min(32rem, 40%);
-      padding-block: var(--space-2xl);
+      max-inline-size: min(36rem, 48%);
+      padding-block: var(--space-2xl) calc(var(--space-2xl) + var(--space-l));
     }
   }
 </style>

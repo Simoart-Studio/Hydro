@@ -5,7 +5,7 @@ interface Props {
   id: string;
   title: string;
   intro?: string;
-  tone?: "plain" | "subtle";
+  tone?: "plain" | "subtle" | "navy";
   width?: "page" | "column";
 }
 
@@ -13,7 +13,11 @@ const { id, title, intro, tone = "plain", width = "column" } = Astro.props;
 const titleId = `${id}-title`;
 ---
 
-<section id={id} class:list={["section", tone]} aria-labelledby={titleId}>
+<section
+  id={id}
+  class:list={["section", tone, { "on-navy": tone === "navy" }]}
+  aria-labelledby={titleId}
+>
   <Container width={width} class="inner">
     <div class="heading">
       <h2 id={titleId}>{title}</h2>
@@ -30,6 +34,26 @@ const titleId = `${id}-title`;
 
   .subtle {
     background: var(--color-subtle);
+  }
+
+  /* Navy section: a faint blueprint grid and a warm glow in one corner, in the client's colours. */
+  .navy {
+    background:
+      radial-gradient(
+        60rem 30rem at 100% 0%,
+        color-mix(in srgb, #1675b9 30%, transparent),
+        transparent 70%
+      ),
+      radial-gradient(
+        40rem 24rem at 0% 100%,
+        color-mix(in srgb, #f28c28 10%, transparent),
+        transparent 70%
+      ),
+      linear-gradient(color-mix(in srgb, #ffffff 4%, transparent) 1px, transparent 1px) 0 0 / 32px
+        32px,
+      linear-gradient(90deg, color-mix(in srgb, #ffffff 4%, transparent) 1px, transparent 1px) 0 0 /
+        32px 32px,
+      var(--surface-navy);
   }
 
   .inner {

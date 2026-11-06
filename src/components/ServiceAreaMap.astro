@@ -1,37 +1,38 @@
 ---
+import { Image } from "astro:assets";
+import logoMark from "../assets/brand/logo-mark.png";
 import { serviceMapFrame, serviceMapRegions } from "../content/serviceMapGeometry";
 import { site } from "../content/site";
 
 // Same projection as scripts/build-service-map.mjs, so towns land exactly on the generated outlines.
-const { lonMin, latMax, kx, scale, width, height } = serviceMapFrame;
+const { lonMin, lonMax, latMin, latMax, kx, scale, width, height } = serviceMapFrame;
 const project = (lon: number, lat: number) => ({
   x: (lon - lonMin) * kx * scale,
   y: (latMax - lat) * scale,
 });
 const percent = (value: number, total: number) => `${((value / total) * 100).toFixed(3)}%`;
-
-const { base, places, regions: servedRegions } = site.serviceArea;
-const baseXY = project(base.lon, base.lat);
+// The projection keeps kilometres equal in both directions, so a distance in km is a circle in px.
 const kmToPx = (km: number) => (km / 111.32) * scale;
 
-// Served area: the convex hull of all towns, widened by about 11 km and clipped to land, so the shape
-// follows the real list of places instead of an arbitrary circle.
-const buffer = kmToPx(11);
+const { base, places, regions: servedRegions, reachKm } = site.serviceArea;
+const baseXY = project(base.lon, base.lat);
+
+// Served area: the convex hull of all towns, widened by the reach around each town and clipped to land,
+// so the shape follows the real list of places instead of an arbitrary circle.
+const buffer = kmToPx(reachKm);
 const samples = places.flatMap((place) => {
   const { x, y } = project(place.lon, place.lat);
-  return Array.from({ length: 32 }, (_, i) => {
-    const angle = (i / 32) * Math.PI * 2;
+  return Array.from({ length: 48 }, (_, i) => {
+    const angle = (i / 48) * Math.PI * 2;
     return { x: x + Math.cos(angle) * buffer, y: y + Math.sin(angle) * buffer };
   });
 });
-const cross = (
-  o: { x: number; y: number },
-  a: { x: number; y: number },
-  b: { x: number; y: number },
-) => (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
+type Point = { x: number; y: number };
+const cross = (o: Point, a: Point, b: Point) =>
+  (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
 const sorted = [...samples].sort((a, b) => a.x - b.x || a.y - b.y);
-const half = (points: typeof sorted) => {
-  const chain: typeof sorted = [];
+const half = (points: Point[]) => {
+  const chain: Point[] = [];
   for (const point of points) {
     while (chain.length >= 2 && cross(chain.at(-2)!, chain.at(-1)!, point) <= 0) chain.pop();
     chain.push(point);
@@ -41,6 +42,27 @@ const half = (points: typeof sorted) => {
 const hull = [...half(sorted), ...half([...sorted].reverse())];
 const hullPath = `M${hull.map(({ x, y }) => `${x.toFixed(1)} ${y.toFixed(1)}`).join("L")}Z`;
 
+// Graticule every half degree of longitude and quarter degree of latitude, labelled on the edges.
+const degrees = (value: number, axis: "N" | "E") => {
+  const whole = Math.floor(value);
+  const minutes = Math.round((value - whole) * 60);
+  return `${whole}°${minutes ? `${String(minutes).padStart(2, "0")}′` : ""}${axis}`;
+};
+const range = (from: number, to: number, step: number) =>
+  Array.from({ length: Math.floor((to - from) / step + 1e-9) + 1 }, (_, i) => from + i * step);
+const meridians = range(Math.ceil(lonMin * 2) / 2, lonMax, 0.5).map((lon) => ({
+  x: project(lon, latMax).x,
+  label: degrees(lon, "E"),
+}));
+const parallels = range(Math.ceil(latMin * 4) / 4, latMax, 0.25).map((lat) => ({
+  y: project(lonMin, lat).y,
+  label: lat % 0.5 === 0 ? degrees(lat, "N") : "",
+}));
+
+// Distance rings around the base; the legend explains the 25 km step instead of labels on the chart.
+const ringStepKm = 25;
+const rings = [1, 2, 3, 4].map((step) => ({ r: kmToPx(step * ringStepKm) }));
+
 const isServed = (name: string) => servedRegions.includes(name);
 const regionLabels = [
   { text: ["POMORSKIE"], lon: 17.38, lat: 54.08 },
@@ -49,7 +71,7 @@ const regionLabels = [
   { text: ["ZACHODNIO-", "POMORSKIE"], lon: 17.12, lat: 54.42 },
 ];
 const waterLabels = [
-  { text: "Morze Bałtyckie", lon: 17.75, lat: 54.9 },
+  { text: "Morze Bałtyckie", lon: 18.15, lat: 54.92 },
   { text: "Zatoka Gdańska", lon: 19.05, lat: 54.6 },
 ];
 
@@ -63,24 +85,15 @@ const labelSides: Record<string, "left" | "right" | "top" | "bottom"> = {
   Kościerzyna: "left",
   Czersk: "left",
   "Starogard Gdański": "left",
-  Tczew: "right",
   Malbork: "right",
   Kwidzyn: "right",
   "Nowy Dwór Gdański": "top",
   Elbląg: "bottom",
 };
 
-// On narrow screens only these names stay, so the map does not turn into a cloud of text.
-const keyTowns = new Set([
-  "Gdańsk",
-  "Gdynia",
-  "Tczew",
-  "Elbląg",
-  "Malbork",
-  "Kościerzyna",
-  "Lębork",
-  "Kwidzyn",
-]);
+// Cities get a larger label; on narrow maps only key towns keep theirs.
+const cities = new Set(["Gdańsk", "Gdynia", "Elbląg"]);
+const keyTowns = new Set(["Gdańsk", "Gdynia", "Elbląg", "Kościerzyna", "Lębork", "Kwidzyn"]);
 
 const distanceFromBase = (lon: number, lat: number) => {
   const { x, y } = project(lon, lat);
@@ -88,21 +101,26 @@ const distanceFromBase = (lon: number, lat: number) => {
 };
 const maxDistance = Math.max(...places.map((place) => distanceFromBase(place.lon, place.lat)));
 
-const markers = places.map((place) => {
-  const { x, y } = project(place.lon, place.lat);
-  return {
-    ...place,
-    left: percent(x, width),
-    top: percent(y, height),
-    isBase: place.name === base.name,
-    isKey: keyTowns.has(place.name),
-    side: labelSides[place.name] ?? "right",
-    // Towns appear in a ripple that spreads out from the base.
-    delay: Math.round((distanceFromBase(place.lon, place.lat) / maxDistance) * 900),
-  };
-});
+const markers = places
+  .filter((place) => place.name !== base.name)
+  .map((place) => {
+    const { x, y } = project(place.lon, place.lat);
+    return {
+      ...place,
+      left: percent(x, width),
+      top: percent(y, height),
+      isCity: cities.has(place.name),
+      isKey: keyTowns.has(place.name),
+      side: labelSides[place.name] ?? "right",
+      // Towns appear in a ripple that spreads out from the base.
+      delay: Math.round((distanceFromBase(place.lon, place.lat) / maxDistance) * 900),
+    };
+  });
 
-const description = `${site.serviceArea.summary} Na mapie zaznaczono ${places.length} miejscowości: ${places
+const scaleKm = 20;
+const scaleWidth = percent(kmToPx(scaleKm), width);
+
+const description = `${site.serviceArea.summary} Siedziba: ${base.name}. Obszar działania obejmuje okolice do ${reachKm} km od ${places.length} miejscowości: ${places
   .map((place) => place.name)
   .join(", ")}.`;
 ---
@@ -123,13 +141,30 @@ const description = `${site.serviceArea.summary} Na mapie zaznaczono ${places.le
             <path d={region.d} />
           ))}
         </clipPath>
-        <pattern id="service-map-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-          <path d="M40 0H0v40" fill="none" class="grid-line" />
-        </pattern>
+        <filter id="service-map-glow" x="-10%" y="-10%" width="120%" height="120%">
+          <feGaussianBlur stdDeviation="8" />
+        </filter>
+        <radialGradient id="service-map-halo">
+          <stop offset="0" stop-color="#f28c28" stop-opacity="0.32" />
+          <stop offset="0.55" stop-color="#f28c28" stop-opacity="0.08" />
+          <stop offset="1" stop-color="#f28c28" stop-opacity="0" />
+        </radialGradient>
+        <linearGradient id="service-map-area" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#1675b9" stop-opacity="0.42" />
+          <stop offset="1" stop-color="#1675b9" stop-opacity="0.22" />
+        </linearGradient>
       </defs>
 
       <rect class="sea" width={width} height={height} />
-      <rect class="sea-grid" width={width} height={height} fill="url(#service-map-grid)" />
+
+      <g class="graticule">
+        {meridians.map(({ x }) => (
+          <path d={`M${x.toFixed(1)} 0V${height}`} />
+        ))}
+        {parallels.map(({ y }) => (
+          <path d={`M0 ${y.toFixed(1)}H${width}`} />
+        ))}
+      </g>
 
       {serviceMapRegions.map((region) => (
         <path class:list={["region", { served: isServed(region.name) }]} d={region.d} />
@@ -137,7 +172,15 @@ const description = `${site.serviceArea.summary} Na mapie zaznaczono ${places.le
 
       <g clip-path="url(#service-map-land)">
         <path class="area" d={hullPath} />
-        <path class="area-outline" d={hullPath} />
+        <circle class="halo" cx={baseXY.x} cy={baseXY.y} r={kmToPx(55)} />
+        <path class="area-glow" d={hullPath} filter="url(#service-map-glow)" />
+      </g>
+      <path class="area-outline" d={hullPath} pathLength="1" clip-path="url(#service-map-land)" />
+
+      <g class="rings">
+        {rings.map((ring) => (
+          <circle cx={baseXY.x} cy={baseXY.y} r={ring.r} />
+        ))}
       </g>
 
       {waterLabels.map((label) => {
@@ -148,6 +191,23 @@ const description = `${site.serviceArea.summary} Na mapie zaznaczono ${places.le
           </text>
         );
       })}
+
+      <g class="graticule-labels">
+        {meridians
+          .filter(({ x }) => x < width - 90)
+          .map(({ x, label }) => (
+            <text x={x + 6} y={height - 10}>
+              {label}
+            </text>
+          ))}
+        {parallels
+          .filter(({ y, label }) => label && y > 40 && y < height - 40)
+          .map(({ y, label }) => (
+            <text x={10} y={y - 6}>
+              {label}
+            </text>
+          ))}
+      </g>
     </svg>
 
     <ul class="labels" aria-hidden="true">
@@ -169,23 +229,53 @@ const description = `${site.serviceArea.summary} Na mapie zaznaczono ${places.le
           class:list={[
             "marker",
             `side-${marker.side}`,
-            { base: marker.isBase, "is-key": marker.isKey },
+            { major: marker.label, city: marker.isCity, "is-key": marker.isKey },
           ]}
           style={`left: ${marker.left}; top: ${marker.top}; --delay: ${marker.delay}ms`}
           data-place={marker.name}
           title={marker.name}
         >
           <span class="dot"></span>
-          {(marker.label || marker.isBase) && <span class="name">{marker.name}</span>}
+          {marker.label && <span class="name">{marker.name}</span>}
         </li>
       ))}
+      <li
+        class="base"
+        style={`left: ${percent(baseXY.x, width)}; top: ${percent(baseXY.y, height)}`}
+        data-place={base.name}
+      >
+        <span class="pin">
+          <Image src={logoMark} alt="" width={28} height={28} densities={[1, 2]} />
+        </span>
+        <span class="tag">
+          <span class="tag-brand">{site.brandLines[0]}</span>
+          <span class="tag-town">{base.name}</span>
+        </span>
+      </li>
     </ul>
+
+    <div class="compass" aria-hidden="true">
+      <svg viewBox="0 0 24 32" width="18" height="24">
+        <path d="M12 2 19 26 12 21 5 26Z"></path>
+        <path class="compass-dark" d="M12 2 12 21 5 26Z"></path>
+      </svg>
+      <span>N</span>
+    </div>
+    <div class="scale" aria-hidden="true" style={`--scale-width: ${scaleWidth}`}>
+      <span class="scale-bar"></span>
+      <span class="scale-ticks">
+        <span>0</span>
+        <span>{scaleKm / 2}</span>
+        <span>{scaleKm} km</span>
+      </span>
+    </div>
   </div>
 
   <figcaption class="legend">
+    <span class="legend-title">Legenda</span>
     <span class="legend-item">
       <span class="key key-base" aria-hidden="true"></span>
-      Baza: {base.name}
+      Siedziba: {base.name}
     </span>
     <span class="legend-item">
       <span class="key key-town" aria-hidden="true"></span>
@@ -193,7 +283,11 @@ const description = `${site.serviceArea.summary} Na mapie zaznaczono ${places.le
     </span>
     <span class="legend-item">
       <span class="key key-area" aria-hidden="true"></span>
-      Obszar działania, ok. {base.radiusKm} km od bazy
+      Do {reachKm} km od miejscowości z listy
+    </span>
+    <span class="legend-item">
+      <span class="key key-ring" aria-hidden="true"></span>
+      Odległość od siedziby co {ringStepKm} km
     </span>
   </figcaption>
 </figure>
@@ -211,7 +305,7 @@ const description = `${site.serviceArea.summary} Na mapie zaznaczono ${places.le
           observer.unobserve(entry.target);
         }
       },
-      { threshold: 0.35 },
+      { threshold: 0.3 },
     );
     maps.forEach((map) => observer.observe(map));
   } else {
@@ -232,20 +326,43 @@ const description = `${site.serviceArea.summary} Na mapie zaznaczono ${places.le
 </script>
 
 <style>
+  /*
+   * A navy chart in the client's colours. The map keeps its own fixed palette, so it looks the same
+   * on a white page and inside a navy section (where .on-navy flips the shared tokens).
+   */
   .service-map {
+    --map-sea: #0a1828;
+    --map-land: #11253d;
+    --map-served: #183555;
+    --map-border: rgb(255 255 255 / 0.16);
+    --map-served-border: rgb(255 255 255 / 0.34);
+    --map-text: #ffffff;
+    --map-muted: #9fb0c2;
+    --map-orange: #f28c28;
+    --map-orange-light: #ffb066;
+    --map-blue-light: #8cc4ee;
+
+    position: relative;
+    container-type: inline-size;
     display: grid;
     gap: var(--space-s);
+    padding: var(--space-s);
+    border: 1px solid rgb(255 255 255 / 0.1);
+    border-radius: calc(var(--radius) + var(--space-s));
+    background: #142b45;
+    color: var(--map-text);
+    box-shadow:
+      0 24px 48px rgb(10 24 40 / 0.35),
+      0 0 0 1px rgb(10 24 40 / 0.4);
   }
 
   .canvas {
     position: relative;
-    container-type: inline-size;
     inline-size: 100%;
     overflow: hidden;
-    border: 1px solid var(--color-line);
+    border: 1px solid rgb(255 255 255 / 0.08);
     border-radius: var(--radius);
-    background: var(--color-sea);
-    box-shadow: var(--shadow-card);
+    background: var(--map-sea);
   }
 
   svg {
@@ -255,45 +372,83 @@ const description = `${site.serviceArea.summary} Na mapie zaznaczono ${places.le
   }
 
   .sea {
-    fill: var(--color-sea);
+    fill: var(--map-sea);
   }
 
-  .grid-line {
-    stroke: color-mix(in srgb, var(--color-blue) 10%, transparent);
+  .graticule path {
+    fill: none;
+    stroke: rgb(140 196 238 / 0.09);
     stroke-width: 1;
   }
 
   .region {
-    fill: var(--color-subtle);
-    stroke: color-mix(in srgb, var(--color-ink) 22%, transparent);
+    fill: var(--map-land);
+    stroke: var(--map-border);
     stroke-width: 1;
     stroke-linejoin: round;
   }
 
   .region.served {
-    fill: var(--color-surface);
-    stroke: var(--color-navy);
-    stroke-width: 1.6;
+    fill: var(--map-served);
+    stroke: var(--map-served-border);
+    stroke-width: 1.3;
   }
 
   .area {
-    fill: color-mix(in srgb, var(--color-blue) 16%, transparent);
+    fill: url(#service-map-area);
+  }
+
+  .halo {
+    fill: url(#service-map-halo);
+  }
+
+  .area-glow {
+    fill: none;
+    stroke: var(--map-orange);
+    stroke-width: 12;
+    stroke-linejoin: round;
+    opacity: 0.7;
   }
 
   .area-outline {
     fill: none;
-    stroke: var(--color-blue);
-    stroke-dasharray: 6 5;
-    stroke-width: 2;
+    stroke: var(--map-orange-light);
+    stroke-width: 2.5;
+    stroke-linejoin: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+  }
+
+  .rings circle {
+    fill: none;
+    stroke: rgb(255 255 255 / 0.22);
+    stroke-dasharray: 3 6;
+    stroke-width: 1.2;
+  }
+
+  .graticule-labels text,
+  .water-label {
+    paint-order: stroke;
+    stroke: var(--map-sea);
     stroke-linejoin: round;
   }
 
+  .graticule-labels text {
+    fill: rgb(140 196 238 / 0.55);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    stroke-width: 4px;
+  }
+
   .water-label {
-    fill: color-mix(in srgb, var(--color-blue) 70%, var(--color-ink));
+    fill: var(--map-blue-light);
     font-family: var(--font-base);
-    font-size: 20px;
+    font-size: 17px;
     font-style: italic;
+    letter-spacing: 0.32em;
+    stroke-width: 5px;
     text-anchor: middle;
+    text-transform: uppercase;
   }
 
   .labels,
@@ -309,17 +464,18 @@ const description = `${site.serviceArea.summary} Na mapie zaznaczono ${places.le
   .region-label {
     position: absolute;
     display: grid;
-    color: color-mix(in srgb, var(--color-ink) 55%, transparent);
+    color: rgb(255 255 255 / 0.32);
     font-family: var(--font-mono);
-    font-size: clamp(0.5625rem, 0.45rem + 0.35vw, 0.75rem);
+    font-size: clamp(0.5rem, 0.4rem + 0.3vw, 0.6875rem);
     font-weight: 500;
-    letter-spacing: 0.12em;
-    line-height: 1.25;
+    letter-spacing: 0.16em;
+    line-height: 1.3;
     text-align: center;
     translate: -50% -50%;
   }
 
-  .marker {
+  .marker,
+  .base {
     position: absolute;
     inline-size: 0;
     block-size: 0;
@@ -328,105 +484,206 @@ const description = `${site.serviceArea.summary} Na mapie zaznaczono ${places.le
 
   .dot {
     position: absolute;
-    inline-size: 0.625rem;
-    block-size: 0.625rem;
-    border: 2px solid var(--color-surface);
+    inline-size: 0.4375rem;
+    block-size: 0.4375rem;
     border-radius: 50%;
-    background: var(--color-navy);
-    box-shadow: 0 1px 3px color-mix(in srgb, var(--color-ink) 35%, transparent);
+    background: var(--map-orange-light);
+    opacity: 0.85;
     translate: -50% -50%;
     transition:
       scale 200ms ease,
       background-color 200ms ease;
   }
 
-  .base .dot {
-    inline-size: 1rem;
-    block-size: 1rem;
-    background: var(--color-accent);
+  .major .dot {
+    inline-size: 0.6875rem;
+    block-size: 0.6875rem;
+    border: 2px solid var(--map-sea);
+    background: var(--map-orange);
+    opacity: 1;
+    box-shadow: 0 0 0 3px rgb(242 140 40 / 0.28);
   }
 
-  /* A slow ring around the base point. */
-  .base .dot::after {
-    content: "";
-    position: absolute;
-    inset: -6px;
-    border: 2px solid var(--color-accent);
-    border-radius: 50%;
-    animation: pulse 2.4s ease-out infinite;
+  .city .dot {
+    inline-size: 0.8125rem;
+    block-size: 0.8125rem;
   }
 
+  /* Labels are set like a printed chart: white type with a navy halo instead of boxes. */
   .name {
     position: absolute;
-    color: var(--color-ink);
-    font-size: clamp(0.6875rem, 0.6rem + 0.3vw, 0.8125rem);
+    color: var(--map-text);
+    font-size: clamp(0.6875rem, 0.6rem + 0.25vw, 0.8125rem);
     font-weight: 600;
+    letter-spacing: 0.01em;
     line-height: 1;
     white-space: nowrap;
     text-shadow:
-      0 0 3px var(--color-surface),
-      0 0 3px var(--color-surface),
-      0 0 6px var(--color-surface);
+      0 0 2px var(--map-sea),
+      0 0 4px var(--map-sea),
+      0 0 8px var(--map-sea),
+      0 1px 2px var(--map-sea);
   }
 
-  .base .name {
-    color: var(--color-accent);
+  .city .name {
     font-size: clamp(0.75rem, 0.65rem + 0.35vw, 0.9375rem);
+    font-weight: 700;
+    letter-spacing: 0.02em;
   }
 
   .side-right .name {
-    inset-inline-start: 0.6rem;
+    inset-inline-start: 0.7rem;
     translate: 0 -50%;
   }
 
   .side-left .name {
-    inset-inline-end: 0.6rem;
+    inset-inline-end: 0.7rem;
     translate: 0 -50%;
   }
 
   .side-top .name {
-    inset-block-end: 0.55rem;
+    inset-block-end: 0.65rem;
     translate: -50% 0;
   }
 
   .side-bottom .name {
-    inset-block-start: 0.55rem;
+    inset-block-start: 0.65rem;
     translate: -50% 0;
   }
 
   .marker[data-active] .dot,
   .marker:hover .dot {
-    background: var(--color-accent);
-    scale: 1.5;
+    background: var(--map-text);
+    opacity: 1;
+    scale: 1.6;
   }
 
   .marker[data-active] .name {
-    color: var(--color-accent);
+    color: var(--map-orange-light);
   }
 
-  /* Before the map enters the view (only when scripts run) towns wait hidden, then ripple out from the base. */
-  :global(.js) [data-map-reveal]:not([data-revealed]) .marker,
-  :global(.js) [data-map-reveal]:not([data-revealed]) .area,
-  :global(.js) [data-map-reveal]:not([data-revealed]) .area-outline {
-    opacity: 0;
+  /* The base: the logo in a glowing ring with a tag above it. */
+  .pin {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+    border: 2px solid var(--map-orange);
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 0 22px rgb(242 140 40 / 0.75);
+    translate: -50% -50%;
   }
 
-  [data-revealed] .marker {
-    animation: drop-in 520ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
-    animation-delay: calc(300ms + var(--delay));
+  .pin img {
+    border-radius: 50%;
   }
 
-  [data-revealed] .area,
-  [data-revealed] .area-outline {
-    animation: fade-in 900ms ease backwards;
+  .pin::after {
+    content: "";
+    position: absolute;
+    inset: -8px;
+    border: 2px solid var(--map-orange);
+    border-radius: 50%;
+    animation: pulse 2.4s ease-out infinite;
+  }
+
+  .tag {
+    position: absolute;
+    inset-block-end: 1.75rem;
+    display: flex;
+    overflow: hidden;
+    border: 1px solid var(--map-orange);
+    border-radius: var(--radius-sm);
+    font-size: clamp(0.6875rem, 0.6rem + 0.3vw, 0.875rem);
+    line-height: 1;
+    white-space: nowrap;
+    box-shadow: 0 6px 16px rgb(10 24 40 / 0.5);
+    translate: -50% 0;
+  }
+
+  .tag-brand {
+    padding: 0.35em 0.55em;
+    background: var(--map-orange);
+    color: #142b45;
+    font-style: italic;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+
+  .tag-town {
+    padding: 0.35em 0.6em;
+    background: var(--map-sea);
+    color: var(--map-text);
+    font-weight: 600;
+  }
+
+  .compass {
+    position: absolute;
+    inset-block-start: 4%;
+    inset-inline-end: 3%;
+    display: grid;
+    justify-items: center;
+    color: var(--map-text);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    line-height: 1;
+  }
+
+  .compass svg {
+    inline-size: 1.125rem;
+    block-size: auto;
+    fill: var(--map-text);
+  }
+
+  .compass .compass-dark {
+    fill: var(--map-muted);
+  }
+
+  .scale {
+    position: absolute;
+    inset-block-start: 5%;
+    inset-inline-end: calc(3% + 3rem);
+    display: grid;
+    gap: 0.2rem;
+    inline-size: var(--scale-width);
+    color: var(--map-muted);
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+  }
+
+  .scale-bar {
+    block-size: 0.375rem;
+    border: 1px solid var(--map-text);
+    background: linear-gradient(90deg, var(--map-text) 50%, transparent 50%);
+  }
+
+  .scale-ticks {
+    display: flex;
+    justify-content: space-between;
+    margin-inline: -0.2rem -1.75rem;
+    white-space: nowrap;
   }
 
   .legend {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-xs) var(--space-l);
-    color: var(--color-muted);
-    font-size: var(--text-sm);
+    align-items: center;
+    padding: var(--space-2xs) var(--space-xs) var(--space-xs);
+    color: var(--map-muted);
+    font-size: var(--text-xs);
+  }
+
+  .legend-title {
+    color: var(--map-text);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
   }
 
   .legend-item {
@@ -443,20 +700,112 @@ const description = `${site.serviceArea.summary} Na mapie zaznaczono ${places.le
   }
 
   .key-base {
-    background: var(--color-accent);
+    border: 2px solid var(--map-orange);
+    background: #ffffff;
+    box-shadow: 0 0 8px rgb(242 140 40 / 0.8);
   }
 
   .key-town {
-    border: 2px solid var(--color-surface);
-    background: var(--color-navy);
-    box-shadow: 0 0 0 1px var(--color-line);
+    inline-size: 0.6875rem;
+    block-size: 0.6875rem;
+    border: 2px solid var(--map-sea);
+    background: var(--map-orange);
+    box-shadow: 0 0 0 2px rgb(242 140 40 / 0.28);
   }
 
   .key-area {
     inline-size: 1.25rem;
-    border: 2px dashed var(--color-blue);
+    border: 2px solid var(--map-orange-light);
     border-radius: 4px;
-    background: color-mix(in srgb, var(--color-blue) 16%, transparent);
+    background: rgb(22 117 185 / 0.4);
+    box-shadow: 0 0 8px rgb(242 140 40 / 0.6);
+  }
+
+  .key-ring {
+    inline-size: 1.25rem;
+    block-size: 0;
+    border-block-start: 1.5px dashed rgb(255 255 255 / 0.5);
+    border-radius: 0;
+  }
+
+  /* Narrow maps keep only the key towns, the base pin and the scale, so nothing turns into a cloud of text. */
+  @container (width < 40rem) {
+    .marker:not(.is-key) .name,
+    .region-label,
+    .graticule-labels,
+    .tag-brand {
+      display: none;
+    }
+
+    .legend {
+      display: grid;
+      gap: var(--space-2xs);
+    }
+
+    .pin {
+      inline-size: 1.875rem;
+      block-size: 1.875rem;
+    }
+
+    .pin img {
+      inline-size: 1.25rem;
+      block-size: 1.25rem;
+    }
+
+    .tag {
+      inset-block-end: 1.3rem;
+    }
+
+    .water-label {
+      font-size: 26px;
+    }
+
+    .compass {
+      inset-block-start: 3%;
+    }
+
+    .scale {
+      inset-block-start: 4%;
+      inset-inline-end: calc(3% + 3.25rem);
+    }
+  }
+
+  /* Before the map enters the view (only when scripts run), towns and the area wait hidden. */
+  :global(.js)
+    [data-map-reveal]:not([data-revealed])
+    :is(.marker, .base, .area, .area-glow, .halo, .rings) {
+    opacity: 0;
+  }
+
+  :global(.js) [data-map-reveal]:not([data-revealed]) .area-outline {
+    stroke-dashoffset: 1;
+  }
+
+  [data-revealed] .area-outline {
+    animation: draw 1600ms cubic-bezier(0.45, 0, 0.2, 1) backwards;
+  }
+
+  [data-revealed] :is(.area, .rings) {
+    animation: fade-in 900ms ease backwards;
+  }
+
+  [data-revealed] :is(.area-glow, .halo) {
+    animation: fade-in 1200ms ease 900ms backwards;
+  }
+
+  [data-revealed] .base {
+    animation: drop-in 520ms cubic-bezier(0.22, 1, 0.36, 1) 200ms backwards;
+  }
+
+  [data-revealed] .marker {
+    animation: drop-in 520ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    animation-delay: calc(450ms + var(--delay));
+  }
+
+  @keyframes draw {
+    from {
+      stroke-dashoffset: 1;
+    }
   }
 
   @keyframes drop-in {
@@ -484,19 +833,9 @@ const description = `${site.serviceArea.summary} Na mapie zaznaczono ${places.le
     }
   }
 
-  /* Measured on the map itself, so a map in a narrow column thins its labels just like on a phone. */
-  @container (width < 40rem) {
-    .marker:not(.base, .is-key) .name,
-    .region-label {
-      display: none;
-    }
-  }
-
   @media (prefers-reduced-motion: reduce) {
-    [data-revealed] .marker,
-    [data-revealed] .area,
-    [data-revealed] .area-outline,
-    .base .dot::after {
+    [data-revealed] :is(.marker, .base, .area, .area-outline, .area-glow, .halo, .rings),
+    .pin::after {
       animation: none;
     }
   }

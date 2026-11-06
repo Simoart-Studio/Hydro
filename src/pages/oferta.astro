@@ -3,11 +3,11 @@ import Container from "../components/Container.astro";
 import CtaBand from "../components/CtaBand.astro";
 import OfferEntry from "../components/OfferEntry.astro";
 import PageHeader from "../components/PageHeader.astro";
-import { installation, offerItems, offerPage } from "../content/offer";
+import { electrical, installation, offerItems, offerPage } from "../content/offer";
 import { site } from "../content/site";
 import BaseLayout from "../layouts/BaseLayout.astro";
 
-const entries = [...offerItems, installation];
+const entries = [...offerItems, installation, electrical];
 ---
 
 <BaseLayout title={`${offerPage.metaTitle} | ${site.brandLines[0]}`} description={offerPage.lead}>

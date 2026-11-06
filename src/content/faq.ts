@@ -31,14 +31,19 @@ export const faq: FaqItem[] = [
       "To Lista Zielonych Urządzeń i Materiałów. Urządzenie kupione z dotacją musi spełniać jej aktualne wymagania. Proponujemy tylko modele, które je spełniają.",
   },
   {
+    question: "Kto prowadzi wniosek o dotację?",
+    answer:
+      "Firma, z którą współpracujemy i która zajmuje się wnioskami dla naszych klientów. To nie handlowcy, tylko ludzie znający programy od strony formalnej. My dobieramy urządzenie spełniające wymagania programu, montujemy je i uruchamiamy.",
+  },
+  {
     question: "Czym różnicie się od firm handlowych z OZE?",
     answer:
-      "Formalności przygotowujemy jako instalatorzy i sami montujemy urządzenia. Nie ma pośredników między wnioskiem a montażem.",
+      "Jesteśmy instalatorami, nie handlowcami. Sami dobieramy, montujemy i uruchamiamy urządzenia, a pomoc przy dotacji jest dodatkiem do instalacji, nie odwrotnie.",
   },
   {
     question: "Ile kosztuje pierwsza rozmowa?",
     answer:
-      "Nic. Na rozmowie oceniamy, czy dotacja ma sens w Twoim domu. Wycenę przygotowujemy po oględzinach kotłowni.",
+      "Nic. Na rozmowie mówimy, jakie rozwiązanie ma sens w Twoim domu i czy możesz liczyć na dotację. Wycenę przygotowujemy po oględzinach kotłowni.",
   },
   {
     question: "Gdzie pracujecie?",

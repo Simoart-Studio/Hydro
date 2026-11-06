@@ -1,10 +1,16 @@
 ---
 import { intro } from "../content/intro";
-import { offerItems } from "../content/offer";
+import { electrical, installation, offerItems } from "../content/offer";
 import Button from "./Button.astro";
 import PhotoTile from "./PhotoTile.astro";
 import Section from "./Section.astro";
 import TileGrid from "./TileGrid.astro";
+
+const allItems = [...offerItems, installation, electrical];
+const tiles = intro.tiles.flatMap(({ id, label }) => {
+  const item = allItems.find((entry) => entry.id === id);
+  return item ? [{ ...item, shortTitle: label ?? item.shortTitle }] : [];
+});
 ---
 
 <Section id="o-firmie" title={intro.title} width="page">
@@ -18,7 +24,7 @@ import TileGrid from "./TileGrid.astro";
   </div>
   <p class="prompt">{intro.categoriesPrompt}</p>
   <TileGrid columns={4}>
-    {offerItems.map((item) => (
+    {tiles.map((item) => (
       <li>
         <PhotoTile
           label={item.shortTitle}

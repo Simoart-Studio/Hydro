@@ -1,7 +1,16 @@
 export const subsidiesPage = {
   title: "Dotacje na wymianę źródła ciepła",
   metaTitle: "Dotacje na kotły na pellet i pompy ciepła",
-  lead: "Które urządzenia mogą być objęte dofinansowaniem, od czego zależy wsparcie i jak prowadzimy sprawę od pierwszej rozmowy do rozliczenia.",
+  lead: "Jesteśmy instalatorami i chcemy wyjść naprzeciw inwestorowi. Jeśli kwalifikujesz się do dofinansowania, pomożemy je uzyskać razem z firmą, która zajmuje się wnioskami dla naszych klientów.",
+};
+
+// TODO(klient): nazwa firmy partnerskiej, jeśli może być podana na stronie.
+export const partner = {
+  title: "Kto zajmuje się wnioskiem",
+  paragraphs: [
+    "Przy dotacjach współpracujemy z firmą, która przygotowuje i prowadzi wnioski dla naszych klientów. To nie są handlowcy, którzy obiecują wszystko bez znajomości tematu, tylko ludzie, którzy znają programy i ich wymagania od strony formalnej.",
+    "My zostajemy przy tym, na czym znamy się najlepiej: dobieramy urządzenie spełniające wymagania programu, montujemy je i uruchamiamy. Dzięki temu każdą część sprawy robi ktoś, kto się na niej zna.",
+  ],
 };
 
 export type Eligibility = "yes" | "conditional";
@@ -81,13 +90,13 @@ export const zum = {
 export const responsibilities = {
   title: "Podział obowiązków",
   intro:
-    "Formalności bierzemy na siebie. Od Ciebie potrzebujemy tylko tego, czego nie da się załatwić bez właściciela domu.",
+    "Wniosek prowadzi współpracująca z nami firma, my odpowiadamy za urządzenie i montaż. Od Ciebie potrzebujemy tylko tego, czego nie da się załatwić bez właściciela domu.",
   oursTitle: "Po naszej stronie",
   ours: [
-    "Ocena, czy budynek i obecne źródło ciepła kwalifikują się do programu",
+    "Wstępna ocena, czy budynek i obecne źródło ciepła pasują do programu",
     "Dobór urządzenia z aktualnej listy ZUM",
-    "Przygotowanie dokumentów i pomoc przy złożeniu wniosku",
-    "Montaż, uruchomienie i dokumenty do rozliczenia",
+    "Kontakt z firmą, która przygotuje i poprowadzi wniosek",
+    "Montaż, uruchomienie i dokumenty z montażu potrzebne do rozliczenia",
   ],
   yoursTitle: "Po Twojej stronie",
   yours: [

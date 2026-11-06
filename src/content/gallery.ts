@@ -17,6 +17,7 @@ import photo15 from "../assets/gallery/15.jpeg";
 import photo16 from "../assets/gallery/16.jpeg";
 import photo17 from "../assets/gallery/17.jpeg";
 import photo18 from "../assets/gallery/18.jpeg";
+import photo19 from "../assets/gallery/19.jpeg";
 
 export interface Photo {
   src: ImageMetadata;
@@ -33,6 +34,11 @@ export interface GalleryGroup {
 
 // TODO(klient): potwierdzić podpisy zdjęć i dopisać miejscowości, jeśli klienci się zgodzą
 export const photos = {
+  gasAndDistrictHeating: {
+    src: photo19,
+    caption:
+      "Kocioł gazowy i ogrzewanie miejskie w domu jednorodzinnym: grupy pompowe dwóch obiegów, podłogówki i grzejników",
+  },
   pelletBoilerRoom: {
     src: photo14,
     caption: "Kocioł na pellet z podajnikiem, zasobnik CWU i nowe orurowanie kotłowni",
@@ -135,10 +141,11 @@ export const galleryGroups: GalleryGroup[] = [
   },
   {
     id: "instalacje",
-    title: "Instalacje i ogrzewanie podłogowe",
+    title: "Instalacje hydrauliczne i ogrzewanie podłogowe",
     description:
-      "Rozdzielacze ze sterowaniem strefowym, grzejniki kanałowe i rurociągi prowadzone w budynkach w budowie.",
+      "Obiegi grzewcze z grupami pompowymi, rozdzielacze ze sterowaniem strefowym, grzejniki kanałowe i rurociągi w budynkach w budowie.",
     photos: [
+      photos.gasAndDistrictHeating,
       photos.manifold,
       photos.manifoldPair,
       photos.trenchConvector,
@@ -160,9 +167,9 @@ export const galleryPreview = {
   intro: "Zdjęcia kotłowni i instalacji, które wykonaliśmy.",
   moreLabel: "Zobacz wszystkie realizacje",
   photos: [
+    photos.gasAndDistrictHeating,
     photos.pelletBoilerFuelStore,
     photos.heatPumpIndoor,
-    photos.manifoldPair,
     photos.pelletBoilerLowCeiling,
   ],
 };

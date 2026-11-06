@@ -44,7 +44,7 @@ const lead = hasContactForm ? contactPage.lead : contactPage.leadPhoneOnly;
       </section>
       <section id="obszar" aria-labelledby="contact-area-title">
         <h2 id="contact-area-title">{contactPage.areaTitle}</h2>
-        <ServiceArea layout="stacked" />
+        <ServiceArea layout="stacked" calls={false} />
       </section>
     </div>
   </Container>
@@ -112,7 +112,8 @@ const lead = hasContactForm ? contactPage.lead : contactPage.leadPhoneOnly;
 
   @media (width >= 56rem) {
     .layout {
-      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+      /* Two equal halves: details with the map on one side, the call card on the other. */
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .details {

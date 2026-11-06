@@ -2,28 +2,34 @@
   color-scheme: light;
 
   /*
-   * One palette taken from the logo and the hero photo.
-   * Red is reserved for actions, navy carries structure, blue marks links and labels,
-   * and the warm greys follow the wall behind the manifold in the hero photo.
+   * Client palette: navy carries the page, white is the background, orange marks actions and
+   * highlights, light grey separates sections. Orange fills always carry navy text (5.9:1);
+   * white on orange would be 2.5:1. Orange as text on light backgrounds uses --color-accent-text.
    */
   --color-bg: #ffffff;
   --color-surface: #ffffff;
-  --color-subtle: #f4f4f1;
-  --color-hero-bg: #efeeea;
-  --color-band: #e6e6e0;
-  --color-line: #e0e0da;
-  --color-field: #878b8c; /* 3.4:1 on white, enough for input borders */
-  --color-ink: #18262f;
-  --color-muted: #56626a; /* 5.0:1 or more on every background above */
+  --color-subtle: #f5f7fa;
+  --color-hero-bg: #142b45;
+  --color-band: #e9eef3;
+  --color-line: #dde3ea;
+  --color-field: #7d8794; /* 3.6:1 on white, enough for input borders */
+  --color-ink: #142b45;
+  --color-muted: #4f5d6c; /* 6.4:1 on white, 6.0:1 on subtle */
 
-  --color-accent: #d0281f; /* 5.2:1 with white */
-  --color-accent-hover: #b0201a;
-  --color-on-accent: #ffffff;
-  --color-navy: #163a5f; /* 11.6:1 with white */
-  --color-navy-hover: #0f2a46;
+  --color-accent: #f28c28; /* fills only, with --color-on-accent */
+  --color-accent-hover: #f59e45;
+  --color-on-accent: #142b45; /* 5.9:1 on accent */
+  --color-accent-text: #a65300; /* 5.0:1 on subtle, 5.4:1 on white */
+  --color-navy: #142b45; /* 14.4:1 with white */
+  /* Fixed navy backgrounds: never remapped by .on-navy, unlike --color-navy. */
+  --surface-navy: #142b45;
+  --surface-navy-deep: #0c1d31;
+  --color-navy-hover: #0c1d31;
+  --color-navy-soft: #1c3a5c;
   --color-on-navy: #ffffff;
-  --color-blue: #11649f; /* 6.3:1 on white, 5.7:1 on subtle */
-  --color-sea: #e3ecf1;
+  --color-on-navy-muted: #c9d3de; /* 9.5:1 on navy */
+  --color-blue: #1675b9; /* 4.9:1 on white */
+  --color-sea: #e4eef6;
 
   --font-base: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace;
@@ -56,7 +62,7 @@
   --radius-pill: 999px;
   --target-size: 2.75rem;
 
-  --shadow-card: 0 2px 12px color-mix(in srgb, #18262f 12%, transparent);
+  --shadow-card: 0 2px 12px color-mix(in srgb, #142b45 12%, transparent);
   /* Height of the sticky header, used to keep anchor targets clear of it. */
   --header-height: 4.5rem;
   --hero-overlap: clamp(1.5rem, 1rem + 2.5vw, 3rem);

@@ -1,12 +1,18 @@
 import heroPhoto from "../assets/photos/hero.jpeg";
 
 export const hero = {
-  label: "Od wniosku po montaż, w jednych rękach",
-  title: "Nowe źródło ciepła",
-  titleAccent: "z dotacją",
-  lead: "Kotły na pellet, kotły zgazowujące drewno i pompy ciepła z dofinansowaniem. Załatwiamy formalności i sami montujemy kotłownię: w Trójmieście, okolicach Tczewa i do 100 km dalej.",
-  action: { label: "Umów bezpłatną rozmowę", href: "/kontakt" },
-  secondaryAction: { label: "Jak działa dotacja", href: "/dotacje" },
+  label: "Montaż · sprzedaż · serwis",
+  brand: "HYDRO",
+  title: "Nowoczesne instalacje",
+  titleAccent: "grzewcze i hydrauliczne",
+  lead: "Pompy ciepła, kotły gazowe, kotły na pellet i zgazowujące drewno. Kompleksowy montaż, modernizacja kotłowni oraz pomoc w uzyskaniu dofinansowania. Działamy na terenie Trójmiasta, Tczewa i okolic.",
+  callLabel: "Zadzwoń",
+  perksLabel: "Dodatkowo",
+  perks: [
+    { label: "Pomoc w uzyskaniu dotacji", href: "/dotacje" },
+    { label: "Rabaty na urządzenia", href: "/oferta" },
+  ],
+  secondaryAction: { label: "Zobacz ofertę", href: "/oferta" },
   image: {
     src: heroPhoto,
     alt: "Rozdzielacz ogrzewania podłogowego z listwą sterującą w szafce instalacyjnej",

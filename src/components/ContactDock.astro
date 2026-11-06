@@ -29,17 +29,9 @@ const contactLabel = hasContactForm ? contactDock.formLabel : contactDock.contac
 
 <script>
   const dock = document.querySelector<HTMLElement>("[data-contact-dock]");
-  const storageKey = "contact-dock-closed";
 
-  const readClosed = () => {
-    try {
-      return sessionStorage.getItem(storageKey) === "1";
-    } catch {
-      return false;
-    }
-  };
-
-  if (dock && !readClosed()) {
+  // Closing hides the dock only for the current page view: after a reload or on the next page it is back.
+  if (dock) {
     // The dock waits until the hero has scrolled away and steps aside wherever contact is already on screen.
     const threshold = () => Math.min(window.innerHeight * 0.6, 520);
     const covering = new Set<Element>();
@@ -78,11 +70,6 @@ const contactLabel = hasContactForm ? contactDock.formLabel : contactDock.contac
       closed = true;
       dock.removeAttribute("data-visible");
       observer.disconnect();
-      try {
-        sessionStorage.setItem(storageKey, "1");
-      } catch {
-        // Without storage the dock simply stays closed until the next page load.
-      }
       document.querySelector<HTMLElement>("#main")?.focus({ preventScroll: true });
     });
 

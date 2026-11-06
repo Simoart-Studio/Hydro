@@ -1,4 +1,4 @@
-export type ServiceIcon = "paperwork" | "discount" | "tank" | "installation";
+export type ServiceIcon = "heatPump" | "gasBoiler" | "solidFuel" | "plumbing";
 
 export interface Service {
   icon: ServiceIcon;
@@ -14,27 +14,27 @@ export const servicesSection = {
 
 export const services: Service[] = [
   {
-    icon: "paperwork",
-    title: "Formalności dotacyjne",
-    summary: "Dobór programu, komplet dokumentów i pilnowanie terminów.",
-    href: "/dotacje",
+    icon: "heatPump",
+    title: "Pompy ciepła",
+    summary: "Dobór, montaż i uruchomienie pomp ciepła powietrze–woda.",
+    href: "/oferta#pompy-ciepla",
   },
   {
-    icon: "discount",
-    title: "Rabaty na urządzenia",
-    summary: "Kotły, pompy ciepła i armatura na warunkach instalatorskich.",
-    href: "/oferta",
+    icon: "gasBoiler",
+    title: "Kotły gazowe",
+    summary: "Montaż kotłów gazowych i modernizacja istniejących kotłowni.",
+    href: "/oferta#kotly-gazowe",
   },
   {
-    icon: "tank",
-    title: "Zasobniki i bufory",
-    summary: "Pojemność dobrana do zużycia wody i mocy źródła ciepła.",
-    href: "/oferta#zasobniki",
+    icon: "solidFuel",
+    title: "Kotły na pellet i drewno",
+    summary: "Kotły na pellet i zgazowujące drewno z buforem i zasobnikiem.",
+    href: "/oferta#kotly",
   },
   {
-    icon: "installation",
-    title: "Montaż kotłowni",
-    summary: "Demontaż, wykonanie instalacji, uruchomienie i instruktaż.",
+    icon: "plumbing",
+    title: "Instalacje hydrauliczne",
+    summary: "Kompleksowo: c.o., ogrzewanie podłogowe, woda i kotłownie.",
     href: "/oferta#montaz",
   },
 ];

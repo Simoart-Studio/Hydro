@@ -9,7 +9,7 @@ interface Props {
 const { title, lead } = Astro.props;
 ---
 
-<div class="page-header">
+<div class="page-header on-navy">
   <Container width="column" class="inner">
     <nav aria-label="Ścieżka">
       <ol class="breadcrumbs" role="list">
@@ -26,13 +26,26 @@ const { title, lead } = Astro.props;
 
 <style>
   .page-header {
+    position: relative;
     padding-block: var(--space-xl) var(--space-2xl);
-    border-block-end: 1px solid var(--color-line);
-    background-color: var(--color-subtle);
-    background-image:
-      linear-gradient(var(--color-line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--color-line) 1px, transparent 1px);
-    background-size: 24px 24px;
+    overflow: hidden;
+    /* Navy like the home hero: a blueprint grid, blue light from the right and a warm glow from the left. */
+    background:
+      radial-gradient(
+        50rem 26rem at 100% 0%,
+        color-mix(in srgb, #1675b9 38%, transparent),
+        transparent 70%
+      ),
+      radial-gradient(
+        36rem 20rem at 0% 100%,
+        color-mix(in srgb, #f28c28 16%, transparent),
+        transparent 70%
+      ),
+      linear-gradient(color-mix(in srgb, #ffffff 5%, transparent) 1px, transparent 1px) 0 0 / 24px
+        24px,
+      linear-gradient(90deg, color-mix(in srgb, #ffffff 5%, transparent) 1px, transparent 1px) 0 0 /
+        24px 24px,
+      var(--surface-navy);
   }
 
   .inner {
@@ -83,8 +96,23 @@ const { title, lead } = Astro.props;
 
   .lead {
     max-inline-size: var(--measure);
-    padding: var(--space-xs) var(--space-m);
-    background: var(--color-surface);
     color: var(--color-muted);
+    font-size: var(--text-lg);
+  }
+
+  .page-header::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 0;
+    block-size: 3px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--color-accent) 30%,
+      var(--color-accent) 70%,
+      transparent
+    );
+    opacity: 0.8;
   }
 </style>
