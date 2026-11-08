@@ -2,7 +2,7 @@
 import { contactForm, heatSources, photoLimits } from "../content/contact";
 import { privacyPolicyLink } from "../content/navigation";
 import { phoneHref, primaryContact, site, telHref } from "../content/site";
-import { formEndpoint } from "../lib/env";
+import { formEndpoint, isFormConnected } from "../lib/env";
 import Button from "./Button.astro";
 import PhoneIcon from "./PhoneIcon.astro";
 
@@ -14,14 +14,20 @@ const { fields, success } = contactForm;
     class="contact-form"
     method="post"
     enctype="multipart/form-data"
-    action={formEndpoint}
+    action={isFormConnected ? formEndpoint : undefined}
     aria-labelledby="contact-form-title"
     data-contact-form
+    data-connected={isFormConnected ? "" : undefined}
   >
     <header class="intro">
       <p class="eyebrow">{contactForm.eyebrow}</p>
       <h2 id="contact-form-title">{contactForm.title}</h2>
       <p class="note">{contactForm.requiredNote}</p>
+      {!isFormConnected && (
+        <p class="pending">
+          {contactForm.notConnected.notice} <a href={phoneHref}>{primaryContact.phone}</a>
+        </p>
+      )}
     </header>
 
     <div class="field">
@@ -181,6 +187,9 @@ const { fields, success } = contactForm;
     <template data-failure>
       {contactForm.failure} <a href={phoneHref}>{primaryContact.phone}</a>
     </template>
+    <template data-not-connected>
+      {contactForm.notConnected.status} <a href={phoneHref}>{primaryContact.phone}</a>
+    </template>
   </form>
 
   <section class="success" aria-labelledby="contact-success-title" hidden data-success>
@@ -230,6 +239,8 @@ const { fields, success } = contactForm;
   if (form) {
     const status = form.querySelector<HTMLElement>("[data-status]");
     const failure = form.querySelector<HTMLTemplateElement>("[data-failure]");
+    const notConnected = form.querySelector<HTMLTemplateElement>("[data-not-connected]");
+    const honeypot = form.querySelector<HTMLInputElement>("[name=website]");
     const submit = form.querySelector<HTMLButtonElement>("button[type=submit]");
     const submitLabel = form.querySelector<HTMLElement>("[data-submit-label]");
     const fields = Array.from(form.querySelectorAll<Field>("[data-error]"));
@@ -292,12 +303,23 @@ const { fields, success } = contactForm;
         ? `${Math.max(1, Math.round(bytes / 1024))} KB`
         : `${(bytes / 1024 / 1024).toFixed(1).replace(".", ",")} MB`;
 
+    // The file picker replaces the selection, so the form keeps its own list and adds new picks to it.
+    let selected: File[] = [];
+    let syncing = false;
+    const sameFile = (a: File, b: File) =>
+      a.name === b.name && a.size === b.size && a.lastModified === b.lastModified;
+
     const setPhotos = (files: File[]) => {
       if (!photos) return;
+      selected = files.filter(
+        (file, index) => files.findIndex((other) => sameFile(file, other)) === index,
+      );
       const transfer = new DataTransfer();
-      for (const file of files) transfer.items.add(file);
+      for (const file of selected) transfer.items.add(file);
+      syncing = true;
       photos.files = transfer.files;
       photos.dispatchEvent(new Event("change"));
+      syncing = false;
     };
 
     // Names come from the visitor's device, so they are only ever set as text.
@@ -335,6 +357,10 @@ const { fields, success } = contactForm;
     };
 
     photos?.addEventListener("change", () => {
+      if (!syncing) {
+        setPhotos([...selected, ...Array.from(photos.files ?? [])]);
+        return;
+      }
       renderPhotos();
       showError(photos, !isValid(photos));
     });
@@ -350,8 +376,7 @@ const { fields, success } = contactForm;
       dropzone.addEventListener("drop", (event) => {
         event.preventDefault();
         delete dropzone.dataset.dragover;
-        const dropped = Array.from(event.dataTransfer?.files ?? []);
-        setPhotos([...Array.from(photos.files ?? []), ...dropped]);
+        setPhotos([...selected, ...Array.from(event.dataTransfer?.files ?? [])]);
       });
     }
 
@@ -369,8 +394,8 @@ const { fields, success } = contactForm;
 
     const resetForm = () => {
       form.reset();
+      setPhotos([]);
       for (const field of fields) field.removeAttribute("aria-invalid");
-      renderPhotos();
       status?.replaceChildren();
     };
 
@@ -408,6 +433,21 @@ const { fields, success } = contactForm;
         return;
       }
 
+      // Bots fill every field, people never see this one: pretend success and send nothing.
+      if (honeypot && honeypot.value !== "") {
+        resetForm();
+        showSuccess();
+        return;
+      }
+
+      if (!form.hasAttribute("data-connected")) {
+        setStatus(
+          notConnected ? notConnected.content.cloneNode(true) : contactForm.notConnected.status,
+          "info",
+        );
+        return;
+      }
+
       setSending(true);
       try {
         const response = await fetch(form.action, {
@@ -429,8 +469,11 @@ const { fields, success } = contactForm;
 
 <style>
   .contact-card {
+    /* Inner padding; the boiler room panel bleeds to the card edge on phones, so it reads the same value. */
+    --card-padding: var(--space-m);
+
     position: relative;
-    padding: var(--space-l);
+    padding: var(--space-l) var(--card-padding);
     border: 1px solid var(--color-line);
     border-radius: calc(var(--radius) + var(--space-s));
     background: var(--color-surface);
@@ -438,6 +481,7 @@ const { fields, success } = contactForm;
   }
 
   .contact-form {
+    container-type: inline-size;
     display: grid;
     gap: var(--space-m);
   }
@@ -485,6 +529,21 @@ const { fields, success } = contactForm;
     color: var(--color-muted);
     font-size: var(--text-sm);
     font-weight: 400;
+  }
+
+  .pending {
+    margin-block-start: var(--space-2xs);
+    padding: var(--space-s) var(--space-m);
+    border-inline-start: 4px solid var(--color-accent);
+    border-radius: var(--radius-sm);
+    background: var(--color-subtle);
+    font-size: var(--text-sm);
+  }
+
+  .pending a,
+  .status a {
+    font-weight: 600;
+    white-space: nowrap;
   }
 
   .field {
@@ -544,13 +603,13 @@ const { fields, success } = contactForm;
   }
 
   /* Boiler room: optional details grouped on a tinted panel. */
+  /* On phones the panel spans the full card width, so its fields line up with the fields above and below. */
   .boiler-room {
     display: grid;
     gap: var(--space-m);
-    margin: 0;
-    padding: var(--space-m);
+    margin: 0 calc(var(--card-padding) * -1);
+    padding: var(--space-m) var(--card-padding);
     border: 0;
-    border-radius: var(--radius);
     background: var(--color-subtle);
   }
 
@@ -680,14 +739,15 @@ const { fields, success } = contactForm;
 
   .check {
     display: grid;
-    grid-template-columns: var(--target-size) minmax(0, 1fr);
+    grid-template-columns: 1.5rem minmax(0, 1fr);
+    gap: var(--space-s);
     align-items: start;
   }
 
   .check input {
-    inline-size: 1.375rem;
-    block-size: 1.375rem;
-    margin: 0.6875rem;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    margin: var(--space-xs) 0 0;
     accent-color: var(--color-navy);
   }
 
@@ -834,11 +894,15 @@ const { fields, success } = contactForm;
 
   @media (width >= 30rem) {
     .contact-card {
-      padding: var(--space-xl);
+      --card-padding: var(--space-xl);
+
+      padding-block: var(--space-xl);
     }
 
     .boiler-room {
+      margin-inline: 0;
       padding: var(--space-l);
+      border-radius: var(--radius);
     }
 
     .submit,
@@ -852,7 +916,8 @@ const { fields, success } = contactForm;
     }
   }
 
-  @media (width >= 72rem) {
+  /* City and heat source side by side once the form itself is wide enough, wherever the card sits. */
+  @container (width >= 26rem) {
     .pair {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }

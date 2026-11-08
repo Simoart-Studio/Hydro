@@ -89,6 +89,12 @@ export const contactForm = {
     again: "Wyślij kolejne zapytanie",
   },
   failure: "Nie udało się wysłać zapytania. Spróbuj ponownie albo zadzwoń:",
+  /** Gdy formularz nie ma jeszcze adresu wysyłki (PUBLIC_FORM_ENDPOINT). */
+  notConnected: {
+    notice: "Formularz jest w przygotowaniu. Do tego czasu zgłoszenia przyjmujemy telefonicznie:",
+    status:
+      "Formularz jeszcze nie wysyła zgłoszeń, a Twoje dane zostały tylko w tej przeglądarce. Zadzwoń:",
+  },
   invalid: "Formularz zawiera błędy. Popraw zaznaczone pola.",
 };
 

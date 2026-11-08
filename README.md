@@ -26,11 +26,12 @@ npm run dev        # http://localhost:4321
 
 ## Zmienne środowiskowe
 
-| Zmienna                | Domyślnie                                        | Opis                                                                                                        |
-| ---------------------- | ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
-| `PUBLIC_SITE_URL`      | domena produkcyjna projektu Vercel / `localhost` | Adres w canonical, sitemapie, Open Graph i JSON-LD. W CI bez niego build się przerywa.                      |
-| `PUBLIC_NOINDEX`       | indeksowanie **wyłączone**                       | Tylko `false` włącza indeksowanie. Ustawić dopiero na produkcji z domeną klienta i zatwierdzoną treścią.    |
-| `PUBLIC_FORM_ENDPOINT` | pusty                                            | Adres usługi formularzy. Pusty — strona Kontakt pokazuje telefony. Jego domena trafia automatycznie do CSP. |
+| Zmienna                | Domyślnie                                        | Opis                                                                                                                                                                   |
+| ---------------------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PUBLIC_SITE_URL`      | domena produkcyjna projektu Vercel / `localhost` | Adres w canonical, sitemapie, Open Graph i JSON-LD. W CI bez niego build się przerywa.                                                                                 |
+| `PUBLIC_NOINDEX`       | indeksowanie **wyłączone**                       | Tylko `false` włącza indeksowanie. Ustawić dopiero na produkcji z domeną klienta i zatwierdzoną treścią.                                                               |
+| `PUBLIC_FORM_ENDPOINT` | pusty                                            | Adres usługi formularzy. Pusty — formularz jest widoczny, ale nie wysyła: informuje, że zgłoszenia przyjmujemy telefonicznie. Jego domena trafia automatycznie do CSP. |
+| `PUBLIC_CONTACT_FORM`  | formularz widoczny                               | `false` — strona Kontakt pokazuje karty z telefonami zamiast formularza.                                                                                               |
 
 Domeny `*.vercel.app` dostają dodatkowo nagłówek `X-Robots-Tag: noindex` (`vercel.json`), więc po podpięciu domeny klienta adresy techniczne nie konkurują z nią w wyszukiwarce.
 
@@ -73,7 +74,7 @@ Kod nie wymaga zmian poza jedną linią z e-mailem. Kolejność:
 5. **Wizytówka.** `npm run card -- --url=https://domena-klienta` → `print/wizytowka.pdf`. Przed zamówieniem zeskanować kod z wydruku próbnego dwoma telefonami.
 6. **Rejestrator domeny.** Włączyć automatyczne odnawianie i 2FA — wygaśnięcie domeny unieważnia też kody QR na wydrukowanych wizytówkach.
 
-Formularz kontaktowy włącza osobno `PUBLIC_FORM_ENDPOINT` (usługa formularzy z obsługą załączników, wysyłająca na e-mail firmowy). Bez niego strona Kontakt pokazuje telefony.
+Wysyłkę formularza włącza `PUBLIC_FORM_ENDPOINT` (usługa formularzy z obsługą załączników do 5 × 10 MB, wysyłająca na e-mail firmowy). Do tego czasu formularz jest widoczny, waliduje dane, ale niczego nie wysyła i kieruje do telefonu. Po ustawieniu: wysłać zgłoszenie testowe ze zdjęciem, dopisać usługę do polityki prywatności jako odbiorcę danych i zawrzeć z nią umowę powierzenia.
 
 ## Wizytówka
 

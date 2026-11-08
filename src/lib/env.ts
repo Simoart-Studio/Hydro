@@ -3,8 +3,9 @@ export const isNoindex = import.meta.env.PUBLIC_NOINDEX !== "false";
 export const formEndpoint = import.meta.env.PUBLIC_FORM_ENDPOINT ?? "";
 
 /**
- * Bez adresu usługi formularzy strona zamiast formularza pokazuje kontakt telefoniczny.
- * W trybie deweloperskim formularz jest widoczny zawsze, żeby dało się go obejrzeć bez konta w usłudze;
- * wysyłka bez adresu kończy się wtedy komunikatem o błędzie z numerem telefonu.
+ * Formularz jest widoczny domyślnie; `PUBLIC_CONTACT_FORM=false` zastępuje go kartą z telefonami.
+ * Wysyła dopiero po ustawieniu `PUBLIC_FORM_ENDPOINT`. Do tego czasu po poprawnym wypełnieniu
+ * zamiast wysyłki pokazuje informację, że zgłoszenia przyjmujemy telefonicznie, i niczego nie wysyła.
  */
-export const hasContactForm = formEndpoint !== "" || import.meta.env.DEV;
+export const hasContactForm = import.meta.env.PUBLIC_CONTACT_FORM !== "false";
+export const isFormConnected = formEndpoint !== "";
