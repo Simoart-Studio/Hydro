@@ -33,7 +33,8 @@ export const privacySections: PolicySection[] = [
   {
     title: "Jakie dane zbieramy",
     paragraphs: [
-      "Przez formularz kontaktowy zbieramy imię, numer telefonu, miejscowość, informację o obecnym źródle ciepła i treść wiadomości, jeśli ją dopiszesz. Podanie danych jest dobrowolne, ale bez numeru telefonu nie możemy oddzwonić.",
+      "Przez formularz kontaktowy zbieramy imię, numer telefonu, miejscowość, informację o obecnym źródle ciepła, a jeśli je dodasz, także wymiary i zdjęcia kotłowni oraz treść wiadomości. Podanie danych jest dobrowolne, ale bez numeru telefonu nie możemy oddzwonić.",
+      "Zdjęcia służą wyłącznie do oceny pomieszczenia i instalacji. Prosimy, żeby nie było na nich osób ani dokumentów. Zdjęcia usuwamy razem z pozostałymi danymi zapytania.",
     ],
   },
   {

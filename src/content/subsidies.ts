@@ -113,5 +113,6 @@ export const preparation = {
     "Rodzaj i wiek obecnego źródła ciepła",
     "Orientacyjne rachunki za ogrzewanie z ostatniego sezonu",
     "Informację, czy dom był docieplany i kiedy wymieniano okna",
+    "Zdjęcie kotłowni i jej wymiary: długość, szerokość i wysokość",
   ],
 };

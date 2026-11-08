@@ -87,9 +87,8 @@ const contactLabel = hasContactForm ? contactDock.formLabel : contactDock.contac
     gap: var(--space-s);
     align-items: center;
     margin-inline: auto;
-    inline-size: fit-content;
     max-inline-size: calc(100% - 2 * var(--space-s));
-    padding: var(--space-xs) var(--space-xs) var(--space-xs) var(--space-m);
+    padding: var(--space-xs);
     border: 1px solid var(--color-line);
     border-radius: var(--radius-pill);
     background: rgb(255 255 255 / 0.96);
@@ -156,10 +155,10 @@ const contactLabel = hasContactForm ? contactDock.formLabel : contactDock.contac
     stroke-width: 2;
   }
 
-  @media (width < 30rem) {
+  @media (width >= 30rem) {
     .contact-dock {
-      inline-size: auto;
-      padding-inline-start: var(--space-xs);
+      inline-size: fit-content;
+      padding-inline-start: var(--space-m);
     }
   }
 

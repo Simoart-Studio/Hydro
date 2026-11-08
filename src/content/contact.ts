@@ -1,7 +1,7 @@
 export const contactPage = {
   title: "Kontakt",
   metaTitle: "Kontakt: Tczew, Trójmiasto i okolice",
-  lead: "Zadzwoń albo zostaw numer. Oddzwonimy, zapytamy o budynek i powiemy, jakie rozwiązanie ma sens w Twojej sytuacji.",
+  lead: "Zadzwoń albo napisz. Jeśli dołączysz zdjęcie kotłowni i jej wymiary, szybciej ocenimy, co da się zrobić. Oddzwonimy i powiemy, jakie rozwiązanie ma sens w Twojej sytuacji.",
   leadPhoneOnly:
     "Zadzwoń do nas. Zapytamy o budynek i obecne ogrzewanie, a potem powiemy, jakie rozwiązanie ma sens i czy możesz liczyć na dotację.",
   detailsTitle: "Telefon",
@@ -39,8 +39,10 @@ export const heatSources: string[] = [
 ];
 
 export const contactForm = {
+  eyebrow: "Formularz",
   title: "Zapytanie o rozmowę",
-  requiredNote: "Wszystkie pola poza wiadomością są wymagane.",
+  requiredNote: "Pola oznaczone jako opcjonalne możesz pominąć.",
+  optional: "(opcjonalnie)",
   fields: {
     name: { label: "Imię", error: "Wpisz imię, żebyśmy wiedzieli, jak się do Ciebie zwracać." },
     phone: {
@@ -54,7 +56,22 @@ export const contactForm = {
       placeholder: "Wybierz z listy",
       error: "Wybierz obecne źródło ciepła. Jeśli nie masz pewności, wybierz „Nie wiem”.",
     },
-    message: { label: "Wiadomość", optional: "(opcjonalnie)" },
+    boilerRoom: {
+      legend: "Kotłownia",
+      text: "Zdjęcie i wymiary pomieszczenia pomogą nam od razu ocenić, co da się zrobić.",
+    },
+    dimensions: {
+      label: "Wymiary kotłowni",
+      hint: "Długość × szerokość × wysokość, np. 3 × 2,5 × 2,2 m.",
+    },
+    photos: {
+      label: "Zdjęcia kotłowni",
+      hint: "Do 5 zdjęć, każde do 10 MB. Najlepiej całe pomieszczenie i obecny kocioł.",
+      choose: "Wybierz zdjęcia",
+      empty: "Nie wybrano zdjęć",
+      error: "Dodaj najwyżej 5 zdjęć (JPG, PNG, HEIC lub WebP), każde do 10 MB.",
+    },
+    message: { label: "Wiadomość" },
     consent: {
       label:
         "Zgadzam się na kontakt telefoniczny w sprawie zapytania. Zasady przetwarzania danych opisuje",
@@ -65,7 +82,19 @@ export const contactForm = {
   },
   submit: "Wyślij zapytanie",
   sending: "Wysyłanie…",
-  success: "Dziękujemy, zapytanie dotarło. Oddzwonimy na podany numer.",
+  success: {
+    title: "Dziękujemy za zgłoszenie!",
+    text: "Zapytanie dotarło. Oddzwonimy na podany numer, żeby porozmawiać o Twojej instalacji.",
+    urgent: "Sprawa jest pilna? Zadzwoń od razu:",
+    again: "Wyślij kolejne zapytanie",
+  },
   failure: "Nie udało się wysłać zapytania. Spróbuj ponownie albo zadzwoń:",
   invalid: "Formularz zawiera błędy. Popraw zaznaczone pola.",
+};
+
+/** Limity zdjęć w formularzu; usługa formularzy musi przyjmować pliki tej wielkości. */
+export const photoLimits = {
+  maxFiles: 5,
+  maxBytes: 10 * 1024 * 1024,
+  extensions: [".jpg", ".jpeg", ".png", ".heic", ".heif", ".webp"],
 };

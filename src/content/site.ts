@@ -59,8 +59,7 @@ export const site: SiteInfo = {
   description:
     "Pompy ciepła, kotły gazowe, kotły na pellet i zgazowujące drewno. Kompleksowy montaż, modernizacja kotłowni i instalacje hydrauliczne, plus pomoc w uzyskaniu dotacji. Trójmiasto, Tczew i okolice.",
   contacts: [
-    // TODO(klient): numer Norberta. Pierwsze dane: 882 834 207, w feedbacku: 882 834 297. Potwierdzić.
-    { name: "Norbert", phone: "+48 882 834 207" },
+    { name: "Norbert", phone: "+48 882 834 297" },
     { name: "Leszek", phone: "+48 690 135 002" },
   ],
   email: "", // TODO(klient): adres e-mail

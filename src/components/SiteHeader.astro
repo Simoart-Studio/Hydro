@@ -156,7 +156,7 @@ const isCurrent = (href: string) =>
   }
 
   .brand-name {
-    display: grid;
+    display: none;
     line-height: 1.15;
   }
 
@@ -276,9 +276,9 @@ const isCurrent = (href: string) =>
     background: var(--color-accent);
   }
 
-  @media (width < 30rem) {
+  @media (width >= 30rem) {
     .brand-name {
-      display: none;
+      display: grid;
     }
   }
 

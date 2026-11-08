@@ -1,136 +1,231 @@
 ---
-import { contactForm, heatSources } from "../content/contact";
+import { contactForm, heatSources, photoLimits } from "../content/contact";
 import { privacyPolicyLink } from "../content/navigation";
-import { phoneHref, primaryContact } from "../content/site";
+import { phoneHref, primaryContact, site, telHref } from "../content/site";
 import { formEndpoint } from "../lib/env";
 import Button from "./Button.astro";
+import PhoneIcon from "./PhoneIcon.astro";
 
-const { fields } = contactForm;
+const { fields, success } = contactForm;
 ---
 
-<form
-  class="contact-form"
-  method="post"
-  action={formEndpoint}
-  aria-labelledby="contact-form-title"
-  data-contact-form
->
-  <h2 id="contact-form-title">{contactForm.title}</h2>
-  <p class="note">{contactForm.requiredNote}</p>
+<div class="contact-card">
+  <form
+    class="contact-form"
+    method="post"
+    enctype="multipart/form-data"
+    action={formEndpoint}
+    aria-labelledby="contact-form-title"
+    data-contact-form
+  >
+    <header class="intro">
+      <p class="eyebrow">{contactForm.eyebrow}</p>
+      <h2 id="contact-form-title">{contactForm.title}</h2>
+      <p class="note">{contactForm.requiredNote}</p>
+    </header>
 
-  <div class="field">
-    <label for="contact-name">{fields.name.label}</label>
-    <input
-      id="contact-name"
-      name="name"
-      type="text"
-      autocomplete="name"
-      required
-      minlength="2"
-      maxlength="80"
-      aria-describedby="contact-name-error"
-      data-error={fields.name.error}
-    />
-    <p id="contact-name-error" class="error" hidden></p>
-  </div>
-
-  <div class="field">
-    <label for="contact-phone">{fields.phone.label}</label>
-    <p id="contact-phone-hint" class="hint">
-      {fields.phone.hint}
-    </p>
-    <input
-      id="contact-phone"
-      name="phone"
-      type="tel"
-      autocomplete="tel"
-      required
-      pattern="\+?[\d \(\)\-]{9,20}"
-      aria-describedby="contact-phone-hint contact-phone-error"
-      data-error={fields.phone.error}
-    />
-    <p id="contact-phone-error" class="error" hidden></p>
-  </div>
-
-  <div class="field">
-    <label for="contact-city">{fields.city.label}</label>
-    <input
-      id="contact-city"
-      name="city"
-      type="text"
-      autocomplete="address-level2"
-      required
-      maxlength="80"
-      aria-describedby="contact-city-error"
-      data-error={fields.city.error}
-    />
-    <p id="contact-city-error" class="error" hidden></p>
-  </div>
-
-  <div class="field">
-    <label for="contact-heat-source">{fields.heatSource.label}</label>
-    <select
-      id="contact-heat-source"
-      name="heatSource"
-      required
-      aria-describedby="contact-heat-source-error"
-      data-error={fields.heatSource.error}
-    >
-      <option value="">{fields.heatSource.placeholder}</option>
-      {heatSources.map((source) => (
-        <option value={source}>{source}</option>
-      ))}
-    </select>
-    <p id="contact-heat-source-error" class="error" hidden></p>
-  </div>
-
-  <div class="field">
-    <label for="contact-message">
-      {fields.message.label} <span class="optional">{fields.message.optional}</span>
-    </label>
-    <textarea id="contact-message" name="message" rows="4" maxlength="2000"></textarea>
-  </div>
-
-  <div class="trap" aria-hidden="true">
-    <label for="contact-website">{fields.honeypot.label}</label>
-    <input id="contact-website" name="website" type="text" tabindex="-1" autocomplete="off" />
-  </div>
-
-  <div class="field">
-    <div class="check">
+    <div class="field">
+      <label for="contact-name">{fields.name.label}</label>
       <input
-        id="contact-consent"
-        name="consent"
-        type="checkbox"
-        value="tak"
+        id="contact-name"
+        name="name"
+        type="text"
+        autocomplete="name"
         required
-        aria-describedby="contact-consent-error"
-        data-error={fields.consent.error}
+        minlength="2"
+        maxlength="80"
+        aria-describedby="contact-name-error"
+        data-error={fields.name.error}
       />
-      <label for="contact-consent">
-        {fields.consent.label} <a href={privacyPolicyLink.href}>{fields.consent.linkLabel}</a>.
-      </label>
+      <p id="contact-name-error" class="error" hidden></p>
     </div>
-    <p id="contact-consent-error" class="error" hidden></p>
-  </div>
 
-  <Button type="submit" arrow class="submit">
-    <span data-submit-label>{contactForm.submit}</span>
-  </Button>
+    <div class="field">
+      <label for="contact-phone">{fields.phone.label}</label>
+      <p id="contact-phone-hint" class="hint">
+        {fields.phone.hint}
+      </p>
+      <input
+        id="contact-phone"
+        name="phone"
+        type="tel"
+        autocomplete="tel"
+        required
+        pattern="\+?[\d \(\)\-]{9,20}"
+        aria-describedby="contact-phone-hint contact-phone-error"
+        data-error={fields.phone.error}
+      />
+      <p id="contact-phone-error" class="error" hidden></p>
+    </div>
 
-  <p class="status" role="status" aria-live="polite" data-status></p>
-  <template data-failure>
-    {contactForm.failure} <a href={phoneHref}>{primaryContact.phone}</a>
-  </template>
-</form>
+    <div class="pair">
+      <div class="field">
+        <label for="contact-city">{fields.city.label}</label>
+        <input
+          id="contact-city"
+          name="city"
+          type="text"
+          autocomplete="address-level2"
+          required
+          maxlength="80"
+          aria-describedby="contact-city-error"
+          data-error={fields.city.error}
+        />
+        <p id="contact-city-error" class="error" hidden></p>
+      </div>
+
+      <div class="field">
+        <label for="contact-heat-source">{fields.heatSource.label}</label>
+        <select
+          id="contact-heat-source"
+          name="heatSource"
+          required
+          aria-describedby="contact-heat-source-error"
+          data-error={fields.heatSource.error}
+        >
+          <option value="">{fields.heatSource.placeholder}</option>
+          {heatSources.map((source) => (
+            <option value={source}>{source}</option>
+          ))}
+        </select>
+        <p id="contact-heat-source-error" class="error" hidden></p>
+      </div>
+    </div>
+
+    <fieldset class="boiler-room">
+      <legend>
+        {fields.boilerRoom.legend} <span class="optional">{contactForm.optional}</span>
+      </legend>
+      <p class="boiler-text">{fields.boilerRoom.text}</p>
+
+      <div class="field">
+        <label for="contact-dimensions">{fields.dimensions.label}</label>
+        <p id="contact-dimensions-hint" class="hint">
+          {fields.dimensions.hint}
+        </p>
+        <input
+          id="contact-dimensions"
+          name="dimensions"
+          type="text"
+          maxlength="120"
+          aria-describedby="contact-dimensions-hint"
+        />
+      </div>
+
+      <div class="field">
+        <label for="contact-photos">{fields.photos.label}</label>
+        <p id="contact-photos-hint" class="hint">
+          {fields.photos.hint}
+        </p>
+        <input
+          id="contact-photos"
+          class="photos-input visually-hidden"
+          name="photos"
+          type="file"
+          accept={["image/*", ...photoLimits.extensions].join(",")}
+          multiple
+          aria-describedby="contact-photos-hint contact-photos-error"
+          data-error={fields.photos.error}
+        />
+        <!-- A second, decorative label: the whole area opens the file picker and accepts dropped files. -->
+        <label for="contact-photos" class="dropzone" aria-hidden="true" data-dropzone>
+          <svg class="camera" viewBox="0 0 24 24" width="28" height="28">
+            <path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.2l1.5-2h5.6l1.5 2h2.2A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5Z"></path>
+            <circle cx="12" cy="13" r="3.5"></circle>
+          </svg>
+          <span class="choose">{fields.photos.choose}</span>
+          <span class="summary" data-files-summary>
+            {fields.photos.empty}
+          </span>
+        </label>
+        <ul class="files" role="list" data-files hidden></ul>
+        <p id="contact-photos-error" class="error" hidden></p>
+      </div>
+    </fieldset>
+
+    <div class="field">
+      <label for="contact-message">
+        {fields.message.label} <span class="optional">{contactForm.optional}</span>
+      </label>
+      <textarea id="contact-message" name="message" rows="4" maxlength="2000"></textarea>
+    </div>
+
+    <div class="trap" aria-hidden="true">
+      <label for="contact-website">{fields.honeypot.label}</label>
+      <input id="contact-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+    </div>
+
+    <div class="field">
+      <div class="check">
+        <input
+          id="contact-consent"
+          name="consent"
+          type="checkbox"
+          value="tak"
+          required
+          aria-describedby="contact-consent-error"
+          data-error={fields.consent.error}
+        />
+        <label for="contact-consent">
+          {fields.consent.label} <a href={privacyPolicyLink.href}>{fields.consent.linkLabel}</a>.
+        </label>
+      </div>
+      <p id="contact-consent-error" class="error" hidden></p>
+    </div>
+
+    <Button type="submit" arrow class="submit">
+      <span data-submit-label>{contactForm.submit}</span>
+    </Button>
+
+    <p class="status" role="status" aria-live="polite" data-status></p>
+    <template data-failure>
+      {contactForm.failure} <a href={phoneHref}>{primaryContact.phone}</a>
+    </template>
+  </form>
+
+  <section class="success" aria-labelledby="contact-success-title" hidden data-success>
+    <span class="success-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="32" height="32">
+        <path d="M5 12.5l4.5 4.5L19 7.5"></path>
+      </svg>
+    </span>
+    <h2 id="contact-success-title" tabindex="-1">
+      {success.title}
+    </h2>
+    <p class="success-text">{success.text}</p>
+    <div class="urgent">
+      <p class="urgent-title">{success.urgent}</p>
+      <ul class="numbers" role="list">
+        {site.contacts.map((contact, index) => (
+          <li>
+            <span class="person">{contact.name}</span>
+            <Button
+              variant={index === 0 ? "primary" : "dark"}
+              href={telHref(contact.phone)}
+              class="call"
+            >
+              <PhoneIcon />
+              <span class="visually-hidden">Zadzwoń do: {contact.name},</span>
+              {contact.phone}
+            </Button>
+          </li>
+        ))}
+      </ul>
+    </div>
+    <Button variant="outline" class="again">
+      {success.again}
+    </Button>
+  </section>
+</div>
 
 <script>
-  import { contactForm } from "../content/contact";
+  import { contactForm, photoLimits } from "../content/contact";
 
   type Field = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
   type Tone = "ok" | "error" | "info";
 
   const form = document.querySelector<HTMLFormElement>("[data-contact-form]");
+  const successPanel = document.querySelector<HTMLElement>("[data-success]");
 
   if (form) {
     const status = form.querySelector<HTMLElement>("[data-status]");
@@ -138,12 +233,30 @@ const { fields } = contactForm;
     const submit = form.querySelector<HTMLButtonElement>("button[type=submit]");
     const submitLabel = form.querySelector<HTMLElement>("[data-submit-label]");
     const fields = Array.from(form.querySelectorAll<Field>("[data-error]"));
+    const photos = form.querySelector<HTMLInputElement>("input[type=file]");
+    const dropzone = form.querySelector<HTMLElement>("[data-dropzone]");
+    const fileList = form.querySelector<HTMLUListElement>("[data-files]");
+    const fileSummary = form.querySelector<HTMLElement>("[data-files-summary]");
     const isTextInput = (field: Field) =>
-      field instanceof HTMLInputElement && field.type !== "checkbox";
+      field instanceof HTMLInputElement && field.type !== "checkbox" && field.type !== "file";
 
     form.noValidate = true;
 
+    // Phones often save photos as HEIC with an empty MIME type, so the extension decides as well.
+    const isPhoto = (file: File) =>
+      file.type.startsWith("image/") ||
+      photoLimits.extensions.some((extension) => file.name.toLowerCase().endsWith(extension));
+
+    const photosAreValid = (input: HTMLInputElement) => {
+      const files = Array.from(input.files ?? []);
+      return (
+        files.length <= photoLimits.maxFiles &&
+        files.every((file) => isPhoto(file) && file.size <= photoLimits.maxBytes)
+      );
+    };
+
     const isValid = (field: Field) => {
+      if (field instanceof HTMLInputElement && field.type === "file") return photosAreValid(field);
       if (isTextInput(field)) field.value = field.value.trim();
       if (field.name === "phone" && field.value !== "") {
         const digits = field.value.replace(/\D/g, "").length;
@@ -174,7 +287,76 @@ const { fields } = contactForm;
       }
     };
 
+    const formatSize = (bytes: number) =>
+      bytes < 1024 * 1024
+        ? `${Math.max(1, Math.round(bytes / 1024))} KB`
+        : `${(bytes / 1024 / 1024).toFixed(1).replace(".", ",")} MB`;
+
+    const setPhotos = (files: File[]) => {
+      if (!photos) return;
+      const transfer = new DataTransfer();
+      for (const file of files) transfer.items.add(file);
+      photos.files = transfer.files;
+      photos.dispatchEvent(new Event("change"));
+    };
+
+    // Names come from the visitor's device, so they are only ever set as text.
+    const renderPhotos = () => {
+      if (!photos || !fileList || !fileSummary) return;
+      const files = Array.from(photos.files ?? []);
+      fileSummary.textContent =
+        files.length === 0
+          ? contactForm.fields.photos.empty
+          : `Wybrano: ${files.length} z ${photoLimits.maxFiles}`;
+      fileList.hidden = files.length === 0;
+      fileList.replaceChildren(
+        ...files.map((file, index) => {
+          const item = document.createElement("li");
+          const name = document.createElement("span");
+          name.className = "file-name";
+          name.textContent = file.name;
+          const size = document.createElement("span");
+          size.className = "file-size";
+          size.textContent = formatSize(file.size);
+          const remove = document.createElement("button");
+          remove.type = "button";
+          remove.className = "file-remove";
+          remove.textContent = "Usuń";
+          remove.setAttribute("aria-label", `Usuń zdjęcie ${file.name}`);
+          remove.addEventListener("click", () => {
+            setPhotos(files.filter((_, other) => other !== index));
+            photos.focus();
+          });
+          if (!isPhoto(file) || file.size > photoLimits.maxBytes) item.dataset.invalid = "";
+          item.append(name, size, remove);
+          return item;
+        }),
+      );
+    };
+
+    photos?.addEventListener("change", () => {
+      renderPhotos();
+      showError(photos, !isValid(photos));
+    });
+
+    if (dropzone && photos) {
+      for (const type of ["dragenter", "dragover"]) {
+        dropzone.addEventListener(type, (event) => {
+          event.preventDefault();
+          dropzone.dataset.dragover = "";
+        });
+      }
+      dropzone.addEventListener("dragleave", () => delete dropzone.dataset.dragover);
+      dropzone.addEventListener("drop", (event) => {
+        event.preventDefault();
+        delete dropzone.dataset.dragover;
+        const dropped = Array.from(event.dataTransfer?.files ?? []);
+        setPhotos([...Array.from(photos.files ?? []), ...dropped]);
+      });
+    }
+
     for (const field of fields) {
+      if (field === photos) continue;
       field.addEventListener(isTextInput(field) ? "blur" : "change", () => {
         if (field.hasAttribute("aria-invalid")) showError(field, !isValid(field));
       });
@@ -184,6 +366,35 @@ const { fields } = contactForm;
         }
       });
     }
+
+    const resetForm = () => {
+      form.reset();
+      for (const field of fields) field.removeAttribute("aria-invalid");
+      renderPhotos();
+      status?.replaceChildren();
+    };
+
+    const showSuccess = () => {
+      if (!successPanel) {
+        setStatus(contactForm.success.title, "ok");
+        return;
+      }
+      form.hidden = true;
+      successPanel.hidden = false;
+      // The panel is much shorter than the form, so bring the card back into view before focusing it.
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      successPanel.closest(".contact-card")?.scrollIntoView({
+        behavior: reducedMotion ? "auto" : "smooth",
+        block: "start",
+      });
+      successPanel.querySelector<HTMLElement>("h2")?.focus({ preventScroll: true });
+    };
+
+    successPanel?.querySelector(".again")?.addEventListener("click", () => {
+      successPanel.hidden = true;
+      form.hidden = false;
+      form.querySelector<HTMLInputElement>("#contact-name")?.focus();
+    });
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
@@ -205,9 +416,8 @@ const { fields } = contactForm;
           headers: { Accept: "application/json" },
         });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        form.reset();
-        for (const field of fields) field.removeAttribute("aria-invalid");
-        setStatus(contactForm.success, "ok");
+        resetForm();
+        showSuccess();
       } catch {
         setStatus(failure ? failure.content.cloneNode(true) : contactForm.failure, "error");
       } finally {
@@ -218,19 +428,55 @@ const { fields } = contactForm;
 </script>
 
 <style>
-  .contact-form {
+  .contact-card {
     position: relative;
-    display: grid;
-    gap: var(--space-m);
     padding: var(--space-l);
     border: 1px solid var(--color-line);
-    border-block-start: 3px solid var(--color-navy);
+    border-radius: calc(var(--radius) + var(--space-s));
     background: var(--color-surface);
     box-shadow: var(--shadow-card);
   }
 
+  .contact-form {
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  /* The form, the file list and the thank-you panel are switched with the hidden attribute. */
+  .contact-form[hidden],
+  .files[hidden] {
+    display: none;
+  }
+
+  .intro {
+    display: grid;
+    gap: var(--space-xs);
+    padding-block-end: var(--space-m);
+    border-block-end: 1px solid var(--color-line);
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    gap: var(--space-xs);
+    align-items: center;
+    color: var(--color-accent-text);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .eyebrow::before {
+    content: "";
+    inline-size: 1.5rem;
+    block-size: 2px;
+    background: var(--color-accent);
+  }
+
   h2 {
-    font-size: var(--text-xl);
+    font-size: var(--text-2xl);
+    line-height: 1.2;
   }
 
   .note,
@@ -243,24 +489,37 @@ const { fields } = contactForm;
 
   .field {
     display: grid;
+    align-content: start;
     gap: var(--space-2xs);
+  }
+
+  .pair {
+    display: grid;
+    gap: var(--space-m);
   }
 
   label {
     font-weight: 600;
   }
 
-  input:not([type="checkbox"]),
+  input:not([type="checkbox"], [type="file"]),
   select,
   textarea {
     inline-size: 100%;
     min-block-size: var(--target-size);
     padding: var(--space-xs) var(--space-s);
     border: 1px solid var(--color-field);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius);
     background: var(--color-surface);
     color: var(--color-ink);
     font: inherit;
+    transition: border-color 150ms ease;
+  }
+
+  input:not([type="checkbox"], [type="file"]):hover,
+  select:hover,
+  textarea:hover {
+    border-color: var(--color-navy);
   }
 
   textarea {
@@ -282,6 +541,141 @@ const { fields } = contactForm;
     color: var(--color-accent-text);
     font-size: var(--text-sm);
     font-weight: 600;
+  }
+
+  /* Boiler room: optional details grouped on a tinted panel. */
+  .boiler-room {
+    display: grid;
+    gap: var(--space-m);
+    margin: 0;
+    padding: var(--space-m);
+    border: 0;
+    border-radius: var(--radius);
+    background: var(--color-subtle);
+  }
+
+  .boiler-room legend {
+    float: inline-start;
+    inline-size: 100%;
+    padding: 0;
+    color: var(--color-blue);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .boiler-room legend .optional {
+    font-family: var(--font-base);
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .boiler-text {
+    font-size: var(--text-sm);
+  }
+
+  .dropzone {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs) var(--space-s);
+    align-items: center;
+    padding: var(--space-m);
+    border: 1.5px dashed var(--color-field);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    font-weight: 400;
+    cursor: pointer;
+    transition:
+      border-color 150ms ease,
+      background-color 150ms ease;
+  }
+
+  .dropzone:hover,
+  .dropzone[data-dragover] {
+    border-color: var(--color-navy);
+    background: var(--color-sea);
+  }
+
+  .photos-input:focus-visible + .dropzone {
+    outline: 3px solid var(--color-navy);
+    outline-offset: 3px;
+  }
+
+  .photos-input[aria-invalid="true"] + .dropzone {
+    border-color: var(--color-accent-text);
+  }
+
+  .camera {
+    flex: none;
+    fill: none;
+    stroke: var(--color-accent-text);
+    stroke-linejoin: round;
+    stroke-width: 1.6;
+  }
+
+  .choose {
+    padding: var(--space-2xs) var(--space-m);
+    border: 1.5px solid var(--color-navy);
+    border-radius: var(--radius-pill);
+    color: var(--color-navy);
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+
+  .summary {
+    color: var(--color-muted);
+    font-size: var(--text-sm);
+  }
+
+  .files {
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  .files :global(li) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: var(--space-s);
+    align-items: center;
+    padding: var(--space-2xs) var(--space-2xs) var(--space-2xs) var(--space-s);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    font-size: var(--text-sm);
+  }
+
+  .files :global(li[data-invalid]) {
+    border-color: var(--color-accent-text);
+  }
+
+  .files :global(.file-name) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .files :global(.file-size) {
+    color: var(--color-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+  }
+
+  .files :global(.file-remove) {
+    min-block-size: var(--target-size);
+    padding-inline: var(--space-s);
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--color-accent-text);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .files :global(.file-remove:hover) {
+    background: var(--color-subtle);
   }
 
   .check {
@@ -317,12 +711,14 @@ const { fields } = contactForm;
   }
 
   .submit {
-    justify-self: start;
+    justify-self: stretch;
+    min-block-size: 3.25rem;
   }
 
   .status {
     padding: var(--space-s) var(--space-m);
     border-inline-start: 4px solid var(--color-navy);
+    border-radius: var(--radius-sm);
     background: var(--color-subtle);
     font-weight: 600;
   }
@@ -333,5 +729,132 @@ const { fields } = contactForm;
 
   .status[data-tone="error"] {
     border-inline-start-color: var(--color-accent-text);
+  }
+
+  /* Thank-you panel that replaces the form after a successful submission. */
+  .success {
+    display: grid;
+    gap: var(--space-m);
+    justify-items: start;
+    animation: appear 400ms ease both;
+  }
+
+  .success[hidden] {
+    display: none;
+  }
+
+  .success-icon {
+    display: grid;
+    place-items: center;
+    inline-size: 4rem;
+    block-size: 4rem;
+    border-radius: 50%;
+    background: var(--color-accent);
+    box-shadow: 0 0 0 0.5rem color-mix(in srgb, var(--color-accent) 20%, transparent);
+  }
+
+  .success-icon svg {
+    fill: none;
+    stroke: var(--color-on-accent);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2.5;
+  }
+
+  .success h2 {
+    margin-block-start: var(--space-xs);
+    font-size: var(--text-3xl);
+  }
+
+  .success h2:focus {
+    outline: none;
+  }
+
+  .success-text {
+    max-inline-size: 48ch;
+    color: var(--color-muted);
+    font-size: var(--text-lg);
+  }
+
+  .urgent {
+    display: grid;
+    gap: var(--space-s);
+    justify-self: stretch;
+    padding-block-start: var(--space-m);
+    border-block-start: 1px solid var(--color-line);
+  }
+
+  .urgent-title {
+    color: var(--color-blue);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .numbers {
+    display: grid;
+    gap: var(--space-s);
+  }
+
+  .numbers li {
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  .person {
+    color: var(--color-muted);
+    font-size: var(--text-sm);
+  }
+
+  .call {
+    justify-self: stretch;
+    min-block-size: 3.25rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-lg);
+  }
+
+  .again {
+    justify-self: stretch;
+  }
+
+  @keyframes appear {
+    from {
+      opacity: 0;
+      translate: 0 0.75rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .success {
+      animation: none;
+    }
+  }
+
+  @media (width >= 30rem) {
+    .contact-card {
+      padding: var(--space-xl);
+    }
+
+    .boiler-room {
+      padding: var(--space-l);
+    }
+
+    .submit,
+    .call,
+    .again {
+      justify-self: start;
+    }
+
+    .call {
+      min-inline-size: 16rem;
+    }
+  }
+
+  @media (width >= 72rem) {
+    .pair {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 </style>

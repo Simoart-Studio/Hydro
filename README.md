@@ -43,7 +43,7 @@ src/
   layouts/     BaseLayout: meta, canonical, JSON-LD
   lib/         env.ts (zmienne), structuredData.ts (schema.org)
   pages/       podstrony, robots.txt, .well-known/security.txt
-scripts/       build-service-map.mjs (mapa zasięgu), smoke.mjs (test dymny)
+scripts/       build-service-map.mjs (mapa zasięgu), smoke.mjs (test dymny), business-card/ (wizytówka z kodem QR)
 ```
 
 Braki w danych od klienta są oznaczone w kodzie `TODO(klient)` — nie uzupełniać ich zgadywanymi wartościami.
@@ -52,7 +52,7 @@ Braki w danych od klienta są oznaczone w kodzie `TODO(klient)` — nie uzupełn
 
 - **CSP**: Astro (`security.csp` w `astro.config.mjs`) wstawia do każdej strony `<meta>` z hashami skryptów i stylów. Nagłówki, których meta nie obsłuży (`frame-ancestors`, `X-Frame-Options`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`, COOP), ustawia `vercel.json`.
 - Nowy zewnętrzny zasób (skrypt, font, mapa, analityka) wymaga dopisania jego domeny do dyrektyw CSP w `astro.config.mjs`.
-- Zgłaszanie podatności: `/.well-known/security.txt` → GitHub Private Vulnerability Reporting.
+- Zgłaszanie podatności: `/.well-known/security.txt` → e-mail firmowy (gdy uzupełniony) i GitHub Private Vulnerability Reporting.
 - CI (`.github/workflows/ci.yml`): typy, lint, formatowanie, `npm audit` zależności produkcyjnych, podpisy pakietów, build, test dymny, SBOM CycloneDX.
 - Po każdym wdrożeniu produkcyjnym i co 30 minut `smoke.yml` sprawdza stronę na żywo; nieudany przebieg = e-mail od GitHuba.
 
@@ -62,9 +62,19 @@ Vercel buduje projekt z gałęzi `main` (Install Command: `npm ci`, Build Comman
 
 Wycofanie zmian: Vercel → projekt → **Deployments** → poprzednie wdrożenie produkcyjne → **Instant Rollback**. Potem poprawka w kodzie i normalne wdrożenie.
 
-Podpięcie domeny klienta:
+## Uruchomienie na domenie klienta
 
-1. Vercel → **Settings → Domains** → dodać domenę, ustawić DNS u rejestratora.
-2. Ustawić domenę jako produkcyjną; `PUBLIC_SITE_URL` może zostać pusty (Vercel poda nową domenę) albo wpisany jawnie.
-3. Po akceptacji treści: `PUBLIC_NOINDEX=false`, redeploy, `npm run smoke -- https://domena-klienta`.
-4. Ustawić zmienną repozytorium `SITE_URL` (GitHub → Settings → Variables), żeby monitoring sprawdzał nową domenę.
+Kod nie wymaga zmian poza jedną linią z e-mailem. Kolejność:
+
+1. **Domena.** Vercel → **Settings → Domains** → dodać domenę (z `www` i bez), ustawić rekordy DNS u rejestratora i oznaczyć ją jako produkcyjną. Adres `hydrodemosite.vercel.app` ustawić jako przekierowanie 308 na domenę. `PUBLIC_SITE_URL` może zostać pusty — Vercel poda nową domenę do canonical, sitemapy i JSON-LD.
+2. **E-mail firmowy.** Wpisać w `src/content/site.ts` (`email`). Adres pojawi się w stopce, na stronie Kontakt, w polityce prywatności, w danych strukturalnych i w `security.txt`.
+3. **Indeksowanie** — po akceptacji treści: Vercel → Environment Variables → `PUBLIC_NOINDEX=false` (Production), redeploy.
+4. **Monitoring.** GitHub → Settings → Variables → `SITE_URL=https://domena-klienta`. Ręcznie: `npm run smoke -- https://domena-klienta`.
+5. **Wizytówka.** `npm run card -- --url=https://domena-klienta` → `print/wizytowka.pdf`. Przed zamówieniem zeskanować kod z wydruku próbnego dwoma telefonami.
+6. **Rejestrator domeny.** Włączyć automatyczne odnawianie i 2FA — wygaśnięcie domeny unieważnia też kody QR na wydrukowanych wizytówkach.
+
+Formularz kontaktowy włącza osobno `PUBLIC_FORM_ENDPOINT` (usługa formularzy z obsługą załączników, wysyłająca na e-mail firmowy). Bez niego strona Kontakt pokazuje telefony.
+
+## Wizytówka
+
+`npm run card` składa wizytówkę 90 × 50 mm (spad 2 mm, PDF dwustronicowy: przód i tył) z danych w `src/content/site.ts` i kodem QR prowadzącym na stronę. Kod QR generuje własny koder (`scripts/business-card/qr.mjs`) — bez zewnętrznych usług i przekierowań — a każdy kod jest po wygenerowaniu odczytywany kontrolnie. Bez docelowej domeny powstaje wzór z czerwonym paskiem „WZÓR – NIE DRUKOWAĆ”. Do PDF potrzebny jest Chrome (`CHROME_PATH`, jeśli nie w standardowym miejscu). Pliki trafiają do `print/` (poza gitem).

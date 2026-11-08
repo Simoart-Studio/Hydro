@@ -12,7 +12,8 @@
     "preview": "astro preview",
     "check": "astro check && eslint . && prettier --check .",
     "format": "prettier --write .",
-    "smoke": "node scripts/smoke.mjs"
+    "smoke": "node scripts/smoke.mjs",
+    "card": "node --experimental-strip-types --no-warnings scripts/business-card/build.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
