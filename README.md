@@ -52,7 +52,7 @@ Braki w danych od klienta są oznaczone w kodzie `TODO(klient)` — nie uzupełn
 
 ## Bezpieczeństwo
 
-- **CSP**: Astro (`security.csp` w `astro.config.mjs`) wstawia do każdej strony `<meta>` z hashami skryptów i stylów. Nagłówki, których meta nie obsłuży (`frame-ancestors`, `X-Frame-Options`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`, COOP), ustawia `public/_headers`.
+- **CSP**: Astro (`security.csp` w `astro.config.mjs`) wstawia do każdej strony `<meta>` z hashami skryptów i stylów. Nagłówki, których meta nie obsłuży (HSTS, `frame-ancestors`, `X-Frame-Options`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`, COOP), ustawia `public/_headers`.
 - Nowy zewnętrzny zasób (skrypt, font, mapa, analityka) wymaga dopisania jego domeny do dyrektyw CSP w `astro.config.mjs`.
 - Zgłaszanie podatności: `/.well-known/security.txt` → e-mail firmowy (gdy uzupełniony) i GitHub Private Vulnerability Reporting.
 - CI (`.github/workflows/ci.yml`): typy, lint, formatowanie, `npm audit` zależności produkcyjnych, podpisy pakietów, build, test dymny, SBOM CycloneDX.
