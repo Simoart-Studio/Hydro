@@ -10,11 +10,12 @@ const env = { ...loadEnv(process.env.NODE_ENV ?? "production", process.cwd(), ""
  * PUBLIC_SITE_URL wins; on Vercel the project's production domain is the fallback, so the demo points
  * to its vercel.app address now and to the client's domain once it is attached. Local builds use the
  * preview server, and a production deployment without any address fails instead of guessing one.
+ * Cloudflare Pages does not expose the custom domain to the build, so there PUBLIC_SITE_URL is required.
  */
 const resolveSiteUrl = () => {
   if (env.PUBLIC_SITE_URL) return env.PUBLIC_SITE_URL;
   if (env.VERCEL_PROJECT_PRODUCTION_URL) return `https://${env.VERCEL_PROJECT_PRODUCTION_URL}`;
-  if (env.VERCEL_ENV === "production" || env.CI) {
+  if (env.VERCEL_ENV === "production" || env.CF_PAGES || env.CI) {
     throw new Error(
       "PUBLIC_SITE_URL is not set: canonical links and the sitemap need the site address.",
     );
@@ -30,13 +31,13 @@ export default defineConfig({
   site: resolveSiteUrl(),
   // With the class strategy a class passed to a child component keeps the parent scope, so sections can lay out shared components such as Container and Button.
   scopedStyleStrategy: "class",
-  // Pages build to /dotacje.html and are linked as /dotacje; vercel.json serves them without the extension.
+  // Pages build to /dotacje.html and are linked as /dotacje; vercel.json (cleanUrls) and Cloudflare Pages serve them without the extension.
   trailingSlash: "never",
   build: { format: "file" },
   integrations: [sitemap()],
   security: {
     // Astro hashes every script and style it emits into a CSP meta tag. Directives a meta tag cannot carry
-    // (frame-ancestors) and the other security headers are set in vercel.json.
+    // (frame-ancestors) and the other security headers are set in vercel.json and public/_headers.
     csp: {
       directives: [
         "default-src 'self'",

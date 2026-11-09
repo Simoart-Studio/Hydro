@@ -17,8 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      # Canonical links in the CI build point to the demo; the Vercel build sets its own address.
-      PUBLIC_SITE_URL: https://hydrodemosite.vercel.app
+      # Canonical links in the CI build point to the production domain; the Vercel build sets its own address.
+      PUBLIC_SITE_URL: https://hydrokotly.pl
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
