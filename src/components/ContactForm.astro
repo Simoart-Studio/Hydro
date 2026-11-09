@@ -1,7 +1,7 @@
 ---
 import { contactForm, heatSources, photoLimits } from "../content/contact";
 import { privacyPolicyLink } from "../content/navigation";
-import { phoneHref, primaryContact, site, telHref } from "../content/site";
+import { emailHref, phoneHref, primaryContact, site, telHref } from "../content/site";
 import { formEndpoint, isFormConnected } from "../lib/env";
 import Button from "./Button.astro";
 import PhoneIcon from "./PhoneIcon.astro";
@@ -26,6 +26,12 @@ const { fields, success } = contactForm;
       {!isFormConnected && (
         <p class="pending">
           {contactForm.notConnected.notice} <a href={phoneHref}>{primaryContact.phone}</a>
+          {site.email && (
+            <>
+              {" "}
+              {contactForm.notConnected.orEmail} <a href={emailHref}>{site.email}</a>
+            </>
+          )}
         </p>
       )}
     </header>
@@ -189,6 +195,12 @@ const { fields, success } = contactForm;
     </template>
     <template data-not-connected>
       {contactForm.notConnected.status} <a href={phoneHref}>{primaryContact.phone}</a>
+      {site.email && (
+        <>
+          {" "}
+          {contactForm.notConnected.orEmail} <a href={emailHref}>{site.email}</a>
+        </>
+      )}
     </template>
   </form>
 

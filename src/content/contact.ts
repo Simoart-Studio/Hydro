@@ -94,6 +94,8 @@ export const contactForm = {
     notice: "Formularz jest w przygotowaniu. Do tego czasu zgłoszenia przyjmujemy telefonicznie:",
     status:
       "Formularz jeszcze nie wysyła zgłoszeń, a Twoje dane zostały tylko w tej przeglądarce. Zadzwoń:",
+    /** Dopisywane po numerze telefonu, gdy w site.ts jest adres e-mail. */
+    orEmail: "albo napisz:",
   },
   invalid: "Formularz zawiera błędy. Popraw zaznaczone pola.",
 };

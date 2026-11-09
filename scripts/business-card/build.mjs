@@ -3,7 +3,7 @@
 //   npm run card -- --url=https://…  another address
 // Without --url the address comes from PUBLIC_SITE_URL, then the production domain. A technical address
 // (*.pages.dev, *.vercel.app) builds a proof marked "WZÓR – NIE DRUKOWAĆ", because a printed QR code cannot be changed.
-// Names and phones come from src/content/site.ts, so the card always matches the site.
+// Names, phones and the e-mail come from src/content/site.ts, so the card always matches the site.
 // Output in print/: wizytowka.pdf (2 pages, 2 mm bleed), PNG previews and the QR code as SVG.
 // Files from the previous run move to print/archiwum/<date and time of that run>/ before new ones are written.
 
@@ -121,10 +121,18 @@ const pointer = (ink, accent) => `<svg class="pointer" viewBox="0 0 20 24" aria-
   </g>
 </svg>`;
 
+/** Contact icons in a 24 × 24 grid: a handset next to phone numbers, an envelope next to the e-mail. */
+const ICONS = {
+  phone: `<path d="M6.6 10.8a15.2 15.2 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z" />`,
+  email: `<path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm0 2v.5l8 5 8-5V6zm0 2.85V18h16V8.85l-8 5z" />`,
+};
+const icon = (name) =>
+  `<td class="icon"><svg viewBox="0 0 24 24" aria-hidden="true" fill="${COLORS.accent}">${ICONS[name]}</svg></td>`;
+
 const contacts = site.contacts
   .map(
     (contact) => `
-          <tr><th>${escapeHtml(contact.name)}</th><td class="phone">${escapeHtml(contact.phone)}</td></tr>`,
+          <tr><th>${escapeHtml(contact.name)}</th>${icon("phone")}<td class="phone">${escapeHtml(contact.phone)}</td></tr>`,
   )
   .join("");
 
@@ -154,7 +162,12 @@ const back = `
           <p><strong>${escapeHtml(site.brandLines[0])}</strong><span>${escapeHtml(site.brandLines[1])}</span></p>
         </header>
         <p class="scope">${escapeHtml(site.tagline)}</p>
-        <table class="data">${contacts}
+        <table class="data">${contacts}${
+          site.email
+            ? `
+          <tr><th>E-mail</th>${icon("email")}<td class="email">${escapeHtml(site.email)}</td></tr>`
+            : ""
+        }
         </table>
       </div>
       <figure class="qr">
@@ -253,7 +266,7 @@ body {
 }
 .data { border-collapse: collapse; width: 100%; }
 .data th {
-  width: 12mm;
+  width: 10.5mm;
   padding: 0.5mm 0;
   font-size: 6pt;
   font-weight: 400;
@@ -263,6 +276,9 @@ body {
 }
 .data td { padding: 0.5mm 0; font-size: 7pt; vertical-align: baseline; }
 .data .phone { font-size: 9pt; font-weight: 600; letter-spacing: 0.02em; }
+.data .icon { width: 3.8mm; padding: 0; vertical-align: middle; }
+.data .icon svg { display: block; width: 2.6mm; height: 2.6mm; }
+.data .email { font-size: 7.5pt; font-weight: 600; white-space: nowrap; }
 .qr {
   display: grid;
   align-content: center;

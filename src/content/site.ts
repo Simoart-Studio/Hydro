@@ -62,7 +62,7 @@ export const site: SiteInfo = {
     { name: "Norbert", phone: "+48 882 834 297" },
     { name: "Leszek", phone: "+48 690 135 002" },
   ],
-  email: "", // TODO(klient): adres e-mail
+  email: "hydrokotlownie@gmail.com",
   address: {
     street: "", // TODO(klient): ulica i numer
     postalCode: "", // TODO(klient): kod pocztowy
