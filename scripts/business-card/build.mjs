@@ -57,18 +57,21 @@ const dataUri = async (path, type) =>
 
 const fontFaces = async () => {
   const blocks = [];
-  for (const weight of [400, 600]) {
-    const css = await readFile(`node_modules/@fontsource/ibm-plex-sans/${weight}.css`, "utf8");
+  const faces = [
+    ["ibm-plex-sans", 400],
+    ["ibm-plex-sans", 600],
+    ["ibm-plex-mono", 400],
+    ["ibm-plex-mono", 500],
+  ];
+  for (const [family, weight] of faces) {
+    const css = await readFile(`node_modules/@fontsource/${family}/${weight}.css`, "utf8");
     for (const subset of ["latin-ext", "latin"]) {
       const block = css.match(
-        new RegExp(`/\\* ibm-plex-sans-${subset}-${weight}-normal \\*/\\s*@font-face \\{[^}]+\\}`),
+        new RegExp(`/\\* ${family}-${subset}-${weight}-normal \\*/\\s*@font-face \\{[^}]+\\}`),
       )?.[0];
-      if (!block) throw new Error(`Font block ${subset} ${weight} not found`);
-      const file = `ibm-plex-sans-${subset}-${weight}-normal.woff2`;
-      const font = await dataUri(
-        `node_modules/@fontsource/ibm-plex-sans/files/${file}`,
-        "font/woff2",
-      );
+      if (!block) throw new Error(`Font block ${family} ${subset} ${weight} not found`);
+      const file = `${family}-${subset}-${weight}-normal.woff2`;
+      const font = await dataUri(`node_modules/@fontsource/${family}/files/${file}`, "font/woff2");
       blocks.push(block.replace(/src:[^;]+;/, `src: url(${font}) format("woff2");`));
     }
   }
@@ -76,13 +79,52 @@ const fontFaces = async () => {
 };
 
 const fonts = await fontFaces();
-const logo = await dataUri("src/assets/brand/logo.jpeg", "image/jpeg");
 const mark = await dataUri("src/assets/brand/logo-mark.png", "image/png");
+
+/*
+ * Design: a calm, technical card in the language of an engineering drawing.
+ * Front: dark, millimetre grid, corner marks, the brand set in type.
+ * Back: white, a hairline frame divided like a drawing title block, contacts as a table,
+ * a separate field for the QR code. Measurements are in mm from the trim line.
+ */
+const COLORS = {
+  ink: "#142b45",
+  muted: "#5b6878",
+  line: "#c3ccd6",
+  accent: "#f28c28",
+  accentText: "#a65300",
+  dark: "#1b2025",
+  darkLine: "rgb(255 255 255 / 0.06)",
+  onDark: "#ffffff",
+  onDarkMuted: "#9aa7b5",
+};
+/** Text and the QR code stay at least this far inside the trim line. */
+const SAFE = 4;
+/** Distance of the back frame from the trim line. */
+const FRAME = 3.5;
+const QR_SIZE = 20;
+
+const rightOffset = PAGE.width - BLEED - TRIM.width;
+const trimBox = (inset) =>
+  `top: ${BLEED + inset}mm; right: ${rightOffset + inset}mm; bottom: ${BLEED + inset}mm; left: ${BLEED + inset}mm;`;
+
+/** Four L-shaped corner marks, like registration marks on a drawing. */
+const corners = (inset, length, color, width) =>
+  `<div class="corners" style="${trimBox(inset)}">${["tl", "tr", "bl", "br"]
+    .map(
+      (corner) =>
+        `<i class="corner ${corner}" style="--len: ${length}mm; --w: ${width}mm; --c: ${color}"></i>`,
+    )
+    .join("")}</div>`;
+
+/** The address column holds about 30 characters at 7 pt; longer text shrinks to stay on one line (min 5.5 pt). */
+const oneLine = (text) =>
+  `<td class="one-line" style="font-size: ${Math.max(5.5, Math.min(7, (7 * 30) / text.length)).toFixed(2)}pt">${escapeHtml(text)}</td>`;
 
 const contacts = site.contacts
   .map(
     (contact) => `
-      <li><span class="who">${escapeHtml(contact.name)}</span><span class="phone">${escapeHtml(contact.phone)}</span></li>`,
+          <tr><th>${escapeHtml(contact.name)}</th><td class="phone">${escapeHtml(contact.phone)}</td></tr>`,
   )
   .join("");
 
@@ -92,27 +134,41 @@ const proofMark = isProof
 
 const front = `
   <section class="page front">
-    <img class="logo" src="${logo}" alt="${escapeHtml(site.name)}" />
-    <div class="band"></div>
+    <div class="grid"></div>
+    ${corners(SAFE - 1, 3, "rgb(255 255 255 / 0.35)", 0.25)}
+    <div class="front-body">
+      <img class="mark" src="${mark}" alt="" />
+      <div class="name">
+        <p class="brand">${escapeHtml(site.brandLines[0])}</p>
+        <p class="owner">${escapeHtml(site.brandLines[1])}</p>
+        <i class="rule"></i>
+        <p class="scope">${escapeHtml(site.tagline)}</p>
+      </div>
+    </div>
+    <p class="region">${escapeHtml(site.serviceArea.regions.join(" · "))}</p>
     ${proofMark}
   </section>`;
 
 const back = `
   <section class="page back">
-    <div class="info">
-      <div class="brand">
-        <img src="${mark}" alt="" />
-        <p><strong>${escapeHtml(site.brandLines[0])}</strong><span>${escapeHtml(site.brandLines[1])}</span></p>
+    <div class="frame">
+      <div class="block">
+        <header class="title">
+          <img src="${mark}" alt="" />
+          <p><strong>${escapeHtml(site.brandLines[0])}</strong> <span>${escapeHtml(site.brandLines[1])}</span></p>
+        </header>
+        <p class="scope">${escapeHtml(site.tagline)}</p>
+        <table class="data">${contacts}
+          ${site.email ? `<tr><th>E-mail</th>${oneLine(site.email)}</tr>` : ""}
+          <tr><th>WWW</th>${oneLine(displayHost)}</tr>
+        </table>
       </div>
-      <p class="tagline">${escapeHtml(site.tagline)}</p>
-      <ul class="contacts">${contacts}
-      </ul>
-      <p class="links">${site.email ? `${escapeHtml(site.email)}<br />` : ""}${escapeHtml(displayHost)}</p>
+      <figure class="qr">
+        ${qrSvg}
+        <figcaption>Oferta · kontakt</figcaption>
+      </figure>
     </div>
-    <figure class="qr">
-      ${qrSvg}
-      <figcaption>Oferta i kontakt</figcaption>
-    </figure>
+    ${corners(FRAME, 2.4, COLORS.ink, 0.35)}
     ${proofMark}
   </section>`;
 
@@ -128,7 +184,7 @@ ${fonts}
 html, body { background: #fff; }
 body {
   font-family: "IBM Plex Sans", sans-serif;
-  color: #142b45;
+  color: ${COLORS.ink};
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
@@ -140,53 +196,142 @@ body {
   break-after: page;
 }
 .page:last-child { break-after: auto; }
-/* Text and the QR code stay at least 4 mm inside the trim line. */
-.front {
-  display: grid;
-  place-items: center;
-  background: linear-gradient(#1d2226, #12161a);
-}
-.front .logo {
-  height: 46mm;
-  margin-block-end: 4mm;
-  mask-image: radial-gradient(closest-side, #000 80%, transparent 100%);
-}
-.front .band {
+
+/* Corner marks */
+.corners { position: absolute; pointer-events: none; }
+.corner { position: absolute; width: var(--len); height: var(--len); border: 0 solid var(--c); }
+.corner.tl { top: 0; left: 0; border-top-width: var(--w); border-left-width: var(--w); }
+.corner.tr { top: 0; right: 0; border-top-width: var(--w); border-right-width: var(--w); }
+.corner.bl { bottom: 0; left: 0; border-bottom-width: var(--w); border-left-width: var(--w); }
+.corner.br { bottom: 0; right: 0; border-bottom-width: var(--w); border-right-width: var(--w); }
+
+/* Front: dark, millimetre grid, brand set in type. */
+.front { background: ${COLORS.dark}; color: ${COLORS.onDark}; }
+.front .grid {
   position: absolute;
-  inset: auto 0 0;
-  height: ${BLEED + 2.5}mm;
-  background: #f28c28;
+  inset: 0;
+  background-image:
+    linear-gradient(${COLORS.darkLine} 0.1mm, transparent 0.1mm),
+    linear-gradient(90deg, ${COLORS.darkLine} 0.1mm, transparent 0.1mm);
+  background-size: 5mm 5mm;
+  background-position: ${BLEED}mm ${BLEED}mm;
 }
-.back {
-  display: grid;
-  grid-template-columns: 1fr auto;
+.front-body {
+  position: absolute;
+  ${trimBox(SAFE + 3)}
+  display: flex;
   gap: 4mm;
   align-items: center;
-  padding: ${BLEED + 4.5}mm ${BLEED + 4.5}mm ${BLEED + 4}mm;
-  background: #fff;
 }
-.back::before {
+.front .mark {
+  flex: none;
+  width: 17mm;
+  height: 17mm;
+  mask-image: radial-gradient(closest-side, #000 58%, transparent 92%);
+}
+.front .name { display: grid; gap: 0.6mm; }
+.front .brand { font-size: 17pt; font-weight: 600; letter-spacing: 0.2em; line-height: 1; }
+.front .owner { font-size: 8pt; font-weight: 600; color: ${COLORS.accent}; letter-spacing: 0.02em; }
+.front .rule { display: block; width: 8mm; height: 0.3mm; margin-block: 1.6mm 1.2mm; background: ${COLORS.accent}; }
+.front .scope {
+  text-wrap: balance;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 5.6pt;
+  line-height: 1.45;
+  color: ${COLORS.onDarkMuted};
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.front .region {
+  position: absolute;
+  right: ${rightOffset + SAFE + 1}mm;
+  bottom: ${BLEED + SAFE}mm;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 5pt;
+  letter-spacing: 0.08em;
+  color: ${COLORS.onDarkMuted};
+  text-transform: uppercase;
+}
+
+/* Back: white, hairline frame divided like a drawing title block. */
+.back { background: #fff; }
+.frame {
+  position: absolute;
+  ${trimBox(FRAME)}
+  display: grid;
+  grid-template-columns: 1fr ${QR_SIZE + 6}mm;
+  border: 0.2mm solid ${COLORS.line};
+}
+.block { display: flex; flex-direction: column; padding: 2.6mm 3mm 2.4mm; }
+.title {
+  position: relative;
+  display: flex;
+  gap: 2mm;
+  align-items: center;
+  padding-block-end: 2mm;
+  border-bottom: 0.2mm solid ${COLORS.line};
+}
+.title::after {
   content: "";
   position: absolute;
-  inset: 0 auto 0 0;
-  width: ${BLEED + 2}mm;
-  background: #f28c28;
+  left: 0;
+  bottom: -0.3mm;
+  width: 8mm;
+  height: 0.4mm;
+  background: ${COLORS.accent};
 }
-.info { display: grid; gap: 2.2mm; }
-.brand { display: flex; gap: 2mm; align-items: center; }
-.brand img { width: 8.5mm; height: 8.5mm; border-radius: 1.2mm; }
-.brand p { display: grid; line-height: 1.1; }
-.brand strong { font-size: 10pt; font-weight: 600; letter-spacing: 0.08em; }
-.brand span { font-size: 7pt; color: #a65300; font-weight: 600; }
-.tagline { font-size: 6.5pt; color: #4f5d6c; line-height: 1.3; }
-.contacts { list-style: none; display: grid; gap: 0.8mm; }
-.contacts li { display: flex; gap: 2mm; align-items: baseline; }
-.who { min-width: 11mm; font-size: 6.5pt; color: #4f5d6c; }
-.phone { font-size: 9.5pt; font-weight: 600; letter-spacing: 0.01em; }
-.links { font-size: 7pt; line-height: 1.35; }
-.qr { display: grid; justify-items: center; gap: 0.5mm; }
-.qr svg { display: block; width: 22mm; height: 22mm; }
-.qr figcaption { font-size: 5.5pt; color: #4f5d6c; letter-spacing: 0.02em; }
+.title img { width: 6.5mm; height: 6.5mm; border-radius: 1mm; }
+.title p { font-size: 6.8pt; line-height: 1.2; }
+.title strong { font-size: 9pt; font-weight: 600; letter-spacing: 0.16em; }
+.title span { color: ${COLORS.accentText}; font-weight: 600; letter-spacing: 0.02em; }
+.block .scope {
+  margin-block-start: 1.8mm;
+  text-wrap: balance;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 5pt;
+  color: ${COLORS.muted};
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.data { margin-block-start: auto; border-collapse: collapse; width: 100%; }
+.data th {
+  width: 13mm;
+  padding: 0.55mm 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 5.2pt;
+  font-weight: 400;
+  color: ${COLORS.muted};
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: uppercase;
+  vertical-align: baseline;
+}
+.data td { padding: 0.55mm 0; font-size: 7pt; vertical-align: baseline; }
+.data .phone {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 8.6pt;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+.data .one-line {
+  white-space: nowrap;
+}
+.qr {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 1.2mm;
+  border-left: 0.2mm solid ${COLORS.line};
+}
+.qr svg { display: block; width: ${QR_SIZE}mm; height: ${QR_SIZE}mm; }
+.qr figcaption {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 4.8pt;
+  color: ${COLORS.muted};
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
 .proof {
   position: absolute;
   inset: 0 0 auto;
