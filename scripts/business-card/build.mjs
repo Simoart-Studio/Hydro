@@ -2,12 +2,13 @@
 //   npm run card -- --url=https://domena-klienta.pl
 // Without --url the address comes from PUBLIC_SITE_URL. Without a final domain (missing or *.vercel.app)
 // the card is built as a proof marked "WZÓR – NIE DRUKOWAĆ", because a printed QR code cannot be changed.
-// Names, phones and e-mail come from src/content/site.ts, so the card always matches the site.
+// Names and phones come from src/content/site.ts, so the card always matches the site.
 // Output in print/: wizytowka.pdf (2 pages, 2 mm bleed), PNG previews and the QR code as SVG.
+// Files from the previous run move to print/archiwum/<date and time of that run>/ before new ones are written.
 
 import { execFileSync } from "node:child_process";
 import { existsSync } from "node:fs";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, rename, rm, stat, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { site } from "../../src/content/site.ts";
@@ -33,7 +34,6 @@ const parseUrl = (value) => {
 const url = parseUrl(rawUrl) ?? new URL("https://hydrodemosite.vercel.app/");
 const isProof = rawUrl === "" || url.hostname.endsWith(".vercel.app");
 const qrText = `${url.origin}/`;
-const displayHost = url.hostname.replace(/^www\./, "");
 
 selfTest();
 const qr = encode(qrText, "Q");
@@ -82,44 +82,42 @@ const fonts = await fontFaces();
 const mark = await dataUri("src/assets/brand/logo-mark.png", "image/png");
 
 /*
- * Design: a calm, technical card in the language of an engineering drawing.
- * Front: dark, millimetre grid, corner marks, the brand set in type.
- * Back: white, a hairline frame divided like a drawing title block, contacts as a table,
- * a separate field for the QR code. Measurements are in mm from the trim line.
+ * Design: calm and airy. Front: dark, the brand mark and name centred with plenty of room around them.
+ * Back: white, a soft hairline frame, contacts on the left, the QR code on a light panel on the right.
+ * Measurements are in mm from the trim line.
  */
 const COLORS = {
   ink: "#142b45",
   muted: "#5b6878",
-  line: "#c3ccd6",
+  line: "#d5dce3",
+  panel: "#f3f6f9",
   accent: "#f28c28",
   accentText: "#a65300",
   dark: "#1b2025",
-  darkLine: "rgb(255 255 255 / 0.06)",
+  glow: "#262c33",
   onDark: "#ffffff",
-  onDarkMuted: "#9aa7b5",
+  onDarkMuted: "#a3afbc",
 };
 /** Text and the QR code stay at least this far inside the trim line. */
 const SAFE = 4;
 /** Distance of the back frame from the trim line. */
-const FRAME = 3.5;
+const FRAME = 4;
 const QR_SIZE = 20;
 
 const rightOffset = PAGE.width - BLEED - TRIM.width;
 const trimBox = (inset) =>
   `top: ${BLEED + inset}mm; right: ${rightOffset + inset}mm; bottom: ${BLEED + inset}mm; left: ${BLEED + inset}mm;`;
 
-/** Four L-shaped corner marks, like registration marks on a drawing. */
-const corners = (inset, length, color, width) =>
-  `<div class="corners" style="${trimBox(inset)}">${["tl", "tr", "bl", "br"]
-    .map(
-      (corner) =>
-        `<i class="corner ${corner}" style="--len: ${length}mm; --w: ${width}mm; --c: ${color}"></i>`,
-    )
-    .join("")}</div>`;
-
-/** The address column holds about 30 characters at 7 pt; longer text shrinks to stay on one line (min 5.5 pt). */
-const oneLine = (text) =>
-  `<td class="one-line" style="font-size: ${Math.max(5.5, Math.min(7, (7 * 30) / text.length)).toFixed(2)}pt">${escapeHtml(text)}</td>`;
+/** A small figure pointing up at the QR code; the fingertip lines are the accent colour. */
+const pointer = (ink, accent) => `<svg class="pointer" viewBox="0 0 20 24" aria-hidden="true">
+  <circle cx="6" cy="5" r="2.6" fill="${ink}" />
+  <g fill="none" stroke="${ink}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 9v7M6 16l-2.5 6.5M6 16l2.5 6.5M6 11l-3 3.5M6 11l8-7" />
+  </g>
+  <g fill="none" stroke="${accent}" stroke-width="1.2" stroke-linecap="round">
+    <path d="M15.6 1.6l1-1.1M17.1 4h1.5M16.3 6l1.2.8" />
+  </g>
+</svg>`;
 
 const contacts = site.contacts
   .map(
@@ -134,18 +132,14 @@ const proofMark = isProof
 
 const front = `
   <section class="page front">
-    <div class="grid"></div>
-    ${corners(SAFE - 1, 3, "rgb(255 255 255 / 0.35)", 0.25)}
     <div class="front-body">
       <img class="mark" src="${mark}" alt="" />
       <div class="name">
         <p class="brand">${escapeHtml(site.brandLines[0])}</p>
         <p class="owner">${escapeHtml(site.brandLines[1])}</p>
-        <i class="rule"></i>
         <p class="scope">${escapeHtml(site.tagline)}</p>
       </div>
     </div>
-    <p class="region">${escapeHtml(site.serviceArea.regions.join(" · "))}</p>
     ${proofMark}
   </section>`;
 
@@ -155,20 +149,17 @@ const back = `
       <div class="block">
         <header class="title">
           <img src="${mark}" alt="" />
-          <p><strong>${escapeHtml(site.brandLines[0])}</strong> <span>${escapeHtml(site.brandLines[1])}</span></p>
+          <p><strong>${escapeHtml(site.brandLines[0])}</strong><span>${escapeHtml(site.brandLines[1])}</span></p>
         </header>
         <p class="scope">${escapeHtml(site.tagline)}</p>
         <table class="data">${contacts}
-          ${site.email ? `<tr><th>E-mail</th>${oneLine(site.email)}</tr>` : ""}
-          <tr><th>WWW</th>${oneLine(displayHost)}</tr>
         </table>
       </div>
       <figure class="qr">
-        ${qrSvg}
-        <figcaption>Oferta · kontakt</figcaption>
+        <div class="code">${qrSvg}</div>
+        <figcaption>${pointer(COLORS.ink, COLORS.accent)}<span>Zeskanuj mnie</span></figcaption>
       </figure>
     </div>
-    ${corners(FRAME, 2.4, COLORS.ink, 0.35)}
     ${proofMark}
   </section>`;
 
@@ -197,140 +188,90 @@ body {
 }
 .page:last-child { break-after: auto; }
 
-/* Corner marks */
-.corners { position: absolute; pointer-events: none; }
-.corner { position: absolute; width: var(--len); height: var(--len); border: 0 solid var(--c); }
-.corner.tl { top: 0; left: 0; border-top-width: var(--w); border-left-width: var(--w); }
-.corner.tr { top: 0; right: 0; border-top-width: var(--w); border-right-width: var(--w); }
-.corner.bl { bottom: 0; left: 0; border-bottom-width: var(--w); border-left-width: var(--w); }
-.corner.br { bottom: 0; right: 0; border-bottom-width: var(--w); border-right-width: var(--w); }
-
-/* Front: dark, millimetre grid, brand set in type. */
-.front { background: ${COLORS.dark}; color: ${COLORS.onDark}; }
-.front .grid {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(${COLORS.darkLine} 0.1mm, transparent 0.1mm),
-    linear-gradient(90deg, ${COLORS.darkLine} 0.1mm, transparent 0.1mm);
-  background-size: 5mm 5mm;
-  background-position: ${BLEED}mm ${BLEED}mm;
+/* Front: dark, a soft glow behind the mark, the name centred with room to breathe. */
+.front {
+  background: radial-gradient(60mm 40mm at 34% 50%, ${COLORS.glow}, ${COLORS.dark} 70%);
+  color: ${COLORS.onDark};
 }
 .front-body {
   position: absolute;
-  ${trimBox(SAFE + 3)}
+  ${trimBox(SAFE)}
   display: flex;
-  gap: 4mm;
+  gap: 5mm;
+  justify-content: center;
   align-items: center;
 }
 .front .mark {
   flex: none;
-  width: 17mm;
-  height: 17mm;
+  width: 16mm;
+  height: 16mm;
   mask-image: radial-gradient(closest-side, #000 58%, transparent 92%);
 }
-.front .name { display: grid; gap: 0.6mm; }
-.front .brand { font-size: 17pt; font-weight: 600; letter-spacing: 0.2em; line-height: 1; }
-.front .owner { font-size: 8pt; font-weight: 600; color: ${COLORS.accent}; letter-spacing: 0.02em; }
-.front .rule { display: block; width: 8mm; height: 0.3mm; margin-block: 1.6mm 1.2mm; background: ${COLORS.accent}; }
+.front .name { display: grid; }
+.front .brand { font-size: 16pt; font-weight: 600; letter-spacing: 0.18em; line-height: 1.05; }
+.front .owner { margin-block-start: 0.8mm; font-size: 8pt; font-weight: 600; color: ${COLORS.accent}; }
 .front .scope {
-  text-wrap: balance;
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 5.6pt;
+  max-width: 40mm;
+  margin-block-start: 2.6mm;
+  padding-block-start: 2.2mm;
+  background: linear-gradient(rgb(255 255 255 / 0.3), rgb(255 255 255 / 0.3)) top left / 8mm 0.2mm no-repeat;
+  font-size: 6pt;
   line-height: 1.45;
   color: ${COLORS.onDarkMuted};
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-.front .region {
-  position: absolute;
-  right: ${rightOffset + SAFE + 1}mm;
-  bottom: ${BLEED + SAFE}mm;
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 5pt;
-  letter-spacing: 0.08em;
-  color: ${COLORS.onDarkMuted};
-  text-transform: uppercase;
+  text-wrap: balance;
 }
 
-/* Back: white, hairline frame divided like a drawing title block. */
+/* Back: white, a soft hairline frame, contacts on the left and the QR code on a light panel. */
 .back { background: #fff; }
 .frame {
   position: absolute;
   ${trimBox(FRAME)}
   display: grid;
-  grid-template-columns: 1fr ${QR_SIZE + 6}mm;
-  border: 0.2mm solid ${COLORS.line};
-}
-.block { display: flex; flex-direction: column; padding: 2.6mm 3mm 2.4mm; }
-.title {
-  position: relative;
-  display: flex;
+  grid-template-columns: 1fr ${QR_SIZE + 5}mm;
   gap: 2mm;
-  align-items: center;
-  padding-block-end: 2mm;
-  border-bottom: 0.2mm solid ${COLORS.line};
+  padding: 2mm;
+  border: 0.2mm solid ${COLORS.line};
+  border-radius: 1.6mm;
 }
-.title::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -0.3mm;
-  width: 8mm;
-  height: 0.4mm;
-  background: ${COLORS.accent};
+.block {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.4mm 1mm 0.8mm 2mm;
 }
-.title img { width: 6.5mm; height: 6.5mm; border-radius: 1mm; }
-.title p { font-size: 6.8pt; line-height: 1.2; }
-.title strong { font-size: 9pt; font-weight: 600; letter-spacing: 0.16em; }
-.title span { color: ${COLORS.accentText}; font-weight: 600; letter-spacing: 0.02em; }
+.title { display: flex; gap: 2.2mm; align-items: center; }
+.title img { width: 7mm; height: 7mm; border-radius: 1.2mm; }
+.title p { display: grid; line-height: 1.15; }
+.title strong { font-size: 9pt; font-weight: 600; letter-spacing: 0.14em; }
+.title span { font-size: 6.5pt; font-weight: 600; color: ${COLORS.accentText}; }
 .block .scope {
-  margin-block-start: 1.8mm;
-  text-wrap: balance;
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 5pt;
+  margin-block: 2.4mm auto;
+  font-size: 6pt;
   color: ${COLORS.muted};
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
-.data { margin-block-start: auto; border-collapse: collapse; width: 100%; }
+.data { border-collapse: collapse; width: 100%; }
 .data th {
-  width: 13mm;
-  padding: 0.55mm 0;
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 5.2pt;
+  width: 12mm;
+  padding: 0.5mm 0;
+  font-size: 6pt;
   font-weight: 400;
   color: ${COLORS.muted};
-  letter-spacing: 0.08em;
   text-align: left;
-  text-transform: uppercase;
   vertical-align: baseline;
 }
-.data td { padding: 0.55mm 0; font-size: 7pt; vertical-align: baseline; }
-.data .phone {
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 8.6pt;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-}
-.data .one-line {
-  white-space: nowrap;
-}
+.data td { padding: 0.5mm 0; font-size: 7pt; vertical-align: baseline; }
+.data .phone { font-size: 9pt; font-weight: 600; letter-spacing: 0.02em; }
 .qr {
   display: grid;
   align-content: center;
   justify-items: center;
-  gap: 1.2mm;
-  border-left: 0.2mm solid ${COLORS.line};
+  gap: 1.4mm;
+  border-radius: 1.2mm;
+  background: ${COLORS.panel};
 }
-.qr svg { display: block; width: ${QR_SIZE}mm; height: ${QR_SIZE}mm; }
-.qr figcaption {
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 4.8pt;
-  color: ${COLORS.muted};
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
+.qr .code svg { display: block; width: ${QR_SIZE}mm; height: ${QR_SIZE}mm; border-radius: 0.6mm; }
+.qr figcaption { display: flex; gap: 0.8mm; align-items: center; font-size: 6pt; font-weight: 600; color: ${COLORS.ink}; }
+.qr .pointer { width: 5.6mm; height: 6.7mm; }
 
 .proof {
   position: absolute;
@@ -365,17 +306,82 @@ const chromeCandidates = [
 const chrome = chromeCandidates.find((path) => existsSync(path));
 if (!chrome) throw new Error("Chrome not found; set CHROME_PATH");
 
+/**
+ * Moves the previous run's PDF, PNG and SVG files to print/archiwum/<time of that run>/, so nothing sent to
+ * the client or the printer is lost. The HTML files are only build steps and are rebuilt every time.
+ */
+const archivePrevious = async () => {
+  const entries = await readdir(OUT, { withFileTypes: true }).catch(() => []);
+  const kept = entries.filter((entry) => entry.isFile() && /.(pdf|png|svg)$/i.test(entry.name));
+  for (const entry of entries)
+    if (entry.isFile() && entry.name.endsWith(".html")) await rm(resolve(OUT, entry.name));
+  if (kept.length === 0) return undefined;
+  const times = await Promise.all(kept.map((entry) => stat(resolve(OUT, entry.name))));
+  const built = new Date(Math.max(...times.map((info) => info.mtimeMs)));
+  const pad = (n) => String(n).padStart(2, "0");
+  const name = `${built.getFullYear()}-${pad(built.getMonth() + 1)}-${pad(built.getDate())}_${pad(built.getHours())}-${pad(built.getMinutes())}-${pad(built.getSeconds())}`;
+  let folder = resolve(OUT, "archiwum", name);
+  for (let n = 2; existsSync(folder); n++) folder = resolve(OUT, "archiwum", `${name}_${n}`);
+  await mkdir(folder, { recursive: true });
+  for (const entry of kept) await rename(resolve(OUT, entry.name), resolve(folder, entry.name));
+  return folder;
+};
+
 await mkdir(OUT, { recursive: true });
+const archived = await archivePrevious();
 const suffix = isProof ? "-WZOR" : "";
 const files = {
   card: resolve(OUT, "wizytowka.html"),
   front: resolve(OUT, "przod.html"),
   back: resolve(OUT, "tyl.html"),
+  showcase: resolve(OUT, "prezentacja.html"),
 };
+
+/*
+ * Showcase for the client: both sides next to each other, cut to the trim line, without the proof strip.
+ * It is a picture to look at, not a print file; the PDF stays the only file for the printer.
+ */
+const SHOWCASE = { padding: 14, gap: 12, label: 8 };
+const showcase = {
+  width: SHOWCASE.padding * 2 + TRIM.width * 2 + SHOWCASE.gap,
+  height: SHOWCASE.padding * 2 + TRIM.height + SHOWCASE.label,
+};
+const trimmed = (side, label) => `
+  <figure class="sheet">
+    <div class="cut">${side.replace(proofMark, "")}</div>
+    <figcaption>${label}</figcaption>
+  </figure>`;
+const showcaseStyle = `<style>
+  html, body { background: #e9edf1; }
+  .showcase {
+    display: flex;
+    align-items: flex-start;
+    gap: ${SHOWCASE.gap}mm;
+    width: ${showcase.width}mm;
+    height: ${showcase.height}mm;
+    padding: ${SHOWCASE.padding}mm ${SHOWCASE.padding}mm 0;
+  }
+  .sheet { display: grid; gap: 3mm; }
+  .cut {
+    width: ${TRIM.width}mm;
+    height: ${TRIM.height}mm;
+    overflow: hidden;
+    border-radius: 0.8mm;
+    box-shadow: 0 0.6mm 1.2mm rgb(20 43 69 / 0.12), 0 3mm 8mm rgb(20 43 69 / 0.14);
+  }
+  .cut .page { margin: -${BLEED}mm; }
+  .sheet > figcaption { font-size: 7pt; color: #5b6878; text-align: center; letter-spacing: 0.04em; }
+</style>`;
 await writeFile(files.card, page(front + back));
 await writeFile(files.front, page(front));
 await writeFile(files.back, page(back));
 await writeFile(resolve(OUT, `kod-qr${suffix}.svg`), qrSvg);
+await writeFile(
+  files.showcase,
+  page(
+    `${showcaseStyle}<div class="showcase">${trimmed(front, "Przód")}${trimmed(back, "Tył")}</div>`,
+  ),
+);
 
 const run = (args) =>
   execFileSync(
@@ -399,15 +405,21 @@ for (const side of ["front", "back"]) {
   ]);
 }
 
+run([
+  `--window-size=${Math.round((showcase.width / 25.4) * 96)},${Math.round((showcase.height / 25.4) * 96)}`,
+  "--force-device-scale-factor=4",
+  `--screenshot=${resolve(OUT, "wizytowka-dla-klienta.png")}`,
+  pathToFileURL(files.showcase).href,
+]);
+
 console.log(
   [
     isProof
       ? "WZÓR: brak docelowej domeny. Podaj ją: npm run card -- --url=https://domena-klienta.pl"
       : "Gotowe do druku.",
     `Kod QR: ${qrText} (wersja ${qr.version}, korekcja ${qr.ecl}, odczyt kontrolny OK)`,
-    site.email
-      ? `E-mail: ${site.email}`
-      : "E-mail: brak – uzupełnij site.email w src/content/site.ts",
+    "Dla klienta: wizytowka-dla-klienta.png (przód i tył razem, bez paska wzoru, nie do druku)",
     `Pliki: ${OUT}`,
+    archived ? `Poprzednia wersja: ${archived}` : "Poprzednia wersja: brak (pierwsze uruchomienie)",
   ].join("\n"),
 );
