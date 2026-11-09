@@ -53,8 +53,9 @@ export const privacySections: PolicySection[] = [
     title: "Komu przekazujemy dane",
     paragraphs: [
       "Dane mogą trafić do firm, które obsługują dla nas formularz, pocztę i hosting strony, wyłącznie w zakresie potrzebnym do świadczenia tych usług. Danych nie sprzedajemy i nie przekazujemy w celach marketingowych.",
-      // TODO(klient): prawnik — podstawa przekazania danych do USA (np. Data Privacy Framework lub standardowe klauzule umowne w umowie z Vercel) i okres przechowywania logów
-      "Stronę utrzymuje Vercel Inc. z siedzibą w USA. Przy każdym wejściu na stronę serwery hostingu zapisują w logach technicznych adres IP i informacje o przeglądarce. Służą one wyłącznie do bezpiecznego i poprawnego działania strony.",
+      // TODO(klient): prawnik — podstawa przekazania danych do USA (Data Privacy Framework lub standardowe klauzule umowne w umowach z Cloudflare i Google) i okres przechowywania logów
+      "Stronę i formularz obsługuje Cloudflare, Inc. z siedzibą w USA. Zgłoszenie z formularza, razem ze zdjęciami, Cloudflare przekazuje e-mailem na naszą skrzynkę w usłudze Gmail (Google). Przy każdym wejściu na stronę serwery hostingu zapisują w logach technicznych adres IP i informacje o przeglądarce. Służą one wyłącznie do bezpiecznego i poprawnego działania strony.",
+      "Przed wysłaniem przeglądarka zmniejsza zdjęcia i usuwa przy tym zapisane w nich dodatkowe informacje, np. miejsce wykonania. Pliku, którego przeglądarka nie potrafi otworzyć (np. część zdjęć HEIC), nie zmienia i wysyła go w oryginale.",
     ],
   },
   {

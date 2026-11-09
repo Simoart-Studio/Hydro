@@ -27,12 +27,12 @@ npm run dev        # http://localhost:4321
 
 ## Zmienne środowiskowe
 
-| Zmienna                | Domyślnie                  | Opis                                                                                                                                                                   |
-| ---------------------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `PUBLIC_SITE_URL`      | `localhost`                | Adres w canonical, sitemapie, Open Graph i JSON-LD. Na Cloudflare Pages i w CI bez niego build się przerywa.                                                           |
-| `PUBLIC_NOINDEX`       | indeksowanie **wyłączone** | Tylko `false` włącza indeksowanie. Ustawić dopiero na produkcji z domeną klienta i zatwierdzoną treścią.                                                               |
-| `PUBLIC_FORM_ENDPOINT` | pusty                      | Adres usługi formularzy. Pusty — formularz jest widoczny, ale nie wysyła: informuje, że zgłoszenia przyjmujemy telefonicznie. Jego domena trafia automatycznie do CSP. |
-| `PUBLIC_CONTACT_FORM`  | formularz widoczny         | `false` — strona Kontakt pokazuje karty z telefonami zamiast formularza.                                                                                               |
+| Zmienna                | Domyślnie                  | Opis                                                                                                                                                                                                        |
+| ---------------------- | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PUBLIC_SITE_URL`      | `localhost`                | Adres w canonical, sitemapie, Open Graph i JSON-LD. Na Cloudflare Pages i w CI bez niego build się przerywa.                                                                                                |
+| `PUBLIC_NOINDEX`       | indeksowanie **wyłączone** | Tylko `false` włącza indeksowanie. Ustawić dopiero na produkcji z domeną klienta i zatwierdzoną treścią.                                                                                                    |
+| `PUBLIC_FORM_ENDPOINT` | pusty                      | Adres Workera formularza (`https://formularz.hydrokotly.pl`). Pusty — formularz jest widoczny, ale nie wysyła: informuje, że zgłoszenia przyjmujemy telefonicznie. Jego domena trafia automatycznie do CSP. |
+| `PUBLIC_CONTACT_FORM`  | formularz widoczny         | `false` — strona Kontakt pokazuje karty z telefonami zamiast formularza.                                                                                                                                    |
 
 Na Cloudflare Pages `PUBLIC_SITE_URL` jest wymagany (`https://hydrokotly.pl`), bo Cloudflare nie przekazuje domeny do buildu. Adresy techniczne `*.pages.dev` dostają nagłówek `X-Robots-Tag: noindex` (`public/_headers`), więc nie konkurują z domeną klienta w wyszukiwarce.
 
@@ -75,7 +75,15 @@ Kod nie wymaga zmian poza jedną linią z e-mailem. Kolejność:
 5. **Wizytówka.** `npm run card` → `print/wizytowka.pdf` (kod QR na `https://hydrokotly.pl`). Przed zamówieniem zeskanować kod z wydruku próbnego dwoma telefonami.
 6. **Rejestrator domeny.** Włączyć automatyczne odnawianie i 2FA — wygaśnięcie domeny unieważnia też kody QR na wydrukowanych wizytówkach.
 
-Wysyłkę formularza włącza `PUBLIC_FORM_ENDPOINT` (usługa formularzy z obsługą załączników do 5 × 10 MB, wysyłająca na e-mail firmowy). Do tego czasu formularz jest widoczny, waliduje dane, ale niczego nie wysyła i kieruje do telefonu. Po ustawieniu: wysłać zgłoszenie testowe ze zdjęciem, dopisać usługę do polityki prywatności jako odbiorcę danych i zawrzeć z nią umowę powierzenia.
+### Formularz
+
+Zgłoszenia odbiera Worker `workers/contact-form` pod `https://formularz.hydrokotly.pl` i wysyła je e-mailem (Cloudflare Email Routing) na `hydrokotlownie@gmail.com`, ze zdjęciami w załącznikach. Darmowy plan Workers daje 10 ms CPU na zgłoszenie, dlatego przeglądarka sama zmniejsza zdjęcia (dłuższy bok 1600 px, JPEG, bez EXIF) i koduje je do załączników — Worker tylko je sprawdza i składa wiadomość. Limity: `photoLimits` w `src/content/contact.ts` i `LIMITS` w Workerze.
+
+- Testy Workera: `npm run test:form` (bez Cloudflare; wysyłka podstawiona).
+- Wdrożenie: Cloudflare Workers Builds z tego repo, katalog `workers/contact-form` (konfiguracja w `wrangler.jsonc`).
+- Wymaga: Email Routing włączony dla `hydrokotly.pl` i `hydrokotlownie@gmail.com` potwierdzony jako adres docelowy.
+- Strona: `PUBLIC_FORM_ENDPOINT=https://formularz.hydrokotly.pl` w zmiennych projektu Pages. Bez niej formularz jest widoczny, ale nie wysyła i kieruje do telefonu.
+- Logi: Cloudflare → Workers & Pages → `hydro-formularz` → Logs (tylko powód odrzucenia lub błędu, bez danych z formularza).
 
 ## Wizytówka
 

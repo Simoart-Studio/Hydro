@@ -19,7 +19,12 @@ export default defineConfig([
     },
   },
   {
-    files: ["*.js", "*.mjs", "scripts/**/*.mjs"],
+    files: ["*.js", "*.mjs", "scripts/**/*.mjs", "workers/**/test/*.mjs"],
     languageOptions: { globals: globals.node },
+  },
+  {
+    // Cloudflare Workers run on web APIs (Request, Response, crypto), not on Node.
+    files: ["workers/**/src/*.js"],
+    languageOptions: { globals: globals.serviceworker },
   },
 ]);

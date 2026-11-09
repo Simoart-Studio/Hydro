@@ -13,6 +13,7 @@
     "check": "astro check && eslint . && prettier --check .",
     "format": "prettier --write .",
     "smoke": "node scripts/smoke.mjs",
+    "test:form": "node --test \"workers/contact-form/test/*.test.mjs\"",
     "card": "node --experimental-strip-types --no-warnings scripts/business-card/build.mjs"
   },
   "dependencies": {

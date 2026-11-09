@@ -70,6 +70,10 @@ export const contactForm = {
       choose: "Wybierz zdjęcia",
       empty: "Nie wybrano zdjęć",
       error: "Dodaj najwyżej 5 zdjęć (JPG, PNG, HEIC lub WebP), każde do 10 MB.",
+      /** Przed wysyłką przeglądarka zmniejsza zdjęcia; te komunikaty pojawiają się, gdy się to nie uda. */
+      failed:
+        "Nie udało się przygotować zdjęcia do wysyłki. Zapisz je jako JPG albo zrób zrzut ekranu i dodaj ponownie:",
+      tooLarge: "Zdjęcia są za duże do wysłania. Usuń jedno lub dwa i spróbuj ponownie.",
     },
     message: { label: "Wiadomość" },
     consent: {
@@ -104,5 +108,12 @@ export const contactForm = {
 export const photoLimits = {
   maxFiles: 5,
   maxBytes: 10 * 1024 * 1024,
+  /** Dłuższy bok zdjęcia po zmniejszeniu w przeglądarce, w pikselach; wystarcza do oceny kotłowni. */
+  maxEdge: 1600,
+  quality: 0.75,
+  /** Zdjęcie, którego przeglądarka nie umie otworzyć (np. HEIC w Chrome), idzie bez zmian, jeśli nie jest większe. */
+  maxUnprocessedBytes: 1.5 * 1024 * 1024,
+  /** Wszystkie zdjęcia razem po zakodowaniu; ten sam limit sprawdza Worker formularza. */
+  maxEncodedChars: 6_000_000,
   extensions: [".jpg", ".jpeg", ".png", ".heic", ".heif", ".webp"],
 };
