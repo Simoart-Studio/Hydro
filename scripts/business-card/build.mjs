@@ -1,7 +1,8 @@
 // Business card 90 × 50 mm with a QR code linking to the site.
-//   npm run card -- --url=https://domena-klienta.pl
-// Without --url the address comes from PUBLIC_SITE_URL. Without a final domain (missing or *.vercel.app)
-// the card is built as a proof marked "WZÓR – NIE DRUKOWAĆ", because a printed QR code cannot be changed.
+//   npm run card                     QR code for the production domain https://hydrokotly.pl
+//   npm run card -- --url=https://…  another address
+// Without --url the address comes from PUBLIC_SITE_URL, then the production domain. A technical address
+// (*.pages.dev, *.vercel.app) builds a proof marked "WZÓR – NIE DRUKOWAĆ", because a printed QR code cannot be changed.
 // Names and phones come from src/content/site.ts, so the card always matches the site.
 // Output in print/: wizytowka.pdf (2 pages, 2 mm bleed), PNG previews and the QR code as SVG.
 // Files from the previous run move to print/archiwum/<date and time of that run>/ before new ones are written.
@@ -31,8 +32,9 @@ const parseUrl = (value) => {
   return url;
 };
 
-const url = parseUrl(rawUrl) ?? new URL("https://hydrodemosite.vercel.app/");
-const isProof = rawUrl === "" || url.hostname.endsWith(".vercel.app");
+const PRODUCTION_URL = "https://hydrokotly.pl/";
+const url = parseUrl(rawUrl) ?? new URL(PRODUCTION_URL);
+const isProof = [".pages.dev", ".vercel.app"].some((suffix) => url.hostname.endsWith(suffix));
 const qrText = `${url.origin}/`;
 
 selfTest();

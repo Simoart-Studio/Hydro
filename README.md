@@ -3,7 +3,7 @@
 Statyczna strona usługowa firmy instalacyjnej (pompy ciepła, kotły, instalacje hydrauliczne, dotacje). Działa bez backendu, bazy danych i cookies; jedyny kontakt z odwiedzającym to linki `tel:` i opcjonalny formularz wysyłany do zewnętrznej usługi.
 
 - Domena: https://hydrokotly.pl (rejestrator: home.pl, DNS: Cloudflare)
-- Demo: https://hydrodemosite.vercel.app (nieindeksowane, do wyłączenia po przejściu na Cloudflare)
+- Adres techniczny: https://hydro-8g4.pages.dev (nieindeksowany)
 - Stack: [Astro 7](https://astro.build) (SSG), TypeScript strict, czysty CSS, fonty self-hosted (`@fontsource`), hosting Cloudflare Pages
 
 ## Uruchomienie
@@ -27,14 +27,14 @@ npm run dev        # http://localhost:4321
 
 ## Zmienne środowiskowe
 
-| Zmienna                | Domyślnie                                        | Opis                                                                                                                                                                   |
-| ---------------------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `PUBLIC_SITE_URL`      | domena produkcyjna projektu Vercel / `localhost` | Adres w canonical, sitemapie, Open Graph i JSON-LD. W CI bez niego build się przerywa.                                                                                 |
-| `PUBLIC_NOINDEX`       | indeksowanie **wyłączone**                       | Tylko `false` włącza indeksowanie. Ustawić dopiero na produkcji z domeną klienta i zatwierdzoną treścią.                                                               |
-| `PUBLIC_FORM_ENDPOINT` | pusty                                            | Adres usługi formularzy. Pusty — formularz jest widoczny, ale nie wysyła: informuje, że zgłoszenia przyjmujemy telefonicznie. Jego domena trafia automatycznie do CSP. |
-| `PUBLIC_CONTACT_FORM`  | formularz widoczny                               | `false` — strona Kontakt pokazuje karty z telefonami zamiast formularza.                                                                                               |
+| Zmienna                | Domyślnie                  | Opis                                                                                                                                                                   |
+| ---------------------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PUBLIC_SITE_URL`      | `localhost`                | Adres w canonical, sitemapie, Open Graph i JSON-LD. Na Cloudflare Pages i w CI bez niego build się przerywa.                                                           |
+| `PUBLIC_NOINDEX`       | indeksowanie **wyłączone** | Tylko `false` włącza indeksowanie. Ustawić dopiero na produkcji z domeną klienta i zatwierdzoną treścią.                                                               |
+| `PUBLIC_FORM_ENDPOINT` | pusty                      | Adres usługi formularzy. Pusty — formularz jest widoczny, ale nie wysyła: informuje, że zgłoszenia przyjmujemy telefonicznie. Jego domena trafia automatycznie do CSP. |
+| `PUBLIC_CONTACT_FORM`  | formularz widoczny         | `false` — strona Kontakt pokazuje karty z telefonami zamiast formularza.                                                                                               |
 
-Na Cloudflare Pages `PUBLIC_SITE_URL` jest wymagany (`https://hydrokotly.pl`), bo Cloudflare nie przekazuje domeny do buildu. Adresy techniczne `*.pages.dev` i `*.vercel.app` dostają nagłówek `X-Robots-Tag: noindex` (`public/_headers`, `vercel.json`), więc nie konkurują z domeną klienta w wyszukiwarce.
+Na Cloudflare Pages `PUBLIC_SITE_URL` jest wymagany (`https://hydrokotly.pl`), bo Cloudflare nie przekazuje domeny do buildu. Adresy techniczne `*.pages.dev` dostają nagłówek `X-Robots-Tag: noindex` (`public/_headers`), więc nie konkurują z domeną klienta w wyszukiwarce.
 
 ## Struktura
 
@@ -52,7 +52,7 @@ Braki w danych od klienta są oznaczone w kodzie `TODO(klient)` — nie uzupełn
 
 ## Bezpieczeństwo
 
-- **CSP**: Astro (`security.csp` w `astro.config.mjs`) wstawia do każdej strony `<meta>` z hashami skryptów i stylów. Nagłówki, których meta nie obsłuży (`frame-ancestors`, `X-Frame-Options`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`, COOP), ustawia `public/_headers` (Cloudflare Pages; `vercel.json` to odpowiednik dla Vercel).
+- **CSP**: Astro (`security.csp` w `astro.config.mjs`) wstawia do każdej strony `<meta>` z hashami skryptów i stylów. Nagłówki, których meta nie obsłuży (`frame-ancestors`, `X-Frame-Options`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`, COOP), ustawia `public/_headers`.
 - Nowy zewnętrzny zasób (skrypt, font, mapa, analityka) wymaga dopisania jego domeny do dyrektyw CSP w `astro.config.mjs`.
 - Zgłaszanie podatności: `/.well-known/security.txt` → e-mail firmowy (gdy uzupełniony) i GitHub Private Vulnerability Reporting.
 - CI (`.github/workflows/ci.yml`): typy, lint, formatowanie, `npm audit` zależności produkcyjnych, podpisy pakietów, build, test dymny, SBOM CycloneDX.
@@ -72,11 +72,11 @@ Kod nie wymaga zmian poza jedną linią z e-mailem. Kolejność:
 2. **E-mail firmowy.** Wpisać w `src/content/site.ts` (`email`). Adres pojawi się w stopce, na stronie Kontakt, w polityce prywatności, w danych strukturalnych i w `security.txt`.
 3. **Indeksowanie** — po akceptacji treści: projekt Pages → Settings → Variables and Secrets → `PUBLIC_NOINDEX=false` (Production), ponowne wdrożenie.
 4. **Monitoring.** GitHub → Settings → Variables → `SITE_URL=https://hydrokotly.pl`. Ręcznie: `npm run smoke -- https://hydrokotly.pl`.
-5. **Wizytówka.** `npm run card -- --url=https://hydrokotly.pl` → `print/wizytowka.pdf`. Przed zamówieniem zeskanować kod z wydruku próbnego dwoma telefonami.
+5. **Wizytówka.** `npm run card` → `print/wizytowka.pdf` (kod QR na `https://hydrokotly.pl`). Przed zamówieniem zeskanować kod z wydruku próbnego dwoma telefonami.
 6. **Rejestrator domeny.** Włączyć automatyczne odnawianie i 2FA — wygaśnięcie domeny unieważnia też kody QR na wydrukowanych wizytówkach.
 
 Wysyłkę formularza włącza `PUBLIC_FORM_ENDPOINT` (usługa formularzy z obsługą załączników do 5 × 10 MB, wysyłająca na e-mail firmowy). Do tego czasu formularz jest widoczny, waliduje dane, ale niczego nie wysyła i kieruje do telefonu. Po ustawieniu: wysłać zgłoszenie testowe ze zdjęciem, dopisać usługę do polityki prywatności jako odbiorcę danych i zawrzeć z nią umowę powierzenia.
 
 ## Wizytówka
 
-`npm run card` składa wizytówkę 90 × 50 mm (spad 2 mm, PDF dwustronicowy: przód i tył) z danych w `src/content/site.ts` i kodem QR prowadzącym na stronę. Kod QR generuje własny koder (`scripts/business-card/qr.mjs`) — bez zewnętrznych usług i przekierowań — a każdy kod jest po wygenerowaniu odczytywany kontrolnie. Bez docelowej domeny powstaje wzór z czerwonym paskiem „WZÓR – NIE DRUKOWAĆ”. Do PDF potrzebny jest Chrome (`CHROME_PATH`, jeśli nie w standardowym miejscu). Pliki trafiają do `print/` (poza gitem); przy każdym uruchomieniu poprzednie PDF/PNG/SVG przenoszą się do `print/archiwum/<data_godzina>/`.
+`npm run card` składa wizytówkę 90 × 50 mm (spad 2 mm, PDF dwustronicowy: przód i tył) z danych w `src/content/site.ts` i kodem QR prowadzącym na stronę. Kod QR generuje własny koder (`scripts/business-card/qr.mjs`) — bez zewnętrznych usług i przekierowań — a każdy kod jest po wygenerowaniu odczytywany kontrolnie. Domyślnie kod prowadzi na `https://hydrokotly.pl`; inny adres: `npm run card -- --url=https://…`. Adres techniczny (`*.pages.dev`, `*.vercel.app`) daje wzór z czerwonym paskiem „WZÓR – NIE DRUKOWAĆ”. Do PDF potrzebny jest Chrome (`CHROME_PATH`, jeśli nie w standardowym miejscu). Pliki trafiają do `print/` (poza gitem); przy każdym uruchomieniu poprzednie PDF/PNG/SVG przenoszą się do `print/archiwum/<data_godzina>/`.

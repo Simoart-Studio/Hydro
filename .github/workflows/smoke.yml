@@ -1,10 +1,11 @@
 name: Smoke
 
-# After every successful production deployment on Vercel, and every 30 minutes as a simple uptime check.
+# After every successful production deployment on Cloudflare Pages, and every 30 minutes as a simple uptime check.
 # A failed run sends the repository owner an e-mail from GitHub.
 on:
-  # Vercel reports deployments as a commit status named "Vercel", not as GitHub Deployments.
-  status:
+  # Cloudflare Pages reports each deployment as a check run named "Cloudflare Pages".
+  check_run:
+    types: [completed]
   schedule:
     - cron: "*/30 * * * *"
   workflow_dispatch:
@@ -14,11 +15,12 @@ permissions:
 
 jobs:
   smoke:
-    # Only finished deployments of main are production; preview deployments sit behind Vercel Authentication.
+    # Only finished deployments of main are production; other branches get preview deployments.
     if: >-
-      github.event_name != 'status' ||
-      (github.event.context == 'Vercel' && github.event.state == 'success' &&
-       contains(github.event.branches.*.name, 'main'))
+      github.event_name != 'check_run' ||
+      (github.event.check_run.name == 'Cloudflare Pages' &&
+       github.event.check_run.conclusion == 'success' &&
+       github.event.check_run.check_suite.head_branch == 'main')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -30,6 +32,6 @@ jobs:
           node-version-file: package.json
       - name: Smoke test of production
         env:
-          # The production address from the repository variable SITE_URL, the demo until the client's domain is attached.
-          TARGET_URL: ${{ vars.SITE_URL || 'https://hydrodemosite.vercel.app' }}
+          # The production address from the repository variable SITE_URL, the client's domain by default.
+          TARGET_URL: ${{ vars.SITE_URL || 'https://hydrokotly.pl' }}
         run: node scripts/smoke.mjs "$TARGET_URL"
