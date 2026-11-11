@@ -1,5 +1,6 @@
 // Indexing stays off unless a deployment opts in explicitly, so a forgotten variable never exposes a draft to search engines.
-export const isNoindex = import.meta.env.PUBLIC_NOINDEX !== "false";
+// The value is trimmed and lower-cased, because dashboard fields easily keep a trailing space or newline.
+export const isNoindex = (import.meta.env.PUBLIC_NOINDEX ?? "").trim().toLowerCase() !== "false";
 export const formEndpoint = import.meta.env.PUBLIC_FORM_ENDPOINT ?? "";
 
 /**
