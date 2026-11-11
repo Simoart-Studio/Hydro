@@ -10,8 +10,12 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 const entries = [...offerItems, installation, electrical];
 ---
 
-<BaseLayout title={`${offerPage.metaTitle} | ${site.brandLines[0]}`} description={offerPage.lead}>
-  <PageHeader title={offerPage.title} lead={offerPage.lead} />
+<BaseLayout
+  title={`${offerPage.metaTitle} | ${site.brandLines[0]}`}
+  description={offerPage.metaDescription}
+  breadcrumb={offerPage.title}
+>
+  <PageHeader title={offerPage.title} heading={offerPage.heading} lead={offerPage.lead} />
   <Container width="page">
     <nav class="jump" aria-label={offerPage.sectionsLabel}>
       <ul role="list">

@@ -33,6 +33,10 @@ export interface SiteInfo {
   legalName: string;
   tagline: string;
   description: string;
+  /** Opis strony głównej w wynikach Google, do ok. 155 znaków. */
+  metaDescription: string;
+  /** Profile firmy w innych serwisach (np. link do Profilu Firmy w Mapach Google); trafiają do danych strukturalnych. */
+  profiles: string[];
   /** Pierwszy kontakt jest numerem głównym: nagłówek, przyciski, dane strukturalne. */
   contacts: [Contact, ...Contact[]];
   /** Puste pole nie wyświetla się na stronie. */
@@ -56,6 +60,9 @@ export const site: SiteInfo = {
   brandLines: ["HYDRO", "Leszek Weinerowski"],
   legalName: "HYDRO Leszek Weinerowski", // TODO(klient): pełna nazwa firmy z CEIDG
   tagline: "Nowoczesne instalacje grzewcze i hydrauliczne",
+  metaDescription:
+    "Montaż pomp ciepła, kotłów gazowych i na pellet oraz instalacji hydraulicznych, pomoc w dotacjach. Tczew, Trójmiasto i okolice. Zadzwoń: 882 834 297.",
+  profiles: [], // TODO(klient): link do Profilu Firmy w Mapach Google (Udostępnij → Kopiuj link)
   description:
     "Pompy ciepła, kotły gazowe, kotły na pellet i zgazowujące drewno. Kompleksowy montaż, modernizacja kotłowni i instalacje hydrauliczne, plus pomoc w uzyskaniu dotacji. Trójmiasto, Tczew i okolice.",
   contacts: [

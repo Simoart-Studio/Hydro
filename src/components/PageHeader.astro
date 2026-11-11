@@ -2,11 +2,14 @@
 import Container from "./Container.astro";
 
 interface Props {
+  /** Short page name in the breadcrumb trail. */
   title: string;
+  /** Main heading (h1); defaults to the title. It can carry the phrases people search for. */
+  heading?: string;
   lead?: string;
 }
 
-const { title, lead } = Astro.props;
+const { title, heading = title, lead } = Astro.props;
 ---
 
 <div class="page-header on-navy">
@@ -19,7 +22,7 @@ const { title, lead } = Astro.props;
         <li aria-current="page">{title}</li>
       </ol>
     </nav>
-    <h1>{title}</h1>
+    <h1>{heading}</h1>
     {lead && <p class="lead">{lead}</p>}
   </Container>
 </div>

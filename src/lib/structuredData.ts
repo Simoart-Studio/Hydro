@@ -22,6 +22,7 @@ export function businessSchema(base: URL): Schema {
     description: site.description,
     url: new URL("/", base).href,
     logo: new URL("/logo.png", base).href,
+    sameAs: site.profiles,
     image: new URL("/og.jpg", base).href,
     telephone: site.contacts[0].phone,
     email: site.email,

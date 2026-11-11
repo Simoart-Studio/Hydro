@@ -15,11 +15,11 @@ const lead = hasContactForm ? contactPage.lead : contactPage.leadPhoneOnly;
 
 <BaseLayout
   title={`${contactPage.metaTitle} | ${site.brandLines[0]}`}
-  description={lead}
+  description={contactPage.metaDescription}
   breadcrumb={contactPage.title}
   contactDock={false}
 >
-  <PageHeader title={contactPage.title} lead={lead} />
+  <PageHeader title={contactPage.title} heading={contactPage.heading} lead={lead} />
   <Container width="page" class="layout">
     {hasContactForm ? <ContactForm /> : <CallCard />}
     <div class="details">

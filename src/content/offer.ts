@@ -15,6 +15,10 @@ export interface OfferItem {
 
 export const offerPage = {
   title: "Oferta",
+  heading: "Oferta: pompy ciepła, kotły i instalacje hydrauliczne",
+  /** Opis w wynikach Google, do ok. 155 znaków. */
+  metaDescription:
+    "Pompy ciepła, kotły gazowe i na pellet, zasobniki, bufory, ogrzewanie podłogowe i instalacje hydrauliczne. Dobór, montaż i uruchomienie. Tczew i Trójmiasto.",
   metaTitle: "Pompy ciepła, kotły i instalacje hydrauliczne z montażem",
   lead: "Pompy ciepła, kotły gazowe, kotły na pellet i zgazowujące drewno, zasobniki, bufory oraz kompletne instalacje hydrauliczne i elektryczne. Montujemy urządzenia różnych producentów i prowadzimy całość od doboru po uruchomienie.",
   pricing:

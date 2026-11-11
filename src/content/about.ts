@@ -1,5 +1,6 @@
 export const aboutPage = {
   title: "O nas",
+  heading: "O nas: zespół instalatorów z Tczewa",
   metaTitle: "O firmie: instalatorzy z uprawnieniami SEP i F-Gaz",
   lead: "Trzyosobowy zespół instalatorów z Pomorza. Prowadzimy instalacje grzewcze, hydrauliczne i elektryczne od doboru urządzenia po uruchomienie.",
 };
