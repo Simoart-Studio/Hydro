@@ -78,6 +78,8 @@ export const privacySections: PolicySection[] = [
       "Bez Twojej zgody strona nie zapisuje plików cookies i nie łączy się z usługami pomiarowymi.",
       "Jeśli klikniesz „Akceptuję” w okienku na dole strony, strona wczyta tag Google (Google Ads i Google Analytics, dostawca: Google Ireland Limited). Zapisuje on pliki cookies, dzięki którym sprawdzamy, ile osób trafia na stronę z naszych reklam w Google i czy potem dzwonią lub wysyłają formularz. Google może przetwarzać te dane także w USA. Podstawą jest Twoja zgoda (art. 6 ust. 1 lit. a RODO).",
       "Zgodę możesz w każdej chwili wycofać lub zmienić przyciskiem „Ustawienia cookies” w stopce strony. Twój wybór przeglądarka zapamiętuje u Ciebie (w pamięci lokalnej strony), nie w pliku cookie.",
+      "Pliki cookies zapisywane po zgodzie: _ga i _ga_WSBV76Z556 (Google Analytics, odróżniają kolejne wizyty, do 2 lat) a jeśli wejdziesz z reklamy, także _gcl_au (Google Ads, łączy wizytę z kliknięciem w reklamę, do 90 dni). Po wycofaniu zgody strona je usuwa.",
+      "Twój wybór (zgoda lub odmowa) zapamiętujemy razem z datą przez 12 miesięcy. Po tym czasie, albo gdy zmienimy narzędzia opisane powyżej, okienko zapyta Cię ponownie.",
     ],
   },
 ];

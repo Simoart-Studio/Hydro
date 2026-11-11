@@ -1,7 +1,7 @@
-# Cloudflare Pages response headers (the counterpart of the "headers" section in vercel.json).
+# Cloudflare Pages response headers.
 # The CSP with script and style hashes is a meta tag on every page; here go the directives a meta tag cannot carry.
 /*
-  Strict-Transport-Security: max-age=63072000
+  Strict-Transport-Security: max-age=63072000; includeSubDomains
   Content-Security-Policy: frame-ancestors 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff

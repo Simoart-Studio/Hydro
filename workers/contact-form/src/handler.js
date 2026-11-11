@@ -27,6 +27,25 @@ const PHOTO_TYPES = {
   ".heif": "image/heif",
 };
 
+/** The extension an attachment gets when its name does not match what the file really is. */
+const EXTENSION_FOR = {
+  "image/jpeg": ".jpg",
+  "image/png": ".png",
+  "image/webp": ".webp",
+  "image/heic": ".heic",
+  "image/heif": ".heif",
+};
+
+/** ISO-BMFF brands of HEIC (HEVC) and other HEIF images. */
+const HEIC_BRANDS = new Set(["heic", "heix", "heim", "heis", "hevc", "hevx", "hevm", "hevs"]);
+const HEIF_BRANDS = new Set(["mif1", "msf1", "mif2", "avif"]);
+
+/** Every response says: HTTPS only (subdomains too) and no content sniffing. */
+const SECURITY_HEADERS = {
+  "Strict-Transport-Security": "max-age=63072000; includeSubDomains",
+  "X-Content-Type-Options": "nosniff",
+};
+
 const LABELS = {
   name: "Imię",
   phone: "Telefon",
@@ -66,9 +85,38 @@ const safeFileName = (name, index) => {
   return extensionOf(cleaned) in PHOTO_TYPES ? cleaned : `zdjecie-${index + 1}.jpg`;
 };
 
+/** The attachment name with an extension that matches the detected type, so mail clients open it as that type. */
+const attachmentName = (name, index, type) => {
+  const safe = safeFileName(name, index);
+  if (PHOTO_TYPES[extensionOf(safe)] === type) return safe;
+  return `${safe.slice(0, safe.length - extensionOf(safe).length)}${EXTENSION_FOR[type]}`;
+};
+
 /** Base64 has no "-", so encoded content can never contain a MIME boundary line ("--…"). */
 const isEncoded = (content) =>
   typeof content === "string" && content !== "" && !content.includes("-");
+
+/**
+ * The real type of a photo, read from its first bytes (the file signature), or "" when it is not
+ * a JPEG, PNG, WebP or HEIC/HEIF image. The name comes from the visitor, so it proves nothing:
+ * an HTML page or a program renamed to .jpg is refused here.
+ */
+export const photoType = (content) => {
+  // 32 base64 characters are 24 bytes, enough for every signature below.
+  const head = Buffer.from(content.replace(/\s/g, "").slice(0, 32), "base64");
+  const ascii = (start, end) => head.toString("latin1", start, end);
+  if (head[0] === 0xff && head[1] === 0xd8 && head[2] === 0xff) return "image/jpeg";
+  if (head.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))) {
+    return "image/png";
+  }
+  if (ascii(0, 4) === "RIFF" && ascii(8, 12) === "WEBP") return "image/webp";
+  if (ascii(4, 8) === "ftyp") {
+    const brand = ascii(8, 12);
+    if (HEIC_BRANDS.has(brand)) return "image/heic";
+    if (HEIF_BRANDS.has(brand)) return "image/heif";
+  }
+  return "";
+};
 
 /**
  * Reads and checks the submission. Returns `{ spam: true }` for the honeypot,
@@ -107,6 +155,10 @@ export const parseSubmission = (data) => {
   if (!photos.every((photo) => isEncoded(photo.content))) return { error: "photo not encoded" };
   const total = photos.reduce((sum, photo) => sum + photo.content.length, 0);
   if (total > LIMITS.maxPhotoChars) return { error: "photos too large" };
+  for (const photo of photos) {
+    photo.type = photoType(photo.content);
+    if (photo.type === "") return { error: "photo content is not an image" };
+  }
 
   return { fields, photos };
 };
@@ -143,11 +195,12 @@ export const buildMessage = ({ fields, photos, from, to, date = new Date(), id }
   ];
 
   for (const [index, photo] of photos.entries()) {
-    const name = safeFileName(photo.name, index);
+    const type = photo.type ?? photoType(photo.content);
+    const name = attachmentName(photo.name, index, type);
     parts.push(
       [
         `--${boundary}`,
-        `Content-Type: ${PHOTO_TYPES[extensionOf(name)]}; name="${name}"`,
+        `Content-Type: ${type}; name="${name}"`,
         "Content-Transfer-Encoding: base64",
         `Content-Disposition: attachment; filename="${name}"`,
         "",
@@ -172,28 +225,39 @@ export const buildMessage = ({ fields, photos, from, to, date = new Date(), id }
   ].join("\r\n");
 };
 
-const json = (status, body, origin) =>
+const json = (status, body, origin, extra = {}) =>
   new Response(JSON.stringify(body), {
     status,
     headers: {
+      ...SECURITY_HEADERS,
       "Content-Type": "application/json",
       ...(origin && { "Access-Control-Allow-Origin": origin, Vary: "Origin" }),
+      ...extra,
     },
   });
+
+/** Lets every request through; used when no limiter is configured (tests, local runs). */
+const noLimit = async () => true;
 
 /**
  * Handles one request. `send(raw)` delivers the MIME message; `allowedOrigins` lists the sites
  * whose pages may post here, so the endpoint cannot be used from other pages in a browser.
+ * `limit(key)` resolves to false when the visitor (key: IP address) has sent too many submissions;
+ * the Origin check alone does not stop a script, so this is what keeps the mailbox from being flooded.
  */
-export const handle = async (request, { allowedOrigins, from, to, send, log = console }) => {
+export const handle = async (
+  request,
+  { allowedOrigins, from, to, send, limit = noLimit, log = console },
+) => {
   const origin = request.headers.get("Origin") ?? "";
   const allowed = allowedOrigins.includes(origin) ? origin : "";
 
   if (request.method === "OPTIONS") {
-    if (!allowed) return new Response(null, { status: 403 });
+    if (!allowed) return new Response(null, { status: 403, headers: SECURITY_HEADERS });
     return new Response(null, {
       status: 204,
       headers: {
+        ...SECURITY_HEADERS,
         "Access-Control-Allow-Origin": allowed,
         "Access-Control-Allow-Methods": "POST",
         "Access-Control-Allow-Headers": "Accept",
@@ -204,6 +268,13 @@ export const handle = async (request, { allowedOrigins, from, to, send, log = co
   }
   if (request.method !== "POST") return json(405, { ok: false }, allowed);
   if (!allowed) return json(403, { ok: false }, "");
+
+  // Counted before the body is read, so rejected and spam submissions use up the limit too.
+  const visitor = request.headers.get("CF-Connecting-IP") ?? "unknown";
+  if (!(await limit(visitor))) {
+    log.warn("Rejected submission: rate limit");
+    return json(429, { ok: false }, allowed, { "Retry-After": "60" });
+  }
 
   const length = Number(request.headers.get("Content-Length") ?? 0);
   if (length > LIMITS.maxBodyBytes) return json(413, { ok: false }, allowed);

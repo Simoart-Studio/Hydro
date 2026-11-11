@@ -13,7 +13,7 @@ import Button from "./Button.astro";
     data-tag-id={googleTagId}
   >
     <div class="box">
-      <h2 id="consent-title" class="title">
+      <h2 id="consent-title" class="title" tabindex="-1">
         Pliki cookies
       </h2>
       <p class="text">
@@ -36,24 +36,39 @@ import Button from "./Button.astro";
 <script>
   // Basic consent mode: no request goes to Google until the visitor accepts. The choice is kept in
   // localStorage (not a cookie), and "Ustawienia cookies" in the footer opens this banner again.
+  // It is stored with the date it was made and the version of this text, and the banner asks again
+  // after 12 months or when VERSION changes (raise it whenever the purposes or the tools change).
   const KEY = "hydro-consent-v1";
+  const VERSION = 1;
+  const MAX_AGE_MS = 365 * 24 * 60 * 60 * 1000;
+
+  type Choice = "granted" | "denied";
+  type ConsentRecord = { choice: Choice; version: number; date: string };
   const banner = document.querySelector<HTMLElement>("[data-consent]");
   const tagId = banner?.dataset.tagId ?? "";
 
   type Gtag = (...args: unknown[]) => void;
   const page = window as typeof window & { dataLayer?: unknown[]; gtag?: Gtag };
 
-  const readChoice = () => {
+  /** The stored choice, or null when there is none, it is from an older version or older than 12 months. */
+  const readChoice = (): Choice | null => {
     try {
-      return localStorage.getItem(KEY);
+      const record = JSON.parse(
+        localStorage.getItem(KEY) ?? "null",
+      ) as Partial<ConsentRecord> | null;
+      if (!record || (record.choice !== "granted" && record.choice !== "denied")) return null;
+      const age = Date.now() - Date.parse(record.date ?? "");
+      if (record.version !== VERSION || !(age >= 0 && age < MAX_AGE_MS)) return null;
+      return record.choice;
     } catch {
       return null;
     }
   };
 
-  const saveChoice = (choice: string) => {
+  const saveChoice = (choice: Choice) => {
+    const record: ConsentRecord = { choice, version: VERSION, date: new Date().toISOString() };
     try {
-      localStorage.setItem(KEY, choice);
+      localStorage.setItem(KEY, JSON.stringify(record));
     } catch {
       // Private mode: the choice lasts until the page is closed.
     }
@@ -106,9 +121,8 @@ import Button from "./Button.astro";
   const show = () => {
     if (!banner) return;
     banner.hidden = false;
-    banner.querySelector<HTMLElement>("[data-consent-choice='granted']")?.focus({
-      preventScroll: true,
-    });
+    // Focus goes to the title, not to either button, so neither choice is pre-selected.
+    banner.querySelector<HTMLElement>("#consent-title")?.focus({ preventScroll: true });
   };
 
   if (banner) {
@@ -118,7 +132,7 @@ import Button from "./Button.astro";
 
     for (const button of banner.querySelectorAll<HTMLElement>("[data-consent-choice]")) {
       button.addEventListener("click", () => {
-        const choice = button.dataset.consentChoice ?? "denied";
+        const choice: Choice = button.dataset.consentChoice === "granted" ? "granted" : "denied";
         saveChoice(choice);
         banner.hidden = true;
         if (choice === "granted") loadTag();
@@ -169,6 +183,11 @@ import Button from "./Button.astro";
 
   .title {
     font-size: var(--text-base);
+  }
+
+  /* The title only receives focus from script, to move the reader to the banner. */
+  .title:focus {
+    outline: none;
   }
 
   .text {

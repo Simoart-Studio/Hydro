@@ -68,6 +68,10 @@ const checkPage = async (path) => {
       /frame-ancestors 'none'/.test(headers.get("content-security-policy") ?? ""),
       `${path}: CSP header without frame-ancestors`,
     );
+    check(
+      /includeSubDomains/.test(headers.get("strict-transport-security") ?? ""),
+      `${path}: HSTS without includeSubDomains`,
+    );
   }
 };
 
@@ -95,6 +99,44 @@ await checkText(
 if (baseUrl) {
   const missing = await fetch(`${baseUrl}/nie-ma-takiej-strony`);
   check(missing.status === 404, `404 page returns ${missing.status}`);
+
+  // Plain HTTP must redirect to HTTPS (Cloudflare "Always Use HTTPS").
+  const site = new URL(baseUrl);
+  if (site.protocol === "https:") {
+    const plain = await fetch(`http://${site.host}/`, { redirect: "manual" }).catch(() => null);
+    check(
+      plain !== null && plain.status >= 301 && plain.status <= 308,
+      `http://${site.host}/ does not redirect to HTTPS (${plain?.status ?? "no answer"})`,
+    );
+  }
+
+  // The contact form endpoint: only a CORS preflight, which sends no e-mail.
+  const { body } = await load("/kontakt");
+  const endpoint = body.match(/<form[^>]*\saction="(https:\/\/[^"]+)"/)?.[1];
+  if (endpoint) {
+    try {
+      const preflight = await fetch(endpoint, {
+        method: "OPTIONS",
+        headers: { Origin: site.origin, "Access-Control-Request-Method": "POST" },
+      });
+      check(preflight.status === 204, `form endpoint preflight returns ${preflight.status}`);
+      check(
+        preflight.headers.get("access-control-allow-origin") === site.origin,
+        "form endpoint does not allow the site origin",
+      );
+      check(
+        /includeSubDomains/.test(preflight.headers.get("strict-transport-security") ?? ""),
+        "form endpoint without HSTS",
+      );
+      const foreign = await fetch(endpoint, {
+        method: "OPTIONS",
+        headers: { Origin: "https://example.com", "Access-Control-Request-Method": "POST" },
+      });
+      check(foreign.status === 403, `form endpoint accepts other origins (${foreign.status})`);
+    } catch (error) {
+      failures.push(`form endpoint ${endpoint}: ${error.message}`);
+    }
+  }
 }
 
 const target = baseUrl ?? "dist/";
