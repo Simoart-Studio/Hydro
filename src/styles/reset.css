@@ -62,3 +62,8 @@ ol[role="list"] {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* The hidden attribute always hides, even on elements whose own styles set display (e.g. flex or grid). */
+[hidden] {
+  display: none !important;
+}
