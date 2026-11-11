@@ -30,7 +30,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         ))}
         <p class="contact-note">{story.contactNote}</p>
       </div>
-      <CompanyDetails fields={["name", "phones", "email", "address", "taxId"]} class="panel" />
+      <CompanyDetails fields={["phones", "email"]} class="panel" />
     </div>
   </Section>
   {qualifications.length > 0 && (
