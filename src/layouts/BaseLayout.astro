@@ -1,6 +1,7 @@
 ---
 import semiboldFont from "@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-600-normal.woff2?url";
 import regularFont from "@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-400-normal.woff2?url";
+import ConsentBanner from "../components/ConsentBanner.astro";
 import ContactDock from "../components/ContactDock.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
@@ -78,6 +79,7 @@ const structuredData = [
       <slot />
     </main>
     <SiteFooter />
+    <ConsentBanner />
     {contactDock && <ContactDock />}
   </body>
 </html>

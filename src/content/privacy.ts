@@ -17,9 +17,9 @@ export interface PolicySection {
 
 export const privacyPage = {
   title: "Polityka prywatności",
-  lead: "Jakie dane zbieramy przez formularz kontaktowy, po co i jak długo je przechowujemy.",
-  // TODO(klient): datę aktualizacji wpisać po weryfikacji treści przez prawnika
-  updated: "Wersja robocza",
+  lead: "Jakie dane zbieramy przez formularz kontaktowy i pliki cookies, po co i jak długo je przechowujemy.",
+  // TODO(klient): po weryfikacji treści przez prawnika wpisać datę tej wersji
+  updated: "Obowiązuje od 11 listopada 2026 r.",
 };
 
 // TODO(klient): treść do weryfikacji przez prawnika, w szczególności okres przechowywania i odbiorców danych
@@ -72,9 +72,12 @@ export const privacySections: PolicySection[] = [
     ],
   },
   {
-    title: "Pliki cookies",
+    title: "Pliki cookies i pomiar reklam",
     paragraphs: [
-      "Strona nie używa plików cookies ani narzędzi analitycznych, które śledzą odwiedzających.",
+      // TODO(klient): prawnik — okres przechowywania danych w Google Ads i Analytics, przekazanie do USA
+      "Bez Twojej zgody strona nie zapisuje plików cookies i nie łączy się z usługami pomiarowymi.",
+      "Jeśli klikniesz „Akceptuję” w okienku na dole strony, strona wczyta tag Google (Google Ads i Google Analytics, dostawca: Google Ireland Limited). Zapisuje on pliki cookies, dzięki którym sprawdzamy, ile osób trafia na stronę z naszych reklam w Google i czy potem dzwonią lub wysyłają formularz. Google może przetwarzać te dane także w USA. Podstawą jest Twoja zgoda (art. 6 ust. 1 lit. a RODO).",
+      "Zgodę możesz w każdej chwili wycofać lub zmienić przyciskiem „Ustawienia cookies” w stopce strony. Twój wybór przeglądarka zapamiętuje u Ciebie (w pamięci lokalnej strony), nie w pliku cookie.",
     ],
   },
 ];

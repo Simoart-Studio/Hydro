@@ -139,11 +139,11 @@ const [firstContact, ...otherContacts] = site.contacts;
     color: var(--color-ink);
   }
 
+  /* The site loads IBM Plex Sans 400 and 600 only; heavier or italic text would be synthesised by the browser. */
   .brand {
     font-size: clamp(3rem, 2rem + 5vw, 5.25rem);
-    font-weight: 700;
-    font-style: italic;
-    letter-spacing: 0.02em;
+    font-weight: 600;
+    letter-spacing: 0.12em;
     line-height: 0.95;
   }
 
@@ -168,8 +168,14 @@ const [firstContact, ...otherContacts] = site.contacts;
     margin-block-start: var(--space-xs);
   }
 
+  /* On phones both call buttons span the column, so they line up instead of ending at different widths. */
+  .calls li {
+    flex: 1 1 100%;
+  }
+
   .call {
     display: inline-flex;
+    inline-size: 100%;
     gap: var(--space-s);
     align-items: center;
     min-block-size: 3.25rem;
@@ -202,7 +208,7 @@ const [firstContact, ...otherContacts] = site.contacts;
 
   .call-number {
     font-size: var(--text-lg);
-    font-weight: 700;
+    font-weight: 600;
     white-space: nowrap;
   }
 
@@ -244,10 +250,11 @@ const [firstContact, ...otherContacts] = site.contacts;
     font-size: var(--text-sm);
   }
 
+  /* The links are already 44 px tall, so wrapped rows need no extra gap. */
   .perks-list {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-xs) var(--space-m);
+    gap: 0 var(--space-m);
   }
 
   .perks-list a {
@@ -273,6 +280,16 @@ const [firstContact, ...otherContacts] = site.contacts;
     stroke: var(--color-accent);
     stroke-linecap: round;
     stroke-width: 2.5;
+  }
+
+  @media (width >= 30rem) {
+    .calls li {
+      flex: none;
+    }
+
+    .call {
+      inline-size: auto;
+    }
   }
 
   @media (width >= 56rem) {

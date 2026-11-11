@@ -9,3 +9,9 @@ export const formEndpoint = import.meta.env.PUBLIC_FORM_ENDPOINT ?? "";
  */
 export const hasContactForm = import.meta.env.PUBLIC_CONTACT_FORM !== "false";
 export const isFormConnected = formEndpoint !== "";
+
+/**
+ * Tag Google (Google Ads i Analytics). Wczytuje się dopiero po zgodzie odwiedzającego w banerze cookies.
+ * `PUBLIC_GOOGLE_TAG_ID=""` wyłącza tag i baner; ten sam domyślny identyfikator zna astro.config.mjs (CSP).
+ */
+export const googleTagId = import.meta.env.PUBLIC_GOOGLE_TAG_ID ?? "G-WSBV76Z556";

@@ -25,6 +25,28 @@ const resolveSiteUrl = () => {
 const formOrigin = env.PUBLIC_FORM_ENDPOINT ? new URL(env.PUBLIC_FORM_ENDPOINT).origin : "";
 const withFormOrigin = (directive) => [directive, formOrigin].filter(Boolean).join(" ");
 
+// Google tag (Google Ads and Analytics). It loads only after the visitor accepts cookies (ConsentBanner),
+// but the CSP has to allow its hosts up front. PUBLIC_GOOGLE_TAG_ID="" turns the tag and these hosts off.
+// Hosts as listed in Google's CSP guide for the Google tag with Ads; www.google.pl is the local Ads domain.
+const googleTagId = env.PUBLIC_GOOGLE_TAG_ID ?? "G-WSBV76Z556";
+const google = (...hosts) => (googleTagId ? hosts : []);
+const withHosts = (directive, ...hosts) => [directive, ...hosts].join(" ");
+const googleScripts = google(
+  "https://*.googletagmanager.com",
+  "https://www.googleadservices.com",
+  "https://www.google.com",
+  "https://googleads.g.doubleclick.net",
+);
+const googleBeacons = google(
+  "https://*.google-analytics.com",
+  "https://*.analytics.google.com",
+  "https://*.googletagmanager.com",
+  "https://*.g.doubleclick.net",
+  "https://www.google.com",
+  "https://www.google.pl",
+  "https://www.googleadservices.com",
+);
+
 export default defineConfig({
   site: resolveSiteUrl(),
   // With the class strategy a class passed to a child component keeps the parent scope, so sections can lay out shared components such as Container and Button.
@@ -39,13 +61,18 @@ export default defineConfig({
     csp: {
       directives: [
         "default-src 'self'",
-        "img-src 'self' data:",
+        withHosts("img-src 'self' data:", ...googleBeacons),
         "font-src 'self'",
-        withFormOrigin("connect-src 'self'"),
+        withHosts(withFormOrigin("connect-src 'self'"), ...googleBeacons),
+        withHosts(
+          "frame-src 'self'",
+          ...google("https://td.doubleclick.net", "https://www.googletagmanager.com"),
+        ),
         withFormOrigin("form-action 'self'"),
         "base-uri 'self'",
         "object-src 'none'",
       ],
+      scriptDirective: { resources: ["'self'", ...googleScripts] },
       // The service map positions labels and markers with inline style attributes computed at build time.
       styleDirective: {
         resources: ["'self'", { resource: "'unsafe-inline'", kind: "attribute" }],

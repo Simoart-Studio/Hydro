@@ -1,6 +1,6 @@
 # HYDRO Leszek Weinerowski — strona firmowa
 
-Statyczna strona usługowa firmy instalacyjnej (pompy ciepła, kotły, instalacje hydrauliczne, dotacje). Działa bez backendu, bazy danych i cookies; jedyny kontakt z odwiedzającym to linki `tel:` i opcjonalny formularz wysyłany do zewnętrznej usługi.
+Statyczna strona usługowa firmy instalacyjnej (pompy ciepła, kotły, instalacje hydrauliczne, dotacje). Działa bez backendu i bazy danych; kontakt to linki `tel:` i formularz wysyłany przez Worker Cloudflare. Cookies (tag Google) tylko po zgodzie odwiedzającego.
 
 - Domena: https://hydrokotly.pl (rejestrator: home.pl, DNS: Cloudflare)
 - Adres techniczny: https://hydro-8g4.pages.dev (nieindeksowany)
@@ -32,6 +32,7 @@ npm run dev        # http://localhost:4321
 | `PUBLIC_SITE_URL`      | `localhost`                | Adres w canonical, sitemapie, Open Graph i JSON-LD. Na Cloudflare Pages i w CI bez niego build się przerywa.                                                                                                |
 | `PUBLIC_NOINDEX`       | indeksowanie **wyłączone** | Tylko `false` włącza indeksowanie. Ustawić dopiero na produkcji z domeną klienta i zatwierdzoną treścią.                                                                                                    |
 | `PUBLIC_FORM_ENDPOINT` | pusty                      | Adres Workera formularza (`https://formularz.hydrokotly.pl`). Pusty — formularz jest widoczny, ale nie wysyła: informuje, że zgłoszenia przyjmujemy telefonicznie. Jego domena trafia automatycznie do CSP. |
+| `PUBLIC_GOOGLE_TAG_ID` | `G-WSBV76Z556`             | Tag Google (Ads i Analytics). Ładuje się dopiero po zgodzie w banerze cookies (`ConsentBanner.astro`); hosty Google są w CSP. Pusta wartość wyłącza tag i baner.                                            |
 | `PUBLIC_CONTACT_FORM`  | formularz widoczny         | `false` — strona Kontakt pokazuje karty z telefonami zamiast formularza.                                                                                                                                    |
 
 Na Cloudflare Pages `PUBLIC_SITE_URL` jest wymagany (`https://hydrokotly.pl`), bo Cloudflare nie przekazuje domeny do buildu. Adresy techniczne `*.pages.dev` dostają nagłówek `X-Robots-Tag: noindex` (`public/_headers`), więc nie konkurują z domeną klienta w wyszukiwarce.

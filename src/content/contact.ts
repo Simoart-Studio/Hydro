@@ -4,7 +4,7 @@ export const contactPage = {
   lead: "Zadzwoń albo napisz. Jeśli dołączysz zdjęcie kotłowni i jej wymiary, szybciej ocenimy, co da się zrobić. Oddzwonimy i powiemy, jakie rozwiązanie ma sens w Twojej sytuacji.",
   leadPhoneOnly:
     "Zadzwoń do nas. Zapytamy o budynek i obecne ogrzewanie, a potem powiemy, jakie rozwiązanie ma sens i czy możesz liczyć na dotację.",
-  detailsTitle: "Telefon",
+  detailsTitle: "Kontakt",
   companyTitle: "Dane firmy",
   areaTitle: "Obszar działania",
 };

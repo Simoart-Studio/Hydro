@@ -535,6 +535,8 @@ const { fields, success } = contactForm;
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         resetForm();
         showSuccess();
+        // Counted as a lead in Google Ads, only if the visitor accepted cookies (ConsentBanner).
+        document.dispatchEvent(new CustomEvent("hydro:lead"));
       } catch (error) {
         if (error instanceof PhotoError) {
           setStatus(error.message, "error");

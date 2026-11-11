@@ -1,4 +1,5 @@
 ---
+import { googleTagId } from "../lib/env";
 import { mainNavigation, privacyPolicyLink } from "../content/navigation";
 import { site, siteCredit } from "../content/site";
 import CompanyDetails from "./CompanyDetails.astro";
@@ -47,6 +48,11 @@ const year = new Date().getFullYear();
         © {year} {site.legalName}
       </span>
       <a href={privacyPolicyLink.href}>{privacyPolicyLink.label}</a>
+      {googleTagId && (
+        <button type="button" class="consent-open" data-consent-open>
+          Ustawienia cookies
+        </button>
+      )}
       <span class="credit">
         {siteCredit.label}{" "}
         {siteCredit.url ? (
@@ -135,11 +141,27 @@ const year = new Date().getFullYear();
     align-items: center;
   }
 
-  .meta a {
+  .meta a,
+  .consent-open {
     display: inline-flex;
     align-items: center;
     min-block-size: var(--target-size);
     color: var(--color-ink);
+  }
+
+  .consent-open {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    cursor: pointer;
+  }
+
+  .consent-open:hover {
+    text-decoration-thickness: 2px;
   }
 
   @media (width >= 40rem) {

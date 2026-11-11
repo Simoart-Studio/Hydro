@@ -43,7 +43,7 @@ const checkPage = async (path) => {
   check(status === 200, `${path}: status ${status}`);
   check(/href="tel:\+48\d{9}"/.test(body), `${path}: no tel: link`);
   check(
-    /<meta http-equiv="content-security-policy"[^>]*script-src 'self' 'sha256-/.test(body),
+    /<meta http-equiv="content-security-policy"[^>]*script-src[^"]*'sha256-/.test(body),
     `${path}: no CSP meta with script hashes`,
   );
   check(

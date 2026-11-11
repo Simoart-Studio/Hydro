@@ -68,14 +68,23 @@ const Wrapper = href ? "a" : "div";
 
   .label {
     z-index: 1;
+    max-inline-size: calc(100% - var(--space-s));
     margin-block-start: -1.375rem;
-    padding: var(--space-xs) var(--space-l);
+    padding: var(--space-xs) var(--space-s);
     border-radius: var(--radius-pill);
     background: var(--color-navy);
     color: var(--color-on-navy);
     font-size: var(--text-sm);
     font-weight: 600;
+    line-height: 1.25;
     text-align: center;
+    text-wrap: balance;
+  }
+
+  @media (width >= 30rem) {
+    .label {
+      padding-inline: var(--space-l);
+    }
   }
 
   a.frame:hover .image {

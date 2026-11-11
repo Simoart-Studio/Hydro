@@ -11,6 +11,8 @@ interface Props {
   type?: "button" | "submit";
   arrow?: boolean;
   class?: string;
+  /** data-* attributes pass through, so scripts can find the button. */
+  [data: `data-${string}`]: string;
 }
 
 const {
@@ -20,17 +22,18 @@ const {
   type = "button",
   arrow = false,
   class: className,
+  ...data
 } = Astro.props;
 const classes = ["button", variant, size, className];
 ---
 
 {href ? (
-  <a href={href} class:list={classes}>
+  <a href={href} class:list={classes} {...data}>
     <slot />
     {arrow && <span class="arrow" aria-hidden="true" />}
   </a>
 ) : (
-  <button type={type} class:list={classes}>
+  <button type={type} class:list={classes} {...data}>
     <slot />
     {arrow && <span class="arrow" aria-hidden="true" />}
   </button>

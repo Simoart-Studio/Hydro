@@ -18,9 +18,19 @@ const { id, columns = 3 } = Astro.props;
     scroll-margin-block-start: var(--space-xl);
   }
 
+  /* Four short category tiles fit two to a row even on phones, so the section does not run four screens long. */
+  .columns-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-s);
+  }
+
   @media (width >= 30rem) {
     .tile-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .columns-4 {
+      column-gap: var(--space-l);
     }
   }
 
