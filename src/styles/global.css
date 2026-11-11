@@ -7,6 +7,18 @@
 @import "./reset.css";
 @import "./tokens.css";
 
+/* IBM Plex Mono only has a dotted zero. The plain zero comes from Plex Sans at the same weight,
+   so phone numbers and labels read without the dot. */
+@font-face {
+  font-family: "Plex Mono Zero";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../../node_modules/@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-500-normal.woff2")
+    format("woff2");
+  unicode-range: U+0030;
+}
+
 html {
   scrollbar-gutter: stable;
   scroll-behavior: smooth;

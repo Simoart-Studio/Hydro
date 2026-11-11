@@ -32,7 +32,7 @@
   --color-sea: #e4eef6;
 
   --font-base: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace;
+  --font-mono: "Plex Mono Zero", "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace;
 
   --text-xs: 0.8125rem;
   --text-sm: 0.875rem;
