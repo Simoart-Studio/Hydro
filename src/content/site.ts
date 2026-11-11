@@ -37,6 +37,7 @@ export interface SiteInfo {
   metaDescription: string;
   /** Profile firmy w innych serwisach (np. link do Profilu Firmy w Mapach Google); trafiają do danych strukturalnych. */
   profiles: string[];
+  geo: { lat: number; lon: number };
   /** Pierwszy kontakt jest numerem głównym: nagłówek, przyciski, dane strukturalne. */
   contacts: [Contact, ...Contact[]];
   /** Puste pole nie wyświetla się na stronie. */
@@ -58,11 +59,15 @@ export interface SiteInfo {
 export const site: SiteInfo = {
   name: "HYDRO Leszek Weinerowski",
   brandLines: ["HYDRO", "Leszek Weinerowski"],
-  legalName: "HYDRO Leszek Weinerowski", // TODO(klient): pełna nazwa firmy z CEIDG
+  /** Nazwa z rejestru (CEIDG/REGON); marka HYDRO jest w `name`. */
+  legalName: "Leszek Weinerowski",
   tagline: "Nowoczesne instalacje grzewcze i hydrauliczne",
   metaDescription:
     "Montaż pomp ciepła, kotłów gazowych i na pellet oraz instalacji hydraulicznych, pomoc w dotacjach. Tczew, Trójmiasto i okolice. Zadzwoń: 882 834 297.",
-  profiles: [], // TODO(klient): link do Profilu Firmy w Mapach Google (Udostępnij → Kopiuj link)
+  // Profil Firmy w Mapach Google; stały link z identyfikatora miejsca (cid), bez danych wyszukiwania i konta.
+  profiles: ["https://maps.google.com/?cid=1824980093459179988"],
+  /** Położenie siedziby według Profilu Firmy w Mapach Google. */
+  geo: { lat: 54.0949406, lon: 18.788716 },
   description:
     "Pompy ciepła, kotły gazowe, kotły na pellet i zgazowujące drewno. Kompleksowy montaż, modernizacja kotłowni i instalacje hydrauliczne, plus pomoc w uzyskaniu dotacji. Trójmiasto, Tczew i okolice.",
   contacts: [
@@ -71,18 +76,20 @@ export const site: SiteInfo = {
   ],
   email: "hydrokotlownie@gmail.com",
   address: {
-    street: "", // TODO(klient): ulica i numer
-    postalCode: "", // TODO(klient): kod pocztowy
-    city: "", // TODO(klient): miejscowość siedziby
+    street: "Gdańska 45 lok. 6",
+    postalCode: "83-110",
+    city: "Tczew",
     region: "pomorskie",
   },
-  taxId: "", // TODO(klient): NIP
-  openingHours: [], // TODO(klient): godziny pracy, np. { days: "Poniedziałek–piątek", hours: "8:00–17:00", schema: "Mo-Fr 08:00-17:00" }
+  taxId: "5932555986",
+  // Firma nie ma stałych godzin pracy (prace przy ogrzewaniu w terminach ustalanych z klientem), więc strona ich nie podaje.
+  // Wpis np. { days: "Poniedziałek–piątek", hours: "8:00–17:00", schema: "Mo-Fr 08:00-17:00" } pokaże je w stopce i danych dla Google.
+  openingHours: [],
   serviceArea: {
     summary:
       "Pracujemy w województwie pomorskim i warmińsko-mazurskim: w Trójmieście, w okolicach Tczewa i w promieniu około 100 km.",
     regions: ["pomorskie", "warmińsko-mazurskie"],
-    // TODO(klient): potwierdzić punkt, od którego liczyć zasięg (na razie Tczew)
+    // Siedziba firmy jest w Tczewie, stąd liczony jest zasięg.
     base: { name: "Tczew", lat: 54.092, lon: 18.778, radiusKm: 100 },
     // Z grafiki klienta: „+ do 20 km od powyższych miejscowości”.
     reachKm: 20,

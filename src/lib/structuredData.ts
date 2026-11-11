@@ -41,6 +41,8 @@ export function businessSchema(base: URL): Schema {
       addressRegion: address.region,
       addressCountry: "PL",
     }),
+    geo: { "@type": "GeoCoordinates", latitude: site.geo.lat, longitude: site.geo.lon },
+    hasMap: site.profiles.find((url) => url.includes("maps.google.")),
     taxID: site.taxId,
     openingHours: site.openingHours.map((entry) => entry.schema),
     areaServed: [
