@@ -143,10 +143,3 @@ export const formattedAddress = [
 ]
   .filter(Boolean)
   .join(", ");
-
-/** Podpis wykonawcy w stopce. Pusty adres wyświetla samą nazwę, bez linku. */
-export const siteCredit = {
-  label: "Projekt i obsługa strony:",
-  name: "Simoart Studio",
-  url: "", // TODO: adres strony Simoart Studio
-};
