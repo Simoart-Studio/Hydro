@@ -18,10 +18,7 @@ import { testimonials } from "../content/testimonials";
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout
-  title={`Instalacje grzewcze i hydrauliczne, Trójmiasto i Tczew | ${site.brandLines[0]}`}
-  description={site.metaDescription}
->
+<BaseLayout title={`${site.metaTitle} | ${site.brandLines[0]}`} description={site.metaDescription}>
   <Hero />
   <ServicesOverview />
   <Introduction />

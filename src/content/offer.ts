@@ -18,8 +18,8 @@ export const offerPage = {
   heading: "Oferta: pompy ciepła, kotły i instalacje hydrauliczne",
   /** Opis w wynikach Google, do ok. 155 znaków. */
   metaDescription:
-    "Pompy ciepła, kotły gazowe i na pellet, zasobniki, bufory, ogrzewanie podłogowe i instalacje hydrauliczne. Dobór, montaż i uruchomienie. Tczew i Trójmiasto.",
-  metaTitle: "Pompy ciepła, kotły i instalacje hydrauliczne z montażem",
+    "Pompy ciepła, kotły gazowe i na pellet, bufory, zasobniki CWU, podłogówka i instalacje hydrauliczne. Dobór, montaż, uruchomienie: Tczew, Gdańsk, Pomorze.",
+  metaTitle: "Montaż pomp ciepła, kotłów gazowych i na pellet – Tczew",
   lead: "Pompy ciepła, kotły gazowe, kotły na pellet i zgazowujące drewno, zasobniki, bufory oraz kompletne instalacje hydrauliczne i elektryczne. Montujemy urządzenia różnych producentów i prowadzimy całość od doboru po uruchomienie.",
   pricing:
     "Urządzenia kupujemy na warunkach instalatorskich, więc możemy zaproponować rabaty na urządzenia. Cenę urządzeń i montażu podajemy w jednej wycenie, po oględzinach kotłowni.",

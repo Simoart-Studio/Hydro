@@ -1,9 +1,9 @@
 export const subsidiesPage = {
   title: "Dotacje na wymianę źródła ciepła",
-  metaTitle: "Dotacje na kotły na pellet i pompy ciepła",
+  metaTitle: "Dotacja na pompę ciepła lub kocioł na pellet – Pomorze",
   /** Opis w wynikach Google, do ok. 155 znaków. */
   metaDescription:
-    "Pomagamy uzyskać dotację na pompę ciepła lub kocioł na pellet. Sprawdzamy, czy się kwalifikujesz, a wniosek prowadzi firma partnerska. Tczew i Pomorze.",
+    "Pomagamy uzyskać dotację na pompę ciepła lub kocioł na pellet: sprawdzamy, czy się kwalifikujesz, wniosek prowadzi firma partnerska. Tczew, Gdańsk.",
   lead: "Jesteśmy instalatorami i chcemy wyjść naprzeciw inwestorowi. Jeśli kwalifikujesz się do dofinansowania, pomożemy je uzyskać razem z firmą, która zajmuje się wnioskami dla naszych klientów.",
 };
 

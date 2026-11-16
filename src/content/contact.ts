@@ -3,8 +3,8 @@ export const contactPage = {
   heading: "Kontakt z instalatorem: Tczew i Trójmiasto",
   /** Opis w wynikach Google, do ok. 155 znaków. */
   metaDescription:
-    "Zadzwoń: 882 834 297 lub 690 135 002 albo wyślij zdjęcie kotłowni przez formularz. Oddzwonimy i doradzimy. Tczew, Trójmiasto i okolice.",
-  metaTitle: "Kontakt: Tczew, Trójmiasto i okolice",
+    "Zadzwoń: 882 834 297 lub 690 135 002 albo wyślij zdjęcie kotłowni. Pierwsza rozmowa bezpłatna. Tczew, Gdańsk, Gdynia, Starogard Gdański, Malbork.",
+  metaTitle: "Kontakt – instalator ogrzewania, Tczew i Gdańsk",
   lead: "Zadzwoń albo napisz. Jeśli dołączysz zdjęcie kotłowni i jej wymiary, szybciej ocenimy, co da się zrobić. Oddzwonimy i powiemy, jakie rozwiązanie ma sens w Twojej sytuacji.",
   leadPhoneOnly:
     "Zadzwoń do nas. Zapytamy o budynek i obecne ogrzewanie, a potem powiemy, jakie rozwiązanie ma sens i czy możesz liczyć na dotację.",

@@ -8,7 +8,13 @@ import SiteHeader from "../components/SiteHeader.astro";
 import type { FaqItem } from "../content/faq";
 import { site } from "../content/site";
 import { isNoindex } from "../lib/env";
-import { breadcrumbSchema, businessSchema, faqSchema, toJsonLd } from "../lib/structuredData";
+import {
+  breadcrumbSchema,
+  businessSchema,
+  faqSchema,
+  toJsonLd,
+  websiteSchema,
+} from "../lib/structuredData";
 import "../styles/global.css";
 
 interface Props {
@@ -29,6 +35,7 @@ const canonicalPath = Astro.url.pathname.replace(/(index)?\.html$/, "").replace(
 const canonicalUrl = new URL(canonicalPath, base);
 const ogImageUrl = new URL("/og.jpg", base);
 const structuredData = [
+  ...(canonicalPath === "/" ? [websiteSchema(base)] : []),
   businessSchema(base),
   ...(breadcrumb ? [breadcrumbSchema(base, breadcrumb, canonicalPath)] : []),
   ...(faq ? [faqSchema(faq)] : []),
@@ -45,7 +52,14 @@ const structuredData = [
     </script>
     <title>{title}</title>
     <meta name="description" content={description} />
-    {isNoindex && <meta name="robots" content="noindex" />}
+    <meta
+      name="robots"
+      content={isNoindex ? "noindex" : "index, follow, max-image-preview:large, max-snippet:-1"}
+    />
+    <meta name="geo.region" content="PL-22" />
+    <meta name="geo.placename" content={site.address.city} />
+    <meta name="geo.position" content={`${site.geo.lat};${site.geo.lon}`} />
+    <meta name="ICBM" content={`${site.geo.lat}, ${site.geo.lon}`} />
     <link rel="canonical" href={canonicalUrl} />
     <link rel="icon" href="/favicon.png" type="image/png" sizes="48x48" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

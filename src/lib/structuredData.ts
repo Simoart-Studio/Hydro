@@ -15,11 +15,15 @@ export function businessSchema(base: URL): Schema {
   const { address, serviceArea } = site;
   return clean({
     "@context": "https://schema.org",
-    "@type": "HVACBusiness",
+    // Firma montuje ogrzewanie, instalacje wodne i elektryczne, więc ma wszystkie trzy typy usług lokalnych.
+    "@type": ["HVACBusiness", "Plumber", "Electrician"],
     "@id": new URL("/#firma", base).href,
     name: site.name,
+    alternateName: site.brandLines[0],
     legalName: site.legalName,
     description: site.description,
+    slogan: site.tagline,
+    knowsAbout: [...offerItems, installation, electrical].map((item) => item.title),
     url: new URL("/", base).href,
     logo: new URL("/logo.png", base).href,
     sameAs: site.profiles,
@@ -76,6 +80,20 @@ export function businessSchema(base: URL): Schema {
       },
     })),
   });
+}
+
+/** Nazwa witryny w wynikach Google; tylko na stronie głównej. */
+export function websiteSchema(base: URL): Schema {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": new URL("/#witryna", base).href,
+    name: site.brandLines[0],
+    alternateName: site.name,
+    url: new URL("/", base).href,
+    inLanguage: "pl-PL",
+    publisher: { "@id": new URL("/#firma", base).href },
+  };
 }
 
 export function breadcrumbSchema(base: URL, title: string, path: string): Schema {
